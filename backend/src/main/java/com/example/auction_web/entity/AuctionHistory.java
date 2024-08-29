@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Table(name = "auction_item")
+@Table(name = "acution_history")
 @Entity
 @Data
 @NoArgsConstructor

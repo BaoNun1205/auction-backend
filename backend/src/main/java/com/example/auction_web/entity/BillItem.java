@@ -37,7 +37,7 @@ public class BillItem {
     BigDecimal bidPrice;
 
     @OneToOne
-    @JoinColumn(name = "despositId", referencedColumnName = "despositId")
+    @JoinColumn(name = "depositId", referencedColumnName = "depositId")
     Deposit deposit;
 
     Boolean delFlag;

@@ -10,7 +10,7 @@ import lombok.experimental.FieldDefaults;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Table(name = "auction_item")
+@Table(name = "acution_history_detail")
 @Entity
 @Data
 @NoArgsConstructor
