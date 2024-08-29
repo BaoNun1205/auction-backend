@@ -29,5 +29,5 @@ public class Province {
     List<District> districts;
 
     @OneToOne(mappedBy = "province", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    AddressDetail addressDetail;
+    Address address;
 }

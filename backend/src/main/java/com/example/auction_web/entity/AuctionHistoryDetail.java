@@ -7,25 +7,35 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Table(name = "wishlist")
+@Table(name = "auction_item")
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class Wishlist {
+public class AuctionHistoryDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    String wishlistId;
+    String auctionHistoryDetailId;
 
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(name = "auctionHistoryId", referencedColumnName = "auctionHistoryId")
+    AuctionHistory auctionHistory;
+
+    @ManyToOne
     @JoinColumn(name = "userId", referencedColumnName = "userId")
     User user;
 
+    @Column(precision = 15, scale = 0)
+    BigDecimal auctionPrice;
+
+    LocalDateTime auctionTime;
     Boolean delFlag;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
+
 }

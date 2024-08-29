@@ -8,44 +8,29 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-@Table(name = "address")
+@Table(name = "register_auction")
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class Address {
+public class RegisterAuction {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    String addressId;
+    String registerAuctionId;
 
     @ManyToOne
     @JoinColumn(name = "userId", referencedColumnName = "userId")
     User user;
 
-    String recipientName;
-
     @OneToOne
-    @JoinColumn(name = "provinceId", referencedColumnName = "provinceId")
-    Province province;
+    @JoinColumn(name = "auctionSessionId", referencedColumnName = "auctionSessionId")
+    AuctionSession auctionSession;
 
-    @OneToOne
-    @JoinColumn(name = "districtId", referencedColumnName = "districtId")
-    District district;
-
-    @OneToOne
-    @JoinColumn(name = "wardId", referencedColumnName = "wardId")
-    Ward ward;
-
-    String addressDetail;
-    String phone;
     Boolean delFlag;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
-
-
-    @OneToOne(mappedBy = "address", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    Bill bill;
 }

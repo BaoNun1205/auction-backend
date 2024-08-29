@@ -10,7 +10,7 @@ import lombok.experimental.FieldDefaults;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Table(name = "bill")
+@Table(name = "bill_item")
 @Entity
 @Data
 @NoArgsConstructor
@@ -35,6 +35,10 @@ public class BillItem {
 
     @Column(precision = 15, scale = 0)
     BigDecimal bidPrice;
+
+    @OneToOne
+    @JoinColumn(name = "despositId", referencedColumnName = "despositId")
+    Deposit deposit;
 
     Boolean delFlag;
     LocalDateTime createdAt;

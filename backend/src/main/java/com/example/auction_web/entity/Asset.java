@@ -9,6 +9,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Table(name = "asset")
 @Entity
@@ -27,7 +28,8 @@ public class Asset {
     User user;
 
     String assetName;
-    String assetImage;
+    String slug;
+    String mainImage;
     String assetDescription;
 
     @Column(precision = 15, scale = 0)
@@ -51,4 +53,10 @@ public class Asset {
 
     @OneToOne(mappedBy = "asset", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     BillItem billItem;
+
+    @OneToOne(mappedBy = "asset", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    AuctionItem auctionItem;
+
+    @OneToMany(mappedBy = "asset", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<ImageAsset> imageAssets;
 }

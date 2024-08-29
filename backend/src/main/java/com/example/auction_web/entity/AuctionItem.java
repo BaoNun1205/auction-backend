@@ -11,41 +11,39 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Table(name = "bill")
+@Table(name = "auction_item")
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class Bill {
+public class AuctionItem {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    String billId;
+    String auctionItemId;
 
     @ManyToOne
-    @JoinColumn(name = "userId", referencedColumnName = "userId")
-    User user;
-
-    LocalDateTime billDate;
+    @JoinColumn(name = "auctionSessionId", referencedColumnName = "auctionSessionId")
+    AuctionSession auctionSession;
 
     @OneToOne
-    @JoinColumn(name = "addressId", referencedColumnName = "addressId")
-    Address address;
+    @JoinColumn(name = "assetId", referencedColumnName = "assetId")
+    Asset asset;
 
     @Column(precision = 15, scale = 0)
-    BigDecimal despositPrice;
+    BigDecimal startingBids;
 
     @Column(precision = 15, scale = 0)
-    BigDecimal totalProfitPrice;
-
-    @Column(precision = 15, scale = 0)
-    BigDecimal totalPrice;
+    BigDecimal bidIncrement;
 
     Boolean delFlag;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "bill", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    List<BillItem> billItems;
+    @OneToMany(mappedBy = "auctionItem", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<Deposit> deposits;
+
+    @OneToOne(mappedBy = "auctionItem", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    AuctionHistory auctionHistory;
 }

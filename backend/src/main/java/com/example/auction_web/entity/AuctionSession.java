@@ -29,5 +29,8 @@ public class AuctionSession {
     LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "auctionSession", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    List<Deposit> deposits;
+    List<AuctionItem> auctionItems;
+
+    @OneToOne(mappedBy = "auctionSession", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    RegisterAuction registerAuction;
 }
