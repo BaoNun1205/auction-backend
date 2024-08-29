@@ -5,5 +5,5 @@ import com.example.auction_web.dto.response.UserResponse;
 import com.example.auction_web.entity.User;
 
 public interface UserService {
-    public User createUser(UserCreateRequest request);
+    User createUser(UserCreateRequest request);
 }
