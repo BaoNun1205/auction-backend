@@ -30,5 +30,5 @@ public class Ward {
     LocalDateTime updatedAt;
 
     @OneToOne(mappedBy = "ward", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    AddressDetail addressDetail;
+    Address address;
 }

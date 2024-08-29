@@ -28,6 +28,7 @@ public class Authoritiy {
     @OneToOne
     @JoinColumn(name = "roleId", referencedColumnName = "roleId")
     Role role;
+
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 }

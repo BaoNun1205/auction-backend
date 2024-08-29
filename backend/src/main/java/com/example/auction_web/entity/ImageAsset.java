@@ -7,32 +7,25 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Table(name = "deposit")
+@Table(name = "image_asset")
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class Deposit {
+public class ImageAsset {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    String depositId;
+    String imageAssetId;
 
     @ManyToOne
-    @JoinColumn(name = "auctionItemId", referencedColumnName = "auctionItemId")
-    AuctionItem auctionItem;
+    @JoinColumn(name = "assetId", referencedColumnName = "assetId")
+    Asset asset;
 
-    @ManyToOne
-    @JoinColumn(name = "userId", referencedColumnName = "userId")
-    User user;
-
-    @Column(precision = 15, scale = 0)
-    BigDecimal depositPrice;
-
+    String imageAsset;
     Boolean delFlag;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;

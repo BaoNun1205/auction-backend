@@ -9,31 +9,28 @@ import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
-@Table(name = "deposit")
+@Table(name = "acution_history")
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class Deposit {
+public class AuctionHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    String depositId;
+    String auctionHistoryId;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "auctionItemId", referencedColumnName = "auctionItemId")
     AuctionItem auctionItem;
-
-    @ManyToOne
-    @JoinColumn(name = "userId", referencedColumnName = "userId")
-    User user;
-
-    @Column(precision = 15, scale = 0)
-    BigDecimal depositPrice;
 
     Boolean delFlag;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "auctionHistory", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<AuctionHistoryDetail> auctionHistoryDetails;
 }

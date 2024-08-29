@@ -8,22 +8,27 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-@Table(name = "wishlist")
+@Table(name = "register_auction")
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class Wishlist {
+public class RegisterAuction {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    String wishlistId;
+    String registerAuctionId;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "userId", referencedColumnName = "userId")
     User user;
+
+    @OneToOne
+    @JoinColumn(name = "auctionSessionId", referencedColumnName = "auctionSessionId")
+    AuctionSession auctionSession;
 
     Boolean delFlag;
     LocalDateTime createdAt;

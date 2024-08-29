@@ -26,6 +26,8 @@ public class CoinUser {
     @JoinColumn(name = "userId", referencedColumnName = "userId")
     User user;
 
+    @Column(precision = 15, scale = 0)
+    BigDecimal coinQuantity;
     Boolean delFlag;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;

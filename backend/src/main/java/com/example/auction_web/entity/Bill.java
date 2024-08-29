@@ -30,8 +30,8 @@ public class Bill {
     LocalDateTime billDate;
 
     @OneToOne
-    @JoinColumn(name = "addressDetailId", referencedColumnName = "addressDetailId")
-    AddressDetail addressDetail;
+    @JoinColumn(name = "addressId", referencedColumnName = "addressId")
+    Address address;
 
     @Column(precision = 15, scale = 0)
     BigDecimal despositPrice;

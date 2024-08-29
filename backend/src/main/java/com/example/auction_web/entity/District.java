@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Table(name = "district")
 @Entity
@@ -30,5 +31,8 @@ public class District {
     LocalDateTime updatedAt;
 
     @OneToOne(mappedBy = "district", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    AddressDetail addressDetail;
+    Address address;
+
+    @OneToMany(mappedBy = "district", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<Ward> wards;
 }

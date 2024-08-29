@@ -27,6 +27,8 @@ public class Type {
     Category category;
 
     String typeName;
+    String slug;
+    String image;
     Boolean delFlag;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
