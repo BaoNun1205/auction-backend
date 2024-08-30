@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +25,8 @@ public class UserController {
     @PostMapping
     ApiResponse<User> createUser(@RequestBody @Valid UserCreateRequest request){
         return ApiResponse.<User>builder()
+                .code(HttpStatus.OK.value())
+                .message("Create auction item success")
                 .result(userService.createUser(request))
                 .build();
     }
