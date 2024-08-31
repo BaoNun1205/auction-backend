@@ -1,4 +1,4 @@
-package com.example.auction_web.dto.request;
+package com.example.auction_web.dto.response.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,22 +6,20 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDateTime;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class UserCreateRequest {
+public class UserResponse {
     String username;
     String firstName;
     String lastName;
-    String password;
     String avatar;
     String email;
     String phone;
     String token;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
+    Set<RoleResponse> roles;
 }

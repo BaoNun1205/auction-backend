@@ -1,4 +1,4 @@
-package com.example.auction_web.dto.response;
+package com.example.auction_web.dto.request.auth;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -8,7 +8,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AuthenticationResponse {
-    String token;
-    boolean authenticated;
+public class PermissionRequest {
+    String name;
+    String description;
 }

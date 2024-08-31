@@ -1,5 +1,6 @@
-package com.example.auction_web.entity;
+package com.example.auction_web.entity.auth;
 
+import com.example.auction_web.entity.Asset;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,7 +9,6 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Table(name = "inspector")
 @Entity

@@ -1,4 +1,4 @@
-package com.example.auction_web.dto.response;
+package com.example.auction_web.dto.response.auth;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;

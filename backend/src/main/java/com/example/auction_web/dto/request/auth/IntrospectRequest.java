@@ -1,4 +1,4 @@
-package com.example.auction_web.dto.response;
+package com.example.auction_web.dto.request.auth;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -8,6 +8,6 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class IntrospectResponse {
-    boolean valid;
+public class IntrospectRequest {
+    String token;
 }

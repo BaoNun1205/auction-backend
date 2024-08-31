@@ -3,9 +3,7 @@ package com.example.auction_web.service;
 import com.example.auction_web.dto.request.AddressCreateRequest;
 import com.example.auction_web.dto.request.AddressUpdateRequest;
 import com.example.auction_web.dto.response.AddressResponse;
-import com.example.auction_web.entity.User;
-import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
+import com.example.auction_web.entity.auth.User;
 
 import java.util.List;
 //@FieldDefaults(level = AccessLevel.PUBLIC)

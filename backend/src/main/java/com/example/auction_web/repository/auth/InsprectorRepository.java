@@ -1,7 +1,6 @@
-package com.example.auction_web.repository;
+package com.example.auction_web.repository.auth;
 
-import com.example.auction_web.entity.Address;
-import com.example.auction_web.entity.Insprector;
+import com.example.auction_web.entity.auth.Insprector;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

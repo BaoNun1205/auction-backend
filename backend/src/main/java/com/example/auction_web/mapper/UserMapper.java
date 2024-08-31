@@ -1,9 +1,9 @@
 package com.example.auction_web.mapper;
 
-import com.example.auction_web.dto.request.UserCreateRequest;
-import com.example.auction_web.dto.request.UserUpdateRequest;
-import com.example.auction_web.dto.response.UserResponse;
-import com.example.auction_web.entity.User;
+import com.example.auction_web.dto.request.auth.UserCreateRequest;
+import com.example.auction_web.dto.request.auth.UserUpdateRequest;
+import com.example.auction_web.dto.response.auth.UserResponse;
+import com.example.auction_web.entity.auth.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
