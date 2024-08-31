@@ -5,6 +5,7 @@ import com.example.auction_web.dto.request.CategoryUpdateRequest;
 import com.example.auction_web.dto.response.CategoryResponse;
 import com.example.auction_web.entity.Category;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
@@ -13,5 +14,5 @@ public interface CategoryMapper {
     Category toCategory(CategoryCreateRequest request);
     CategoryResponse toCategoryCreateResponse(Category category);
     List<CategoryResponse> toCategoryCreateResponses(List<Category> categories);
-    void updateCategory(Category category, CategoryUpdateRequest request);
+    void updateCategory(@MappingTarget Category category, CategoryUpdateRequest request);
 }
