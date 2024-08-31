@@ -1,5 +1,7 @@
 package com.example.auction_web.entity;
 
+import com.example.auction_web.entity.auth.Insprector;
+import com.example.auction_web.entity.auth.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

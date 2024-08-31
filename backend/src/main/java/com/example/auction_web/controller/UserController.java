@@ -1,10 +1,9 @@
 package com.example.auction_web.controller;
 
-import com.example.auction_web.dto.request.UserCreateRequest;
+import com.example.auction_web.dto.request.auth.UserCreateRequest;
 import com.example.auction_web.dto.response.ApiResponse;
-import com.example.auction_web.dto.response.UserResponse;
-import com.example.auction_web.entity.User;
-import com.example.auction_web.service.UserService;
+import com.example.auction_web.dto.response.auth.UserResponse;
+import com.example.auction_web.service.auth.UserService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +22,8 @@ public class UserController {
     UserService userService;
 
     @PostMapping
-    ApiResponse<User> createUser(@RequestBody @Valid UserCreateRequest request){
-        return ApiResponse.<User>builder()
+    ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreateRequest request){
+        return ApiResponse.<UserResponse>builder()
                 .code(HttpStatus.OK.value())
                 .message("Create auction item success")
                 .result(userService.createUser(request))
