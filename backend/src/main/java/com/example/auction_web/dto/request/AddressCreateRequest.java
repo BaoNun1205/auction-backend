@@ -13,15 +13,14 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class UserCreateRequest {
-    String username;
-    String firstName;
-    String lastName;
-    String password;
-    String avatar;
-    String email;
+public class AddressCreateRequest {
+    String userId;
+    String provinceId;
+    String districtId;
+    String wardId;
+    String addressDetail;
     String phone;
-    String token;
+    Boolean delFlag;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 }

@@ -1,4 +1,4 @@
-package com.example.auction_web.dto.request;
+package com.example.auction_web.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,15 +13,15 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class UserCreateRequest {
-    String username;
-    String firstName;
-    String lastName;
-    String password;
-    String avatar;
-    String email;
+public class AddressResponse {
+    String addressId;
+    String userId;
+    String provinceId;
+    String districtId;
+    String wardId;
+    String addressDetail;
     String phone;
-    String token;
+    Boolean delFlag;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 }
