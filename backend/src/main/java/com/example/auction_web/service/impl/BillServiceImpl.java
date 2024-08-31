@@ -4,7 +4,7 @@ import com.example.auction_web.dto.request.BillCreateRequest;
 import com.example.auction_web.dto.request.BillUpdateRequest;
 import com.example.auction_web.dto.response.BillResponse;
 import com.example.auction_web.entity.Bill;
-import com.example.auction_web.entity.User;
+import com.example.auction_web.entity.auth.User;
 import com.example.auction_web.mapper.BillMapper;
 import com.example.auction_web.repository.BillRepository;
 import com.example.auction_web.service.BillService;

@@ -1,10 +1,10 @@
 package com.example.auction_web.configuration;
 
 import com.example.auction_web.constant.PredefinedRole;
-import com.example.auction_web.entity.Role;
-import com.example.auction_web.entity.User;
-import com.example.auction_web.repository.RoleRepository;
-import com.example.auction_web.repository.UserRepository;
+import com.example.auction_web.entity.auth.Role;
+import com.example.auction_web.entity.auth.User;
+import com.example.auction_web.repository.auth.RoleRepository;
+import com.example.auction_web.repository.auth.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -60,8 +60,12 @@ public class ApplicationInitConfig {
                         .roles(roles)
                         .build();
 
-                userRepository.save(user);
-                log.warn("admin user has been created with default password: admin, please change it");
+                try {
+                    userRepository.save(user);
+                    log.warn("admin user has been created with default password: admin, please change it");
+                } catch (Exception e){
+                    log.warn("failed");
+                }
             }
             log.info("Application initialization completed .....");
         };

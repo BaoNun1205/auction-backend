@@ -1,4 +1,4 @@
-package com.example.auction_web.entity;
+package com.example.auction_web.entity.auth;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

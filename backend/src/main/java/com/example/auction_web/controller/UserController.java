@@ -1,10 +1,9 @@
 package com.example.auction_web.controller;
 
-import com.example.auction_web.dto.request.UserCreateRequest;
+import com.example.auction_web.dto.request.auth.UserCreateRequest;
 import com.example.auction_web.dto.response.ApiResponse;
-import com.example.auction_web.dto.response.UserResponse;
-import com.example.auction_web.entity.User;
-import com.example.auction_web.service.UserService;
+import com.example.auction_web.dto.response.auth.UserResponse;
+import com.example.auction_web.service.auth.UserService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

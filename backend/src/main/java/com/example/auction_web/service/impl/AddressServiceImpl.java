@@ -4,7 +4,7 @@ import com.example.auction_web.dto.request.AddressCreateRequest;
 import com.example.auction_web.dto.request.AddressUpdateRequest;
 import com.example.auction_web.dto.response.AddressResponse;
 import com.example.auction_web.entity.Address;
-import com.example.auction_web.entity.User;
+import com.example.auction_web.entity.auth.User;
 import com.example.auction_web.mapper.AddressMapper;
 import com.example.auction_web.repository.AddressRepository;
 import com.example.auction_web.service.AddressService;

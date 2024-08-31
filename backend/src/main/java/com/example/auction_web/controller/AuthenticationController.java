@@ -1,11 +1,13 @@
 package com.example.auction_web.controller;
 
-import com.example.auction_web.dto.request.AuthenticationRequest;
-import com.example.auction_web.dto.request.IntrospectRequest;
+import com.example.auction_web.dto.request.auth.AuthenticationRequest;
+import com.example.auction_web.dto.request.auth.IntrospectRequest;
+import com.example.auction_web.dto.request.auth.LogoutRequest;
+import com.example.auction_web.dto.request.auth.RefreshRequest;
 import com.example.auction_web.dto.response.ApiResponse;
-import com.example.auction_web.dto.response.AuthenticationResponse;
-import com.example.auction_web.dto.response.IntrospectResponse;
-import com.example.auction_web.service.AuthenticationService;
+import com.example.auction_web.dto.response.auth.AuthenticationResponse;
+import com.example.auction_web.dto.response.auth.IntrospectResponse;
+import com.example.auction_web.service.auth.AuthenticationService;
 import com.nimbusds.jose.JOSEException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -24,12 +26,10 @@ import java.text.ParseException;
 public class AuthenticationController {
     AuthenticationService authenticationService;
 
-    @PostMapping("/login")
-    ApiResponse<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest authenticationRequest){
-        var result = authenticationService.authenticate(authenticationRequest);
-        return ApiResponse.<AuthenticationResponse>builder()
-                .result(result)
-                .build();
+    @PostMapping("/token")
+    ApiResponse<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
+        var result = authenticationService.authenticate(request);
+        return ApiResponse.<AuthenticationResponse>builder().result(result).build();
     }
 
     @PostMapping("/introspect")
@@ -37,5 +37,18 @@ public class AuthenticationController {
             throws ParseException, JOSEException {
         var result = authenticationService.introspect(request);
         return ApiResponse.<IntrospectResponse>builder().result(result).build();
+    }
+
+    @PostMapping("/refresh")
+    ApiResponse<AuthenticationResponse> authenticate(@RequestBody RefreshRequest request)
+            throws ParseException, JOSEException {
+        var result = authenticationService.refreshToken(request);
+        return ApiResponse.<AuthenticationResponse>builder().result(result).build();
+    }
+
+    @PostMapping("/logout")
+    ApiResponse<Void> logout(@RequestBody LogoutRequest request) throws ParseException, JOSEException {
+        authenticationService.logout(request);
+        return ApiResponse.<Void>builder().build();
     }
 }

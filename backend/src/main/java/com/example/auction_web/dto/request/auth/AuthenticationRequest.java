@@ -1,4 +1,4 @@
-package com.example.auction_web.dto.request;
+package com.example.auction_web.dto.request.auth;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
