@@ -4,6 +4,7 @@ import com.example.auction_web.dto.request.AuctionItemCreateRequest;
 import com.example.auction_web.dto.request.AuctionItemUpdateRequest;
 import com.example.auction_web.dto.response.AuctionItemResponse;
 import com.example.auction_web.entity.AuctionItem;
+import com.example.auction_web.entity.AuctionSession;
 import com.example.auction_web.mapper.AuctionItemMapper;
 import com.example.auction_web.repository.AuctionItemRepository;
 import com.example.auction_web.service.AuctionItemService;
@@ -36,8 +37,8 @@ public class AuctionItemServiceImpl implements AuctionItemService {
                 .toList();
     }
 
-    public List<AuctionItemResponse> getAuctionItemsByAuctionSessionId(String auctionSessionId) {
-        return auctionItemRepository.findByAuctionSessionId(auctionSessionId).stream()
+    public List<AuctionItemResponse> getAuctionItemsByAuctionSessionId(AuctionSession auctionSession) {
+        return auctionItemRepository.findByAuctionSession(auctionSession).stream()
                 .map(auctionItemMapper::toAuctionItemResponse)
                 .toList();
     }

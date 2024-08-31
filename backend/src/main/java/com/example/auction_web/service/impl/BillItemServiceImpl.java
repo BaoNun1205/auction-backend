@@ -3,6 +3,7 @@ package com.example.auction_web.service.impl;
 import com.example.auction_web.dto.request.BillItemCreateRequest;
 import com.example.auction_web.dto.request.BillItemUpdateRequest;
 import com.example.auction_web.dto.response.BillItemResponse;
+import com.example.auction_web.entity.Bill;
 import com.example.auction_web.entity.BillItem;
 import com.example.auction_web.mapper.BillItemMapper;
 import com.example.auction_web.repository.BillItemRepository;
@@ -36,8 +37,8 @@ public class BillItemServiceImpl implements BillItemService {
                 .toList();
     }
 
-    public List<BillItemResponse> getBillItemsByBillId(String billId) {
-        return billItemRepository.findByBillId(billId).stream()
+    public List<BillItemResponse> getBillItemsByBillId(Bill bill) {
+        return billItemRepository.findByBill(bill).stream()
                 .map(billItemMapper::toBillItemResponse)
                 .toList();
     }

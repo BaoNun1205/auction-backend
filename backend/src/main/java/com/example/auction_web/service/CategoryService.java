@@ -7,7 +7,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
-@FieldDefaults(level = lombok.AccessLevel.PUBLIC)
+//@FieldDefaults(level = lombok.AccessLevel.PUBLIC)
 public interface CategoryService {
     CategoryResponse createCategory(CategoryCreateRequest request);
     List<CategoryResponse> getAllCategories();
