@@ -4,6 +4,7 @@ import com.example.auction_web.dto.request.AddressCreateRequest;
 import com.example.auction_web.dto.request.AddressUpdateRequest;
 import com.example.auction_web.dto.response.AddressResponse;
 import com.example.auction_web.entity.Address;
+import com.example.auction_web.entity.User;
 import com.example.auction_web.mapper.AddressMapper;
 import com.example.auction_web.repository.AddressRepository;
 import com.example.auction_web.service.AddressService;
@@ -39,8 +40,8 @@ public class AddressServiceImpl implements AddressService {
                 .toList();
     }
 
-    public List<AddressResponse> getAddressByUserId(String userId) {
-        List<Address> addresses = addressRepository.findByUserId(userId).orElseThrow();
+    public List<AddressResponse> getAddressByUser(User user) {
+        List<Address> addresses = addressRepository.findByUser(user).orElseThrow();
         return addressMapper.toAddressResponses(addresses);
 
     }

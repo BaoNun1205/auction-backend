@@ -3,6 +3,7 @@ package com.example.auction_web.service.impl;
 import com.example.auction_web.dto.request.AuctionHistoryDetailCreateRequest;
 import com.example.auction_web.dto.request.AuctionHistoryDetailDeleteRequest;
 import com.example.auction_web.dto.response.AuctionHistoryDetailResponse;
+import com.example.auction_web.entity.AuctionHistory;
 import com.example.auction_web.entity.AuctionHistoryDetail;
 import com.example.auction_web.mapper.AuctionHistoryDetailMapper;
 import com.example.auction_web.repository.AuctionHistoryDetailRepository;
@@ -36,8 +37,8 @@ public class AuctionHistoryDetailServiceImpl implements AuctionHistoryDetailServ
                 .toList();
     }
 
-    public List<AuctionHistoryDetailResponse> getAllByAuctionHistoryId(String auctionHistoryId) {
-       return auctionHistoryDetailRepository.findAllByAuctionHistoryId(auctionHistoryId).stream()
+    public List<AuctionHistoryDetailResponse> getAllByAuctionHistory(AuctionHistory auctionHistory) {
+       return auctionHistoryDetailRepository.findAllByAuctionHistory(auctionHistory).stream()
                .map(auctionHistoryDetailMapper::toAuctionHistoryDetailResponse)
                .toList();
     }

@@ -1,15 +1,12 @@
 package com.example.auction_web.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Set;
-
-@Table(name = "role")
+@Table(name = "permission")
 @Getter
 @Setter
 @Builder
@@ -17,12 +14,9 @@ import java.util.Set;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-public class Role {
+public class Permission {
     @Id
     String name;
 
     String description;
-
-    @ManyToMany
-    Set<Permission> permissions;
 }

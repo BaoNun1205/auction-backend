@@ -4,6 +4,7 @@ import com.example.auction_web.dto.request.BillCreateRequest;
 import com.example.auction_web.dto.request.BillUpdateRequest;
 import com.example.auction_web.dto.response.BillResponse;
 import com.example.auction_web.entity.Bill;
+import com.example.auction_web.entity.User;
 import com.example.auction_web.mapper.BillMapper;
 import com.example.auction_web.repository.BillRepository;
 import com.example.auction_web.service.BillService;
@@ -36,8 +37,8 @@ public class BillServiceImpl implements BillService {
                 .toList();
     }
 
-    public List<BillResponse> getBillsByUserId(String userId) {
-        return billRepository.findByUserId(userId).stream()
+    public List<BillResponse> getBillsByUser(User user) {
+        return billRepository.findByUser(user).stream()
                 .map(billMapper::toBillResponse)
                 .toList();
     }

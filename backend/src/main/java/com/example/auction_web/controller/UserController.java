@@ -23,8 +23,8 @@ public class UserController {
     UserService userService;
 
     @PostMapping
-    ApiResponse<User> createUser(@RequestBody @Valid UserCreateRequest request){
-        return ApiResponse.<User>builder()
+    ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreateRequest request){
+        return ApiResponse.<UserResponse>builder()
                 .code(HttpStatus.OK.value())
                 .message("Create auction item success")
                 .result(userService.createUser(request))
