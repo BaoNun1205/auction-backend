@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -13,15 +14,14 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class UserCreateRequest {
-    String username;
-    String firstName;
-    String lastName;
-    String password;
-    String avatar;
-    String email;
-    String phone;
-    String token;
+public class BillCreateRequest {
+    String userId;
+    LocalDateTime billDate;
+    String addressId;
+    BigDecimal despositPrice;
+    BigDecimal totalProfitPrice;
+    BigDecimal totalPrice;
+    Boolean delFlag;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 }
