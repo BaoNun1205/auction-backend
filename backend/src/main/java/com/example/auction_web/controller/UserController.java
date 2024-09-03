@@ -1,6 +1,7 @@
 package com.example.auction_web.controller;
 
 import com.example.auction_web.dto.request.auth.UserCreateRequest;
+import com.example.auction_web.dto.request.auth.UserUpdateRequest;
 import com.example.auction_web.dto.response.ApiResponse;
 import com.example.auction_web.dto.response.auth.UserResponse;
 import com.example.auction_web.service.auth.UserService;
@@ -48,5 +49,18 @@ public class UserController {
         return ApiResponse.<UserResponse>builder()
                 .result(userService.getMyInfo())
                 .build();
+    }
+
+    @PutMapping("/{userId}")
+    ApiResponse<UserResponse> update(@PathVariable String userId, @RequestBody UserUpdateRequest request){
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.updateUser(userId, request))
+                .build();
+    }
+
+    @DeleteMapping("/{userId}")
+    ApiResponse<String> delete(@PathVariable String userId){
+        userService.deleteUser(userId);
+        return ApiResponse.<String>builder().result("User has been deleted").build();
     }
 }

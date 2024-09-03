@@ -2,6 +2,8 @@ package com.example.auction_web.service.auth.impl;
 
 import com.example.auction_web.constant.PredefinedRole;
 import com.example.auction_web.dto.request.auth.UserCreateRequest;
+import com.example.auction_web.dto.request.auth.UserUpdateRequest;
+import com.example.auction_web.dto.response.ApiResponse;
 import com.example.auction_web.dto.response.auth.UserResponse;
 import com.example.auction_web.entity.auth.Role;
 import com.example.auction_web.entity.auth.User;
@@ -72,5 +74,24 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByUsername(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         return userMapper.toUserResponse(user);
+    }
+
+    @Override
+    @PostAuthorize("returnObject.username == authentication.name")
+    public UserResponse updateUser(String userId, UserUpdateRequest request) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        userMapper.updateUser(user, request);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        var roles = roleRepository.findAllById(request.getRoles());
+        user.setRoles(new HashSet<>(roles));
+
+        return userMapper.toUserResponse(userRepository.save(user));
+    }
+
+    @Override
+    public void deleteUser(String userId) {
+        userRepository.deleteById(userId);
     }
 }
