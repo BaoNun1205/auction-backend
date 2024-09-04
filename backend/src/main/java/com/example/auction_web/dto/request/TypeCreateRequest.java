@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class TypeCreateRequest {
-    String categoryId;
+    String category;
     String typeName;
     String slug;
     String image;

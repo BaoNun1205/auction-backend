@@ -11,5 +11,5 @@ public interface TypeService {
     TypeResponse createType(TypeCreateRequest request);
     TypeResponse updateType(String typeId, TypeUpdateRequest request);
     List<TypeResponse> findAllTypes();
-    List<TypeResponse> findTypesByCategory(Category category);
+    List<TypeResponse> findTypesByCategoryName(String categoryName);
 }

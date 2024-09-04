@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CoinUserRepository extends JpaRepository<CoinUser, String> {
-    CoinUser findCoinUserByUser(User user);
+    CoinUser findCoinUserByUser_UserId(String userId);
 }
