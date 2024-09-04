@@ -11,6 +11,6 @@ public interface CoinUserService {
     CoinUserResponse createCoinUser(CoinUserCreateRequest request);
     CoinUserResponse updateCoinUser(String Id, CoinUserUpdateRequest request);
     List<CoinUserResponse> getCoinUsers();
-    CoinUserResponse getCoinUserByUser(User user);
+    CoinUserResponse getCoinUserByUserId(String userId);
 
 }

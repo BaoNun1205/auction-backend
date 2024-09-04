@@ -15,6 +15,13 @@ public enum ErrorCode {
     UNAUTHENTICATED(1006, "Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(1007, "You do not have permission", HttpStatus.FORBIDDEN),
     INVALID_DOB(1008, "Your age must be at least {min}", HttpStatus.BAD_REQUEST),
+    CATEGORY_NOT_EXISTED(1009, "Category not existed", HttpStatus.NOT_FOUND),
+    COIN_USER_NOT_EXISTED(1010, "Coin user not existed", HttpStatus.NOT_FOUND),
+    PROVINCE_NOT_EXISTED(1011, "Province not existed", HttpStatus.NOT_FOUND),
+    DISTRICT_NOT_EXISTED(1012, "District not existed", HttpStatus.NOT_FOUND),
+    WARD_NOT_EXISTED(1013, "Ward not existed", HttpStatus.NOT_FOUND),
+    TYPE_NOT_EXISTED(1014, "Type not existed", HttpStatus.NOT_FOUND),
+    ADDRESS_NOT_EXISTED(1015, "Address not existed", HttpStatus.NOT_FOUND),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
