@@ -28,9 +28,6 @@ public interface CoinUserMapper {
 
     @Named("userToString")
     default String userToString(User user) {
-        if (user == null) {
-            return null;
-        }
-        return user.getUserId();
+       return user != null ? user.getUserId() : null;
     }
 }

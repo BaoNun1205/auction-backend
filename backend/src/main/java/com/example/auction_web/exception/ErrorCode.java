@@ -22,6 +22,9 @@ public enum ErrorCode {
     WARD_NOT_EXISTED(1013, "Ward not existed", HttpStatus.NOT_FOUND),
     TYPE_NOT_EXISTED(1014, "Type not existed", HttpStatus.NOT_FOUND),
     ADDRESS_NOT_EXISTED(1015, "Address not existed", HttpStatus.NOT_FOUND),
+    ASSET_STATUS_NOT_FOUND(1016, "Asset status not existed", HttpStatus.NOT_FOUND),
+    INSRECTOR_NOT_EXISTED(1017, "Insprector not existed", HttpStatus.NOT_FOUND),
+    ASSET_NOT_EXISTED(1018, "Asset not existed", HttpStatus.NOT_FOUND),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

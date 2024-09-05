@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -13,13 +14,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class AddressUpdateRequest {
-    String recipientName;
-    String provinceId;
-    String districtId;
-    String wardId;
-    String addressDetail;
-    String phone;
+public class AssetStatusCreateRequest {
+    String assetStatusName;
     Boolean delFlag;
+    LocalDateTime createdAt;
     LocalDateTime updatedAt;
 }

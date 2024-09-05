@@ -13,13 +13,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class AddressUpdateRequest {
-    String recipientName;
-    String provinceId;
-    String districtId;
-    String wardId;
-    String addressDetail;
-    String phone;
+public class AssetStatusUpdateRequest {
+    String assetStatusName;
     Boolean delFlag;
     LocalDateTime updatedAt;
 }
