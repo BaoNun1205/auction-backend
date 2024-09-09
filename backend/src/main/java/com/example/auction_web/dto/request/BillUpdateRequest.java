@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class BillUpdateRequest {
     String addressId;
-    BigDecimal despositPrice;
+    BigDecimal depositPrice;
     BigDecimal totalProfitPrice;
     BigDecimal totalPrice;
     Boolean delFlag;

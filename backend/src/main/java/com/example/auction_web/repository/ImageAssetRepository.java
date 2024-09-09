@@ -10,5 +10,5 @@ import java.util.List;
 
 @Repository
 public interface ImageAssetRepository extends JpaRepository<ImageAsset, String> {
-    List<ImageAsset> findImageAssetByAsset(Asset asset);
+    List<ImageAsset> findImageAssetsByAsset_AssetId(String assetId);
 }
