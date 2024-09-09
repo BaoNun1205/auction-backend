@@ -1,6 +1,7 @@
 package com.example.auction_web.entity.auth;
 
 import com.example.auction_web.entity.Asset;
+import com.example.auction_web.entity.Requirement;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +10,8 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-@Table(name = "inspector")
 @Entity
 @Data
 @NoArgsConstructor
@@ -33,4 +34,7 @@ public class Insprector {
 
     @OneToOne(mappedBy = "insprector", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     Asset asset;
+
+    @OneToMany(mappedBy = "insprector", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<Requirement> requirement;
 }

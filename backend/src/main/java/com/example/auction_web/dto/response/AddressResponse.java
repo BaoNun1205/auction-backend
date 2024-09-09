@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 public class AddressResponse {
     String addressId;
     String userId;
+    String recipientName;
     String provinceId;
     String districtId;
     String wardId;

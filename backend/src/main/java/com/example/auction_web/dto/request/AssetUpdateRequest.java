@@ -20,7 +20,6 @@ public class AssetUpdateRequest {
     String mainImage;
     String assetDescription;
     BigDecimal assetPrice;
-    String inspectorId;
     String typeId;
     String assetStatusId;
     Boolean delFlag;

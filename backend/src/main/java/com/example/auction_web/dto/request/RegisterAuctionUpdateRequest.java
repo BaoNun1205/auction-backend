@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -14,10 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class CoinUserCreateRequest {
-    String userId;
-    BigDecimal coinQuantity;
+public class RegisterAuctionUpdateRequest {
     Boolean delFlag;
-    LocalDateTime createdAt;
     LocalDateTime updatedAt;
 }

@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class AddressCreateRequest {
     String userId;
+    String recipientName;
     String provinceId;
     String districtId;
     String wardId;

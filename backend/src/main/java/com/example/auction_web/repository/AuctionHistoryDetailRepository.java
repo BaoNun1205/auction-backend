@@ -9,5 +9,6 @@ import java.util.List;
 
 @Repository
 public interface AuctionHistoryDetailRepository extends JpaRepository<AuctionHistoryDetail, String> {
-    List<AuctionHistoryDetail> findAllByAuctionHistory(AuctionHistory auctionHistory);
+    List<AuctionHistoryDetail> findAuctionHistoryDetailsByAuctionHistory_AuctionHistoryId(String auctionHistoryId);
+    List<AuctionHistoryDetail> findAuctionHistoryDetailsByUser_UserId(String userId);
 }

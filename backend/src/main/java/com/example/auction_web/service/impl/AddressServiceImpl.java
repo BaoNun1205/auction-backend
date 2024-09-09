@@ -4,6 +4,9 @@ import com.example.auction_web.dto.request.AddressCreateRequest;
 import com.example.auction_web.dto.request.AddressUpdateRequest;
 import com.example.auction_web.dto.response.AddressResponse;
 import com.example.auction_web.entity.Address;
+import com.example.auction_web.entity.District;
+import com.example.auction_web.entity.Province;
+import com.example.auction_web.entity.Ward;
 import com.example.auction_web.entity.auth.User;
 import com.example.auction_web.exception.AppException;
 import com.example.auction_web.exception.ErrorCode;
@@ -14,6 +17,7 @@ import com.example.auction_web.repository.ProvinceRepository;
 import com.example.auction_web.repository.WardRepository;
 import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.AddressService;
+import jakarta.persistence.Cacheable;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
@@ -34,24 +38,19 @@ public class AddressServiceImpl implements AddressService {
     public AddressResponse createAddress(AddressCreateRequest request) {
         Address address = addressMapper.toAddress(request);
 
-        var user = userRepository.findById(request.getUserId()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        var province = provinceRepository.findById(request.getProvinceId()).orElseThrow(() -> new AppException(ErrorCode.PROVINCE_NOT_EXISTED));
-        var district = districtRepository.findById(request.getDistrictId()).orElseThrow(() -> new AppException(ErrorCode.DISTRICT_NOT_EXISTED));
-        var ward = wardRepository.findById(request.getWardId()).orElseThrow(() -> new AppException(ErrorCode.WARD_NOT_EXISTED));
-
-        address.setUser(user);
-        address.setProvince(province);
-        address.setDistrict(district);
-        address.setWard(ward);
+        setAddressReference(request, address);
 
         return addressMapper.toAddressResponse(addressRepository.save(address));
     }
 
     public AddressResponse updateAddress(String id, AddressUpdateRequest request) {
-        Address address = addressRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ADDRESS_NOT_EXISTED));
+        Address address = addressRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.ADDRESS_NOT_EXISTED));
         addressMapper.updateAddress(address, request);
-        addressRepository.save(address);
-        return addressMapper.toAddressResponse(address);
+
+        setAddressReference(request, address);
+
+        return addressMapper.toAddressResponse(addressRepository.save(address));
     }
 
     public List<AddressResponse> getAllAddresses() {
@@ -67,5 +66,38 @@ public class AddressServiceImpl implements AddressService {
         return addressRepository.findAddressByUser_UserId(userId).stream()
                 .map(addressMapper::toAddressResponse)
                 .toList();
+    }
+
+    void setAddressReference(Object request, Address address) {
+        if (request instanceof AddressCreateRequest createRequest) {
+            address.setUser(getUserById(createRequest.getUserId()));
+            address.setProvince(getProvinceById(createRequest.getProvinceId()));
+            address.setDistrict(getDistrictById(createRequest.getDistrictId()));
+            address.setWard(getWardById(createRequest.getWardId()));
+        } else if (request instanceof AddressUpdateRequest updateRequest) {
+            address.setProvince(getProvinceById(updateRequest.getProvinceId()));
+            address.setDistrict(getDistrictById(updateRequest.getDistrictId()));
+            address.setWard(getWardById(updateRequest.getWardId()));
+        }
+    }
+
+    User getUserById(String userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+    }
+
+    Province getProvinceById(String provinceId) {
+        return provinceRepository.findById(provinceId)
+                .orElseThrow(() -> new AppException(ErrorCode.PROVINCE_NOT_EXISTED));
+    }
+
+    District getDistrictById(String districtId) {
+        return districtRepository.findById(districtId)
+                .orElseThrow(() -> new AppException(ErrorCode.DISTRICT_NOT_EXISTED));
+    }
+
+    Ward getWardById(String wardId) {
+        return wardRepository.findById(wardId)
+                .orElseThrow(() -> new AppException(ErrorCode.WARD_NOT_EXISTED));
     }
 }

@@ -19,7 +19,7 @@ public class BillResponse {
     String userId;
     LocalDateTime billDate;
     String addressId;
-    BigDecimal despositPrice;
+    BigDecimal depositPrice;
     BigDecimal totalProfitPrice;
     BigDecimal totalPrice;
     Boolean delFlag;

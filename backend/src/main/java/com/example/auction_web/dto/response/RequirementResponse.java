@@ -1,4 +1,4 @@
-package com.example.auction_web.dto.request;
+package com.example.auction_web.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,8 +14,15 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class CoinUserUpdateRequest {
-    BigDecimal coinQuantity;
+public class RequirementResponse {
+    String requirementId;
+    String vendorId;
+    String assetName;
+    String assetDescription;
+    BigDecimal assetPrice;
+    String inspectorId;
+    String assetStatusId;
     Boolean delFlag;
+    LocalDateTime createdAt;
     LocalDateTime updatedAt;
 }

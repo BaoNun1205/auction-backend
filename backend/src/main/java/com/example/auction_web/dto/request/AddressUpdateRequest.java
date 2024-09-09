@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class AddressUpdateRequest {
+    String recipientName;
     String provinceId;
     String districtId;
     String wardId;

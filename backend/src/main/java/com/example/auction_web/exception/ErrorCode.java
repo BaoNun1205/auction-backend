@@ -22,6 +22,21 @@ public enum ErrorCode {
     WARD_NOT_EXISTED(1013, "Ward not existed", HttpStatus.NOT_FOUND),
     TYPE_NOT_EXISTED(1014, "Type not existed", HttpStatus.NOT_FOUND),
     ADDRESS_NOT_EXISTED(1015, "Address not existed", HttpStatus.NOT_FOUND),
+    ASSET_STATUS_NOT_FOUND(1016, "Asset status not existed", HttpStatus.NOT_FOUND),
+    INSRECTOR_NOT_EXISTED(1017, "Insprector not existed", HttpStatus.NOT_FOUND),
+    ASSET_NOT_EXISTED(1018, "Asset not existed", HttpStatus.NOT_FOUND),
+    AUCTION_SESSION_NOT_EXISTED(1019, "Auction session not existed", HttpStatus.NOT_FOUND),
+    AUCTION_ITEM_NOT_EXISTED(1020, "Auction item not existed", HttpStatus.NOT_FOUND),
+    AUCTION_HISTORY_NOT_EXISTED(1021, "Auction history not existed", HttpStatus.NOT_FOUND),
+    AUCTION_HISTORY_DETAIL_NOT_EXISTED(1022, "Auction history detail not existed", HttpStatus.NOT_FOUND),
+    DEPOSIT_NOT_EXISTED(1023, "Deposit not existed", HttpStatus.NOT_FOUND),
+    BILL_NOT_EXISTED(1024, "Bill not existed", HttpStatus.NOT_FOUND),
+    IMAGE_ASSET_NOT_EXISTED(1025, "Image asset not existed", HttpStatus.NOT_FOUND),
+    BILL_ITEM_NOT_EXISTED(1026, "Bill item not existed", HttpStatus.NOT_FOUND),
+    REGISTER_AUCTION_NOT_EXISTED(1027, "Register auction not existed", HttpStatus.NOT_FOUND),
+    INSPECTOR_NOT_EXISTED(1028, "Inspector not existed", HttpStatus.NOT_FOUND),
+    REQUIREMENT_NOT_EXISTED(1029, "Requirement not existed", HttpStatus.NOT_FOUND),
+    IMAGE_REQUIREMENT_NOT_EXISTED(1030, "Image requirement not existed", HttpStatus.NOT_FOUND),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
