@@ -6,7 +6,6 @@ import jakarta.persistence.Table;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-@Table(name = "permission")
 @Getter
 @Setter
 @Builder

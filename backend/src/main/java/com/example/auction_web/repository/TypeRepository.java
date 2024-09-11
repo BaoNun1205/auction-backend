@@ -10,5 +10,5 @@ import java.util.List;
 
 @Repository
 public interface TypeRepository extends JpaRepository<Type, String> {
-    List<Type> findTypesByCategory(Category category);
+    List<Type> findTypesByCategory_CategoryName(String categoryName);
 }

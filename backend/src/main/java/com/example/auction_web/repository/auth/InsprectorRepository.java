@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface InsprectorRepository extends JpaRepository<Insprector, String> {
-    Insprector findInsprectorByUser(User user);
+    Insprector findInsprectorByUser_UserId(String userId);
 }

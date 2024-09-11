@@ -11,5 +11,5 @@ public interface AuctionItemService {
     AuctionItemResponse createAuctionItem(AuctionItemCreateRequest request);
     AuctionItemResponse updateAuctionItem(String id, AuctionItemUpdateRequest request);
     List<AuctionItemResponse> getAllAuctionItems();
-    List<AuctionItemResponse> getAuctionItemsByAuctionSessionId(AuctionSession auctionSession);
+    List<AuctionItemResponse> getAuctionItemsByAuctionSessionId(String auctionSessionId);
 }

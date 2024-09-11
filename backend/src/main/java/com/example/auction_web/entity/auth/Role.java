@@ -6,7 +6,6 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.Set;
 
-@Table(name = "role")
 @Getter
 @Setter
 @Builder

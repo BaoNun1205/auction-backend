@@ -11,5 +11,5 @@ public interface InsprectorService {
     InsprectorResponse createInsprector(InsprectorCreateRequest request);
     InsprectorResponse updateInsprector(String id, InsprectorUpdateRequest request);
     List<InsprectorResponse> getAllInsprectors();
-    InsprectorResponse getInsprectorByUser(User user);
+    InsprectorResponse getInsprectorByUserId(String userId);
 }

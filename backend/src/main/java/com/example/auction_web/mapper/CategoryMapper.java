@@ -12,7 +12,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface CategoryMapper {
     Category toCategory(CategoryCreateRequest request);
-    CategoryResponse toCategoryCreateResponse(Category category);
+    CategoryResponse toCategoryResponse(Category category);
     List<CategoryResponse> toCategoryCreateResponses(List<Category> categories);
     void updateCategory(@MappingTarget Category category, CategoryUpdateRequest request);
 }

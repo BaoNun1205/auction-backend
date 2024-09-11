@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Table(name = "asset_status")
 @Entity
@@ -27,4 +28,7 @@ public class AssetStatus {
 
     @OneToOne(mappedBy = "assetStatus", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     Asset asset;
+
+    @OneToMany(mappedBy = "assetStatus", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<Requirement> requirement;
 }

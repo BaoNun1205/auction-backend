@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface AuctionItemRepository extends JpaRepository<AuctionItem, String> {
-    List<AuctionItem> findByAuctionSession(AuctionSession auctionSession);
+    List<AuctionItem> findAuctionItemByAuctionSession_AuctionSessionId(String auctionSessionId);
 }

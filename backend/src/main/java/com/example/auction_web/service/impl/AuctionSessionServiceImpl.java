@@ -5,6 +5,8 @@ import com.example.auction_web.dto.request.AuctionSessionUpdateRequest;
 import com.example.auction_web.dto.response.AuctionItemResponse;
 import com.example.auction_web.dto.response.AuctionSessionResponse;
 import com.example.auction_web.entity.AuctionSession;
+import com.example.auction_web.exception.AppException;
+import com.example.auction_web.exception.ErrorCode;
 import com.example.auction_web.mapper.AuctionSessionMapper;
 import com.example.auction_web.repository.AuctionSessionRepository;
 import com.example.auction_web.service.AuctionSessionService;
@@ -35,5 +37,11 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
         return auctionSessionRepository.findAll().stream()
                 .map(auctionSessionMapper::toAuctionSessionResponse)
                 .toList();
+    }
+
+    public AuctionSessionResponse  getAuctionSessionById(String id) {
+        var auctionSession = auctionSessionRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.AUCTION_SESSION_NOT_EXISTED));
+        return auctionSessionMapper.toAuctionSessionResponse(auctionSession);
     }
 }

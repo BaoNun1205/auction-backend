@@ -12,5 +12,5 @@ public interface ImageAssetService {
     ImageAssetResponse createImageAsset(ImageAssetCreateRequest request);
     ImageAssetResponse updateImageAsset(String Id, ImageAssetUpdateRequest request);
     List<ImageAssetResponse> findAllImageAssets();
-    List<ImageAssetResponse> findImageAssetByAsset(Asset asset);
+    List<ImageAssetResponse> findImageAssetByAssetId(String assetId);
 }

@@ -11,5 +11,5 @@ public interface BillItemService {
     BillItemResponse createBillItem(BillItemCreateRequest request);
     BillItemResponse updateBillItem(String id, BillItemUpdateRequest request);
     List<BillItemResponse> getAllBillItems();
-    List<BillItemResponse> getBillItemsByBillId(Bill bill);
+    List<BillItemResponse> getBillItemsByBillId(String billId);
 }
