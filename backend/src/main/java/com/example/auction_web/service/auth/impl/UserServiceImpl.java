@@ -12,6 +12,7 @@ import com.example.auction_web.exception.ErrorCode;
 import com.example.auction_web.mapper.UserMapper;
 import com.example.auction_web.repository.auth.RoleRepository;
 import com.example.auction_web.repository.auth.UserRepository;
+import com.example.auction_web.service.EmailVerificationTokenService;
 import com.example.auction_web.service.auth.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,9 @@ public class UserServiceImpl implements UserService {
     RoleRepository roleRepository;
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
+
+    EmailVerificationTokenService emailVerificationTokenService;
+
     @Override
     public UserResponse createUser(UserCreateRequest request) {
         User user = userMapper.toUer(request);
@@ -43,9 +47,11 @@ public class UserServiceImpl implements UserService {
         roleRepository.findById(PredefinedRole.USER_ROLE).ifPresent(roles::add);
 
         user.setRoles(roles);
+        user.setEnabled(false);
 
         try {
             user = userRepository.save(user);
+            emailVerificationTokenService.sendEmailConfirmation(request.getEmail());
         } catch (DataIntegrityViolationException exception) {
             throw new AppException(ErrorCode.USER_EXISTED);
         }

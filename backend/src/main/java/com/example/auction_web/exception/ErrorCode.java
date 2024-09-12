@@ -37,6 +37,7 @@ public enum ErrorCode {
     INSPECTOR_NOT_EXISTED(1028, "Inspector not existed", HttpStatus.NOT_FOUND),
     REQUIREMENT_NOT_EXISTED(1029, "Requirement not existed", HttpStatus.NOT_FOUND),
     IMAGE_REQUIREMENT_NOT_EXISTED(1030, "Image requirement not existed", HttpStatus.NOT_FOUND),
+    EMAIL_VERIFICATION_TOKEN_NOT_EXIST(1031, "Email verification token not existed", HttpStatus.NOT_FOUND),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
