@@ -16,12 +16,11 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class BillResponse {
     String billId;
-    String userId;
     LocalDateTime billDate;
     String addressId;
-    BigDecimal depositPrice;
-    BigDecimal totalProfitPrice;
-    BigDecimal totalPrice;
+    String depositId;
+    BigDecimal bidPrice;
+    BigDecimal profitPrice;
     Boolean delFlag;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;

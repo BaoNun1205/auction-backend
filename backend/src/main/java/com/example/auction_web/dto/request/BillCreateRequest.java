@@ -15,12 +15,11 @@ import java.time.LocalDateTime;
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class BillCreateRequest {
-    String userId;
     LocalDateTime billDate;
     String addressId;
-    BigDecimal depositPrice;
-    BigDecimal totalProfitPrice;
-    BigDecimal totalPrice;
+    String depositId;
+    BigDecimal bidPrice;
+    BigDecimal profitPrice;
     Boolean delFlag;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;

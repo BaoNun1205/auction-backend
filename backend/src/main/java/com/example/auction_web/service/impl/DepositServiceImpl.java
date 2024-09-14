@@ -3,13 +3,13 @@ package com.example.auction_web.service.impl;
 import com.example.auction_web.dto.request.DepositCreateRequest;
 import com.example.auction_web.dto.request.DepositUpdateRequest;
 import com.example.auction_web.dto.response.DepositResponse;
-import com.example.auction_web.entity.AuctionItem;
+import com.example.auction_web.entity.AuctionSession;
 import com.example.auction_web.entity.Deposit;
 import com.example.auction_web.entity.auth.User;
 import com.example.auction_web.exception.AppException;
 import com.example.auction_web.exception.ErrorCode;
 import com.example.auction_web.mapper.DepositMapper;
-import com.example.auction_web.repository.AuctionItemRepository;
+import com.example.auction_web.repository.AuctionSessionRepository;
 import com.example.auction_web.repository.DepositRepository;
 import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.DepositService;
@@ -24,7 +24,7 @@ import java.util.List;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class DepositServiceImpl implements DepositService {
     DepositRepository depositRepository;
-    AuctionItemRepository auctionItemRepository;
+    AuctionSessionRepository auctionSessionRepository;
     UserRepository userRepository;
     DepositMapper depositMapper;
 
@@ -52,7 +52,7 @@ public class DepositServiceImpl implements DepositService {
 
     // find deposits by auction item id
     public List<DepositResponse> findDepositByAuctionItemId(String auctionItemId) {
-        if (!auctionItemRepository.existsById(auctionItemId)) {
+        if (!auctionSessionRepository.existsById(auctionItemId)) {
             throw new AppException(ErrorCode.AUCTION_ITEM_NOT_EXISTED);
         }
         return depositRepository.findDepositsByAuctionItem_AuctionItemId(auctionItemId).stream()
@@ -72,13 +72,13 @@ public class DepositServiceImpl implements DepositService {
 
     // set deposit reference
     void setdepositRefernce(Deposit deposit, DepositCreateRequest request) {
-        deposit.setAuctionItem(getAuctionItem(request.getAuctionItemId()));
+        deposit.setAuctionSession(getAuctionItem(request.getAuctionItemId()));
         deposit.setUser(getUser(request.getUserId()));
     }
 
     // get auction item
-    AuctionItem getAuctionItem(String auctionItemId) {
-        return auctionItemRepository.findById(auctionItemId)
+    AuctionSession getAuctionItem(String auctionItemId) {
+        return auctionSessionRepository.findById(auctionItemId)
                 .orElseThrow(() -> new AppException(ErrorCode.AUCTION_ITEM_NOT_EXISTED));
     }
 

@@ -1,5 +1,6 @@
 package com.example.auction_web.entity;
 
+import com.example.auction_web.entity.auth.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,14 +24,18 @@ public class AuctionHistory {
     @GeneratedValue(strategy = GenerationType.UUID)
     String auctionHistoryId;
 
-    @OneToOne
-    @JoinColumn(name = "auctionItemId", referencedColumnName = "auctionItemId")
-    AuctionItem auctionItem;
+    @ManyToOne
+    @JoinColumn(name = "auctionSessionId", referencedColumnName = "auctionSessionId")
+    AuctionSession auctionSession;
 
+    @ManyToOne
+    @JoinColumn(name = "userId", referencedColumnName = "userId")
+    User user;
+
+    BigDecimal bidPrice;
+    LocalDateTime bidTime;
     Boolean delFlag;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "auctionHistory", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    List<AuctionHistoryDetail> auctionHistoryDetails;
 }

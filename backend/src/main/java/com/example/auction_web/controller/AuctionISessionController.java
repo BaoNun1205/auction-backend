@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/auction-sessions")
+@RequestMapping("/auction-session")
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
-public class AuctionSessionController {
+public class AuctionISessionController {
     AuctionSessionService auctionSessionService;
 
     @PostMapping
@@ -28,7 +28,7 @@ public class AuctionSessionController {
     }
 
     @PutMapping("/{id}")
-    ApiResponse<AuctionSessionResponse> updateAuctionSession(@PathVariable String id, @RequestBody AuctionSessionUpdateRequest request) {
+    ApiResponse<AuctionSessionResponse> updateAuctionSeesion(@PathVariable String id, @RequestBody AuctionSessionUpdateRequest request) {
         return ApiResponse.<AuctionSessionResponse>builder()
                 .code(HttpStatus.OK.value())
                 .result(auctionSessionService.updateAuctionSession(id, request))
@@ -36,18 +36,10 @@ public class AuctionSessionController {
     }
 
     @GetMapping
-    ApiResponse<List<AuctionSessionResponse>> getAuctionSessions() {
+    ApiResponse<List<AuctionSessionResponse>> getAllAuctionSessions() {
         return ApiResponse.<List<AuctionSessionResponse>>builder()
                 .code(HttpStatus.OK.value())
                 .result(auctionSessionService.getAllAuctionSessions())
-                .build();
-    }
-
-    @GetMapping("/id/{id}")
-    ApiResponse<AuctionSessionResponse> getAuctionSessionById(@PathVariable String id) {
-        return ApiResponse.<AuctionSessionResponse>builder()
-                .code(HttpStatus.OK.value())
-                .result(auctionSessionService.getAuctionSessionById(id))
                 .build();
     }
 }

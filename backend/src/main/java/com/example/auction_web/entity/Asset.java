@@ -57,7 +57,7 @@ public class Asset {
     BillItem billItem;
 
     @OneToOne(mappedBy = "asset", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    AuctionItem auctionItem;
+    AuctionSession auctionSession;
 
     @OneToMany(mappedBy = "asset", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<ImageAsset> imageAssets;

@@ -1,10 +1,6 @@
 package com.example.auction_web.controller;
 
-import com.example.auction_web.dto.request.RegisterAuctionCreateRequest;
-import com.example.auction_web.dto.request.RegisterAuctionUpdateRequest;
 import com.example.auction_web.dto.response.ApiResponse;
-import com.example.auction_web.dto.response.RegisterAuctionResponse;
-import com.example.auction_web.service.RegisterAuctionService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;

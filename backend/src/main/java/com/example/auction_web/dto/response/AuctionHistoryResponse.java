@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -15,7 +16,10 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class AuctionHistoryResponse {
     String auctionHistoryId;
-    String auctionItemId;
+    String auctionSessionId;
+    String userId;
+    BigDecimal bidPrice;
+    LocalDateTime bidTime;
     Boolean delFlag;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;

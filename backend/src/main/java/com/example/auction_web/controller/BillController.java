@@ -43,11 +43,11 @@ public class BillController {
                 .build();
     }
 
-    @GetMapping("/user/id/{userId}")
-    ApiResponse<List<BillResponse>> getBillsByUserId(@PathVariable String userId) {
-        return ApiResponse.<List<BillResponse>>builder()
+    @GetMapping("/deposit/id/{depositId}")
+    ApiResponse<BillResponse> findBillByDeposit_DepositId(@PathVariable String depositId) {
+        return ApiResponse.<BillResponse>builder()
                 .code(HttpStatus.OK.value())
-                .result(billService.getBillsByUserId(userId))
+                .result(billService.findBillByDeposit_DepositId(depositId))
                 .build();
     }
 }

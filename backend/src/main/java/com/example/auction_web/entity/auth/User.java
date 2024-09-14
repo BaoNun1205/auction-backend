@@ -41,6 +41,12 @@ public class User {
     @ManyToMany
     Set<Role> roles;
 
+    @ManyToMany
+    Set<AuctionSession> auctionSessions;
+
+    @ManyToMany
+    Set<Asset> assets;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<Bill> bills;
 
@@ -57,13 +63,7 @@ public class User {
     List<AuctionHistoryDetail> auctionHistoryDetails;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    List<RegisterAuction> registerAuctions;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<Address> addresses;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    List<Asset> assets;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<Requirement> requirements;

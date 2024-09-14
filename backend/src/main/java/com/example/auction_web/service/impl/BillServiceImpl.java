@@ -5,12 +5,14 @@ import com.example.auction_web.dto.request.BillUpdateRequest;
 import com.example.auction_web.dto.response.BillResponse;
 import com.example.auction_web.entity.Address;
 import com.example.auction_web.entity.Bill;
+import com.example.auction_web.entity.Deposit;
 import com.example.auction_web.entity.auth.User;
 import com.example.auction_web.exception.AppException;
 import com.example.auction_web.exception.ErrorCode;
 import com.example.auction_web.mapper.BillMapper;
 import com.example.auction_web.repository.AddressRepository;
 import com.example.auction_web.repository.BillRepository;
+import com.example.auction_web.repository.DepositRepository;
 import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.BillService;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +26,7 @@ import java.util.List;
 @FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
 public class BillServiceImpl implements BillService {
     BillRepository billRepository;
-    UserRepository userRepository;
+    DepositRepository depositRepository;
     AddressRepository addressRepository;
     BillMapper billMapper;
 
@@ -38,6 +40,7 @@ public class BillServiceImpl implements BillService {
         Bill bill = billRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.BILL_NOT_EXISTED));
         billMapper.updateBill(bill, request);
+        setBillReference(bill, request);
         return billMapper.toBillResponse(billRepository.save(bill));
     }
 
@@ -47,23 +50,27 @@ public class BillServiceImpl implements BillService {
                 .toList();
     }
 
-    public List<BillResponse> getBillsByUserId(String userId) {
-        if (!userRepository.existsById(userId)) {
-            throw new AppException(ErrorCode.USER_NOT_EXISTED);
+    public BillResponse findBillByDeposit_DepositId(String depositId) {
+        if (!depositRepository.existsById(depositId)) {
+            throw new AppException(ErrorCode.DEPOSIT_NOT_EXISTED);
         }
-        return billRepository.findBillsByUser_UserId(userId).stream()
-                .map(billMapper::toBillResponse)
-                .toList();
+        return billMapper.toBillResponse(billRepository.findBillByDeposit_DepositId(depositId));
     }
 
+
     void setBillReference(Bill bill, BillCreateRequest request) {
-        bill.setUser(getUserById(request.getUserId()));
+        bill.setDeposit(getDepositById(request.getDepositId()));
         bill.setAddress(getAddressById(request.getAddressId()));
     }
 
-    User getUserById(String userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+    void setBillReference(Bill bill, BillUpdateRequest request) {
+        bill.setDeposit(getDepositById(request.getDepositId()));
+        bill.setAddress(getAddressById(request.getAddressId()));
+    }
+
+    Deposit getDepositById(String depositId) {
+        return depositRepository.findById(depositId)
+                .orElseThrow(() -> new AppException(ErrorCode.DEPOSIT_NOT_EXISTED));
     }
 
     Address getAddressById(String addressId) {

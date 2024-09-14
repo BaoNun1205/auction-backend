@@ -1,4 +1,4 @@
-package com.example.auction_web.dto.request;
+package com.example.auction_web.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,11 +9,16 @@ import lombok.experimental.FieldDefaults;
 import java.time.LocalDateTime;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class RegisterAuctionUpdateRequest {
+public class EventResponse {
+    String eventId;
+    String description;
+    LocalDateTime startTime;
+    LocalDateTime endTime;
     Boolean delFlag;
+    LocalDateTime createdAt;
     LocalDateTime updatedAt;
 }

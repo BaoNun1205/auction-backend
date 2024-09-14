@@ -4,12 +4,14 @@ import com.example.auction_web.dto.request.AuctionHistoryCreateRequest;
 import com.example.auction_web.dto.request.AuctionHistoryUpdateRequest;
 import com.example.auction_web.dto.response.AuctionHistoryResponse;
 import com.example.auction_web.entity.AuctionHistory;
-import com.example.auction_web.entity.AuctionItem;
+import com.example.auction_web.entity.AuctionSession;
+import com.example.auction_web.entity.auth.User;
 import com.example.auction_web.exception.AppException;
 import com.example.auction_web.exception.ErrorCode;
 import com.example.auction_web.mapper.AuctionHistoryMapper;
 import com.example.auction_web.repository.AuctionHistoryRepository;
-import com.example.auction_web.repository.AuctionItemRepository;
+import com.example.auction_web.repository.AuctionSessionRepository;
+import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.AuctionHistoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -18,12 +20,13 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 public class AuctionHistoryServiceImpl implements AuctionHistoryService {
     // init
     AuctionHistoryRepository auctionHistoryRepository;
-    AuctionItemRepository auctionItemRepository;
+    AuctionSessionRepository auctionSessionRepository;
+    UserRepository userRepository;
     AuctionHistoryMapper auctionHistoryMapper;
 
     //create AuctionHistory
@@ -49,21 +52,27 @@ public class AuctionHistoryServiceImpl implements AuctionHistoryService {
     }
 
     //get AuctionHistories by AuctionItemId
-    public AuctionHistoryResponse getAuctionHistoriesByAuctionItemId(String auctionItemId) {
-        if (!auctionItemRepository.existsById(auctionItemId)) {
-            throw new AppException(ErrorCode.AUCTION_ITEM_NOT_EXISTED);
+    public AuctionHistoryResponse getAuctionHistoriesByAuctionSessionId(String auctionSessionId) {
+        if (!auctionSessionRepository.existsById(auctionSessionId)) {
+            throw new AppException(ErrorCode.AUCTION_SESSION_NOT_EXISTED);
         }
-        return auctionHistoryMapper.toAuctionHistoryResponse(auctionHistoryRepository.findAuctionHistoryByAuctionItem_AuctionItemId(auctionItemId));
+        return auctionHistoryMapper.toAuctionHistoryResponse(auctionHistoryRepository.findAuctionHistoryByAuctionSession_AuctionSessionId(auctionSessionId));
     }
 
     //set AuctionItem for AuctionHistory
     void setAuctionHistoryReference(AuctionHistoryCreateRequest request, AuctionHistory auctionHistory) {
-        auctionHistory.setAuctionItem(getAuctionItemById(request.getAuctionItemId()));
+        auctionHistory.setAuctionSession(getAuctionSessionById(request.getAuctionSessionId()));
+        auctionHistory.setUser(getUserById(request.getUserId()));
     }
 
     //get AuctionItem by AuctionItemId
-    AuctionItem getAuctionItemById(String auctionItemId) {
-        return auctionItemRepository.findById(auctionItemId)
-                .orElseThrow(() -> new AppException(ErrorCode.AUCTION_ITEM_NOT_EXISTED));
+    AuctionSession getAuctionSessionById(String auctionSessionId) {
+        return auctionSessionRepository.findById(auctionSessionId)
+                .orElseThrow(() -> new AppException(ErrorCode.AUCTION_SESSION_NOT_EXISTED));
+    }
+
+    User getUserById(String userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
     }
 }

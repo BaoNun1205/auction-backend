@@ -24,29 +24,24 @@ public class Bill {
     @GeneratedValue(strategy = GenerationType.UUID)
     String billId;
 
-    @ManyToOne
-    @JoinColumn(name = "userId", referencedColumnName = "userId")
-    User user;
-
     LocalDateTime billDate;
 
     @OneToOne
     @JoinColumn(name = "addressId", referencedColumnName = "addressId")
     Address address;
 
-    @Column(precision = 15, scale = 0)
-    BigDecimal despositPrice;
+    @OneToOne
+    @JoinColumn(name = "depositId", referencedColumnName = "depositId")
+    Deposit deposit;
 
     @Column(precision = 15, scale = 0)
-    BigDecimal totalProfitPrice;
+    BigDecimal bidPrice;
 
     @Column(precision = 15, scale = 0)
-    BigDecimal totalPrice;
+    BigDecimal profitPrice;
 
     Boolean delFlag;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "bill", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    List<BillItem> billItems;
 }
