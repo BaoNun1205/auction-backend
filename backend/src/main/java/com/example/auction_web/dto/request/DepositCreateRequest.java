@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class DepositCreateRequest {
-    String auctionItemId;
+    String auctionSessionId;
     String userId;
     BigDecimal depositPrice;
     Boolean delFlag;

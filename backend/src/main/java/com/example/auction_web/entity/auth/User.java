@@ -47,9 +47,6 @@ public class User {
     @ManyToMany
     Set<Asset> assets;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    List<Bill> bills;
-
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     BalanceUser balanceUser;
 
@@ -60,7 +57,7 @@ public class User {
     List<Deposit> deposits;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    List<AuctionHistoryDetail> auctionHistoryDetails;
+    List<AuctionHistory> auctionHistories;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<Address> addresses;

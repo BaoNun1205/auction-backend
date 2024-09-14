@@ -20,15 +20,15 @@ public interface DepositMapper {
     Deposit toDeposit(DepositCreateRequest request);
     List<Deposit> toDeposits(List<DepositCreateRequest> requests);
 
-    @Mapping(target = "auctionItemId", source = "auctionSession", qualifiedByName = "auctionItemToString")
+    @Mapping(target = "auctionSessionId", source = "auctionSession", qualifiedByName = "auctionSessionToString")
     @Mapping(target = "userId", source = "user", qualifiedByName = "userToString")
     DepositResponse toDepositResponse(Deposit deposit);
     List<DepositResponse> toDepositResponses(List<Deposit> deposits);
     void updateDeposit(@MappingTarget Deposit deposit, DepositUpdateRequest request);
 
-    @Named("auctionItemToString")
-    default String auctionItemToString(AuctionSession auctionSession) {
-        return auctionSession != null ? auctionSession.getAuctionItemId() : null;
+    @Named("auctionSessionToString")
+    default String auctionSessionToString(AuctionSession auctionSession) {
+        return auctionSession != null ? auctionSession.getAuctionSessionId() : null;
     }
 
     @Named("userToString")
