@@ -43,11 +43,11 @@ public class DepositController {
                 .build();
     }
 
-    @GetMapping("/auction-item/id/{auctionItemId}")
-    ApiResponse<List<DepositResponse>> findDepositByAuctionItemId(@PathVariable String auctionItemId) {
+    @GetMapping("/auction-item/id/{auctionSessionId}")
+    ApiResponse<List<DepositResponse>> findDepositByAuctionItemId(@PathVariable String auctionSessionId) {
         return ApiResponse.<List<DepositResponse>>builder()
                 .code(HttpStatus.OK.value())
-                .result(depositService.findDepositByAuctionItemId(auctionItemId))
+                .result(depositService.findDepositByAuctionSessionId(auctionSessionId))
                 .build();
     }
 

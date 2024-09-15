@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface DepositRepository extends JpaRepository<Deposit, String> {
-    List<Deposit> findDepositsByAuctionItem_AuctionItemId(String auctionItemID);
+    List<Deposit> findDepositsByAuctionSession_AuctionSessionId(String auctionSessionId);
     List<Deposit> findDepositsByUser_UserId(String userId);
 }

@@ -51,11 +51,11 @@ public class DepositServiceImpl implements DepositService {
     }
 
     // find deposits by auction item id
-    public List<DepositResponse> findDepositByAuctionItemId(String auctionItemId) {
-        if (!auctionSessionRepository.existsById(auctionItemId)) {
-            throw new AppException(ErrorCode.AUCTION_ITEM_NOT_EXISTED);
+    public List<DepositResponse> findDepositByAuctionSessionId(String auctionSession) {
+        if (!auctionSessionRepository.existsById(auctionSession)) {
+            throw new AppException(ErrorCode.AUCTION_SESSION_NOT_EXISTED);
         }
-        return depositRepository.findDepositsByAuctionItem_AuctionItemId(auctionItemId).stream()
+        return depositRepository.findDepositsByAuctionSession_AuctionSessionId(auctionSession).stream()
                 .map(depositMapper::toDepositResponse)
                 .toList();
     }
@@ -72,14 +72,14 @@ public class DepositServiceImpl implements DepositService {
 
     // set deposit reference
     void setdepositRefernce(Deposit deposit, DepositCreateRequest request) {
-        deposit.setAuctionSession(getAuctionItem(request.getAuctionItemId()));
+        deposit.setAuctionSession(getAuctionSession(request.getAuctionSessionId()));
         deposit.setUser(getUser(request.getUserId()));
     }
 
-    // get auction item
-    AuctionSession getAuctionItem(String auctionItemId) {
-        return auctionSessionRepository.findById(auctionItemId)
-                .orElseThrow(() -> new AppException(ErrorCode.AUCTION_ITEM_NOT_EXISTED));
+    // get auction session
+    AuctionSession getAuctionSession(String auctionSession) {
+        return auctionSessionRepository.findById(auctionSession)
+                .orElseThrow(() -> new AppException(ErrorCode.AUCTION_SESSION_NOT_EXISTED));
     }
 
     // get user

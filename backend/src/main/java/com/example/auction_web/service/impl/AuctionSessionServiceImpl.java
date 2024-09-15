@@ -38,7 +38,7 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
 
     public AuctionSessionResponse updateAuctionSession(String id, AuctionSessionUpdateRequest request) {
         AuctionSession auctionSession = auctionSessionRepository.findById(id)
-                        .orElseThrow(() -> new AppException(ErrorCode.AUCTION_ITEM_NOT_EXISTED));
+                        .orElseThrow(() -> new AppException(ErrorCode.AUCTION_SESSION_NOT_EXISTED));
         auctionSessionMapper.updateAuctionItem(auctionSession, request);
         return auctionSessionMapper.toAuctionItemResponse(auctionSessionRepository.save(auctionSession));
     }

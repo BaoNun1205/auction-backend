@@ -33,7 +33,7 @@ public class BalanceUserServiceImpl implements BalanceUserService {
     }
 
     public BalanceUserResponse updateCoinUser(String id, BalanceUserUpdateRequest request) {
-        BalanceUser balanceUser = balanceUserRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.COIN_USER_NOT_EXISTED));
+        BalanceUser balanceUser = balanceUserRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.BALANCE_USER_NOT_EXISTED));
         balanceUserMapper.updateBalance(balanceUser, request);
         return balanceUserMapper.toBalanceUserResponse(balanceUserRepository.save(balanceUser));
     }
