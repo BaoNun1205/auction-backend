@@ -34,7 +34,7 @@ public class User {
     String email;
     String phone;
     String token;
-    Boolean Enabled;
+    Boolean enabled;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 

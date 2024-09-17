@@ -24,6 +24,7 @@ public enum ErrorCode {
     ASSET_NOT_EXISTED(1018, "Asset not existed", HttpStatus.NOT_FOUND),
     AUCTION_SESSION_NOT_EXISTED(1019, "Auction session not existed", HttpStatus.NOT_FOUND),
     AUCTION_HISTORY_NOT_EXISTED(1021, "Auction history not existed", HttpStatus.NOT_FOUND),
+    ACCOUNT_UNVERIFIED(1022, "Unconfirmed user", HttpStatus.NOT_FOUND),
     DEPOSIT_NOT_EXISTED(1023, "Deposit not existed", HttpStatus.NOT_FOUND),
     BILL_NOT_EXISTED(1024, "Bill not existed", HttpStatus.NOT_FOUND),
     IMAGE_ASSET_NOT_EXISTED(1025, "Image asset not existed", HttpStatus.NOT_FOUND),

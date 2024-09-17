@@ -67,6 +67,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @PostAuthorize("returnObject.username == authentication.name")
+    public UserResponse getUserByUsername(String username) {
+        return userMapper.toUserResponse(
+                userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED))
+        );
+    }
+
+    @Override
     @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponse> getUsers() {
         return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
