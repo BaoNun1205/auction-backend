@@ -43,11 +43,11 @@ public class AuctionHistoryController {
                 .build();
     }
 
-    @GetMapping("/auctionItem/{auctionItemId}")
-    ApiResponse<AuctionHistoryResponse> getAuctionHistoriesByAuctionItemId(@PathVariable String auctionItemId) {
+    @GetMapping("/auctionSession/{auctionSessionId}")
+    ApiResponse<AuctionHistoryResponse> getAuctionHistoriesByAuctionItemId(@PathVariable String auctionSessionId) {
         return ApiResponse.<AuctionHistoryResponse>builder()
                 .code(HttpStatus.OK.value())
-                .result(auctionHistoryService.getAuctionHistoriesByAuctionItemId(auctionItemId))
+                .result(auctionHistoryService.getAuctionHistoriesByAuctionSessionId(auctionSessionId))
                 .build();
     }
 }

@@ -8,15 +8,29 @@ spring:
   datasource:
     url: ${DBMS_CONNECTION:jdbc:mysql://localhost:3306/auction_web}
     driverClassName: "com.mysql.cj.jdbc.Driver"
-    password: ${DBMS_PASSWORD:120503}
+    password: ${DBMS_PASSWORD:root}
     username: ${DBMS_USERNAME:root}
+
 
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
+  data:
+    redis:
+      host: "redis-19216.c266.us-east-1-3.ec2.redns.redis-cloud.com"
+      port: 19216
 
 jwt:
   signerKey: "1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij"
   valid-duration: 3600 # in second
   refreshable-duration: 36000 # in seconds
+
+email:
+  username: webonlineauction@gmail.com
+  password: hrqqaszjtpqqjchc
+
+redis:
+  host: "redis-19216.c266.us-east-1-3.ec2.redns.redis-cloud.com"
+  port: "19216"
+  password: "dVDInguT3Iw5sP9cpjUPhO4J5QMBfgbm"

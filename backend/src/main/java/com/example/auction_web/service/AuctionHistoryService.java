@@ -10,5 +10,5 @@ public interface AuctionHistoryService {
     AuctionHistoryResponse createAuctionHistory(AuctionHistoryCreateRequest request);
     AuctionHistoryResponse updateAuctionHistory(String id, AuctionHistoryUpdateRequest request);
     List<AuctionHistoryResponse> getAllAuctionHistories();
-    AuctionHistoryResponse getAuctionHistoriesByAuctionItemId(String auctionItemId);
+    AuctionHistoryResponse getAuctionHistoriesByAuctionSessionId(String auctionSessionId);
 }

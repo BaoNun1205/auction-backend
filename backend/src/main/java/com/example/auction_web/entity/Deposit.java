@@ -24,8 +24,8 @@ public class Deposit {
     String depositId;
 
     @ManyToOne
-    @JoinColumn(name = "auctionItemId", referencedColumnName = "auctionItemId")
-    AuctionItem auctionItem;
+    @JoinColumn(name = "auctionSessionId", referencedColumnName = "auctionSessionId")
+    AuctionSession auctionSession;
 
     @ManyToOne
     @JoinColumn(name = "userId", referencedColumnName = "userId")
@@ -37,4 +37,7 @@ public class Deposit {
     Boolean delFlag;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
+
+    @OneToOne(mappedBy = "deposit", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    Bill bill;
 }

@@ -54,10 +54,7 @@ public class Asset {
     LocalDateTime updatedAt;
 
     @OneToOne(mappedBy = "asset", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    BillItem billItem;
-
-    @OneToOne(mappedBy = "asset", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    AuctionItem auctionItem;
+    AuctionSession auctionSession;
 
     @OneToMany(mappedBy = "asset", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<ImageAsset> imageAssets;

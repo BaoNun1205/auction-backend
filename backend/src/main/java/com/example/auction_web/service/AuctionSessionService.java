@@ -10,5 +10,4 @@ public interface AuctionSessionService {
     AuctionSessionResponse createAuctionSession(AuctionSessionCreateRequest request);
     AuctionSessionResponse updateAuctionSession(String id, AuctionSessionUpdateRequest request);
     List<AuctionSessionResponse> getAllAuctionSessions();
-    AuctionSessionResponse getAuctionSessionById(String id);
 }

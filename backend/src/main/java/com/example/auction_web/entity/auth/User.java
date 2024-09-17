@@ -34,14 +34,18 @@ public class User {
     String email;
     String phone;
     String token;
+    Boolean Enabled;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 
     @ManyToMany
     Set<Role> roles;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    List<Bill> bills;
+    @ManyToMany
+    Set<AuctionSession> auctionSessions;
+
+    @ManyToMany
+    Set<Asset> assets;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     BalanceUser balanceUser;
@@ -53,16 +57,10 @@ public class User {
     List<Deposit> deposits;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    List<AuctionHistoryDetail> auctionHistoryDetails;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    List<RegisterAuction> registerAuctions;
+    List<AuctionHistory> auctionHistories;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<Address> addresses;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    List<Asset> assets;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<Requirement> requirements;

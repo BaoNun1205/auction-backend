@@ -10,7 +10,6 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 
-@Table(name = "address")
 @Entity
 @Data
 @NoArgsConstructor
@@ -27,19 +26,9 @@ public class Address {
     User user;
 
     String recipientName;
-
-    @OneToOne
-    @JoinColumn(name = "provinceId", referencedColumnName = "provinceId")
-    Province province;
-
-    @OneToOne
-    @JoinColumn(name = "districtId", referencedColumnName = "districtId")
-    District district;
-
-    @OneToOne
-    @JoinColumn(name = "wardId", referencedColumnName = "wardId")
-    Ward ward;
-
+    String province;
+    String district;
+    String ward;
     String addressDetail;
     String phone;
     Boolean delFlag;

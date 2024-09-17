@@ -10,6 +10,6 @@ public interface DepositService {
     DepositResponse createDeposit(DepositCreateRequest request);
     DepositResponse updateDeposit(String Id, DepositUpdateRequest request);
     List<DepositResponse> findAllDeposits();
-    List<DepositResponse> findDepositByAuctionItemId(String auctionItemId);
+    List<DepositResponse> findDepositByAuctionSessionId(String auctionSessionId);
     List<DepositResponse> findDepositByUserId(String userId);
 }
