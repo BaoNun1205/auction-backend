@@ -53,4 +53,7 @@ public class AuctionSession {
 
     @OneToMany(mappedBy = "auctionSession", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<AuctionHistory> auctionHistories;
+
+    @OneToMany(mappedBy = "auctionSession", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<RegisterSession> registerSessions;
 }
