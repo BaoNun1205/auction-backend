@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -31,7 +32,7 @@ public class DepositServiceImpl implements DepositService {
     // create a deposit
     public DepositResponse createDeposit(DepositCreateRequest request) {
         var deposit = depositMapper.toDeposit(request);
-        setdepositRefernce(deposit, request);
+        setDepositReference(deposit, request);
         return depositMapper.toDepositResponse(depositRepository.save(deposit));
     }
 
@@ -70,8 +71,12 @@ public class DepositServiceImpl implements DepositService {
                 .toList();
     }
 
+    public BigDecimal maxDepositPriceByAuctionSessionId(String auctionSessionId) {
+        return depositRepository.findMaxDepositPriceByAuctionSessionId(auctionSessionId);
+    }
+
     // set deposit reference
-    void setdepositRefernce(Deposit deposit, DepositCreateRequest request) {
+    void setDepositReference(Deposit deposit, DepositCreateRequest request) {
         deposit.setAuctionSession(getAuctionSession(request.getAuctionSessionId()));
         deposit.setUser(getUser(request.getUserId()));
     }

@@ -34,7 +34,7 @@ public class User {
     String email;
     String phone;
     String token;
-    Boolean Enabled;
+    Boolean enabled;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 
@@ -64,4 +64,7 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<Requirement> requirements;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<RegisterSession> registerSessions;
 }

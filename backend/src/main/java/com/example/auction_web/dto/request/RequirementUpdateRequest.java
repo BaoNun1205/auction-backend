@@ -19,6 +19,7 @@ public class RequirementUpdateRequest {
     String assetDescription;
     BigDecimal assetPrice;
     String assetStatusId;
+    String status;
     Boolean delFlag;
     LocalDateTime updatedAt;
 }

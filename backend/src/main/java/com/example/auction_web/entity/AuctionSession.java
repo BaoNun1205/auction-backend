@@ -44,6 +44,7 @@ public class AuctionSession {
     @Column(precision = 15, scale = 0)
     BigDecimal bidIncrement;
 
+    String status;
     Boolean delFlag;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
@@ -53,4 +54,7 @@ public class AuctionSession {
 
     @OneToMany(mappedBy = "auctionSession", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<AuctionHistory> auctionHistories;
+
+    @OneToMany(mappedBy = "auctionSession", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<RegisterSession> registerSessions;
 }

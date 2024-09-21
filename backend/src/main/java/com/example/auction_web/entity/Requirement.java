@@ -36,10 +36,7 @@ public class Requirement {
     @JoinColumn(name = "insprectorId", referencedColumnName = "insprectorId")
     Insprector insprector;
 
-    @ManyToOne
-    @JoinColumn(name = "assetStatusId", referencedColumnName = "assetStatusId")
-    AssetStatus assetStatus;
-
+    String status;
     Boolean delFlag;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;

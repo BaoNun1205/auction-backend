@@ -17,6 +17,7 @@ public enum ErrorCode {
     INVALID_DOB(1008, "Your age must be at least {min}", HttpStatus.BAD_REQUEST),
     CATEGORY_NOT_EXISTED(1009, "Category not existed", HttpStatus.NOT_FOUND),
     BALANCE_USER_NOT_EXISTED(1010, "Balance user not existed", HttpStatus.NOT_FOUND),
+    REGISTER_SESSION_EXISTED(1011, "Register session existed", HttpStatus.BAD_REQUEST),
     TYPE_NOT_EXISTED(1014, "Type not existed", HttpStatus.NOT_FOUND),
     ADDRESS_NOT_EXISTED(1015, "Address not existed", HttpStatus.NOT_FOUND),
     ASSET_STATUS_NOT_FOUND(1016, "Asset status not existed", HttpStatus.NOT_FOUND),
@@ -24,9 +25,11 @@ public enum ErrorCode {
     ASSET_NOT_EXISTED(1018, "Asset not existed", HttpStatus.NOT_FOUND),
     AUCTION_SESSION_NOT_EXISTED(1019, "Auction session not existed", HttpStatus.NOT_FOUND),
     AUCTION_HISTORY_NOT_EXISTED(1021, "Auction history not existed", HttpStatus.NOT_FOUND),
+    ACCOUNT_UNVERIFIED(1022, "Unconfirmed user", HttpStatus.NOT_FOUND),
     DEPOSIT_NOT_EXISTED(1023, "Deposit not existed", HttpStatus.NOT_FOUND),
     BILL_NOT_EXISTED(1024, "Bill not existed", HttpStatus.NOT_FOUND),
     IMAGE_ASSET_NOT_EXISTED(1025, "Image asset not existed", HttpStatus.NOT_FOUND),
+    REGISTER_SESSION_NOT_EXISTED(1026, "Register session not existed", HttpStatus.NOT_FOUND),
     REGISTER_AUCTION_NOT_EXISTED(1027, "Register auction not existed", HttpStatus.NOT_FOUND),
     INSPECTOR_NOT_EXISTED(1028, "Inspector not existed", HttpStatus.NOT_FOUND),
     REQUIREMENT_NOT_EXISTED(1029, "Requirement not existed", HttpStatus.NOT_FOUND),
@@ -34,6 +37,7 @@ public enum ErrorCode {
     EMAIL_VERIFICATION_TOKEN_NOT_EXIST(1031, "Email verification token not existed", HttpStatus.NOT_FOUND),
     EVENT_NOT_EXIST(1032, "Event not existed", HttpStatus.NOT_FOUND),
     FAVOURITE_NOT_EXISTED(1033, "Favourite not existed", HttpStatus.NOT_FOUND),
+    DEPOSIT_PRICE_IS_GREATER_THAN_MAX_DEPOSIT(1034, "Deposit price is greater than max deposit", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

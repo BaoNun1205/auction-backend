@@ -22,6 +22,7 @@ public class AssetUpdateRequest {
     BigDecimal assetPrice;
     String typeId;
     String assetStatusId;
+    String status;
     Boolean delFlag;
     LocalDateTime updatedAt;
 }

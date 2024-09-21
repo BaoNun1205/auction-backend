@@ -7,6 +7,7 @@ import com.example.auction_web.entity.Asset;
 import com.example.auction_web.entity.AuctionSession;
 import com.example.auction_web.entity.Event;
 import com.example.auction_web.entity.auth.User;
+import com.example.auction_web.enums.AUCTION_STATUS;
 import com.example.auction_web.exception.AppException;
 import com.example.auction_web.exception.ErrorCode;
 import com.example.auction_web.mapper.AuctionSessionMapper;
@@ -18,6 +19,7 @@ import com.example.auction_web.service.AuctionSessionService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -47,6 +49,19 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
         return auctionSessionRepository.findAll().stream()
                 .map(auctionSessionMapper::toAuctionItemResponse)
                 .toList();
+    }
+
+    public AuctionSessionResponse getAuctionSessionById(String auctionSessionId) {
+        return auctionSessionMapper.toAuctionItemResponse(auctionSessionRepository.findById(auctionSessionId)
+                .orElseThrow(() -> new AppException(ErrorCode.AUCTION_SESSION_NOT_EXISTED)));
+    }
+
+    @Transactional
+    public void completeAuctionSession(String auctionSessionId) {
+        AuctionSession auctionSession = auctionSessionRepository.findById(auctionSessionId)
+                .orElseThrow(() -> new AppException(ErrorCode.AUCTION_SESSION_NOT_EXISTED));
+        auctionSession.setStatus(String.valueOf(AUCTION_STATUS.FINISHED));
+        auctionSessionRepository.save(auctionSession);
     }
 
     private void setAuctionSessionReference(AuctionSessionCreateRequest request, AuctionSession auctionSession) {

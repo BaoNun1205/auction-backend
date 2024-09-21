@@ -45,10 +45,7 @@ public class Asset {
     @JoinColumn(name = "typeId", referencedColumnName = "typeId")
     Type type;
 
-    @OneToOne
-    @JoinColumn(name = "assetStatusId", referencedColumnName = "assetStatusId")
-    AssetStatus assetStatus;
-
+    String status;
     Boolean delFlag;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;

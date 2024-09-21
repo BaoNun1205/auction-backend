@@ -1,4 +1,4 @@
-package com.example.auction_web.dto.request;
+package com.example.auction_web.WebSocket.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -14,10 +13,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class AuctionSessionUpdateRequest {
-    LocalDateTime startTime;
-    LocalDateTime endTime;
-    String status;
-    Boolean delFlag;
-    LocalDateTime updatedAt;
+public class SessionJoinResponse {
+    String userId;
+    String firstName;
+    String lastName;
+    LocalDateTime createdAt;
 }

@@ -59,14 +59,6 @@ public class RequirementController {
                 .build();
     }
 
-    @GetMapping("/asset-status/id/{assetStatusId}")
-    ApiResponse<List<RequirementResponse>> getRequirementsByAssetStatusId(@PathVariable String assetStatusId) {
-        return ApiResponse.<List<RequirementResponse>>builder()
-                .code(HttpStatus.OK.value())
-                .result(requirementService.getRequirementsByAssetStatusId(assetStatusId))
-                .build();
-    }
-
     @GetMapping("/{requirementId}")
     ApiResponse<RequirementResponse> getRequirementById(@PathVariable String requirementId) {
         return ApiResponse.<RequirementResponse>builder()

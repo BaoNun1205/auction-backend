@@ -24,6 +24,7 @@ public class AssetResponse {
     String inspectorId;
     String typeId;
     String assetStatusId;
+    String status;
     Boolean delFlag;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;

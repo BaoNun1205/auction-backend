@@ -3,14 +3,12 @@ package com.example.auction_web.service.impl;
 import com.example.auction_web.dto.request.RequirementCreateRequest;
 import com.example.auction_web.dto.request.RequirementUpdateRequest;
 import com.example.auction_web.dto.response.RequirementResponse;
-import com.example.auction_web.entity.AssetStatus;
 import com.example.auction_web.entity.Requirement;
 import com.example.auction_web.entity.auth.Insprector;
 import com.example.auction_web.entity.auth.User;
 import com.example.auction_web.exception.AppException;
 import com.example.auction_web.exception.ErrorCode;
 import com.example.auction_web.mapper.RequirementMapper;
-import com.example.auction_web.repository.AssetStatusRepository;
 import com.example.auction_web.repository.RequirementRepository;
 import com.example.auction_web.repository.auth.InsprectorRepository;
 import com.example.auction_web.repository.auth.UserRepository;
@@ -28,7 +26,6 @@ public class RequirementServiceImpl implements RequirementService {
     RequirementRepository requirementRepository;
     UserRepository userRepository;
     InsprectorRepository insprectorRepository;
-    AssetStatusRepository assetStatusRepository;
     RequirementMapper requirementMapper;
 
     public RequirementResponse createRequirement(RequirementCreateRequest request) {
@@ -41,7 +38,6 @@ public class RequirementServiceImpl implements RequirementService {
         Requirement requirement = requirementRepository.findById(requirementId)
                 .orElseThrow(() -> new AppException(ErrorCode.REQUIREMENT_NOT_EXISTED));
         requirementMapper.updateRequirement(requirement, request);
-        setRequirementReference(request, requirement);
         return requirementMapper.toRequirementResponse(requirementRepository.save(requirement));
     }
 
@@ -63,26 +59,14 @@ public class RequirementServiceImpl implements RequirementService {
                 .toList();
     }
 
-
-    public List<RequirementResponse> getRequirementsByAssetStatusId(String assetStatusId) {
-        return requirementRepository.findRequirementsByAssetStatus_AssetStatusId(assetStatusId).stream()
-                .map(requirementMapper::toRequirementResponse)
-                .toList();
-    }
-
     public RequirementResponse getRequirementById(String requirementId) {
         return requirementMapper.toRequirementResponse(requirementRepository.findById(requirementId)
                 .orElseThrow(() -> new AppException(ErrorCode.REQUIREMENT_NOT_EXISTED)));
     }
 
-    void setRequirementReference(Object request, Requirement requirement) {
-        if (request instanceof RequirementCreateRequest requirementCreateRequest) {
-            requirement.setUser(getVendorById(requirementCreateRequest.getVendorId()));
-            requirement.setInsprector(getInspectorById(requirementCreateRequest.getInspectorId()));
-            requirement.setAssetStatus(getAssetStatusById(requirementCreateRequest.getAssetStatusId()));
-        } else if (request instanceof RequirementUpdateRequest requirementUpdateRequest) {
-            requirement.setAssetStatus(getAssetStatusById(requirementUpdateRequest.getAssetStatusId()));
-        }
+    void setRequirementReference(RequirementCreateRequest requirementCreateRequest, Requirement requirement) {
+        requirement.setUser(getVendorById(requirementCreateRequest.getVendorId()));
+        requirement.setInsprector(getInspectorById(requirementCreateRequest.getInspectorId()));
     }
 
     User getVendorById(String vendorId) {
@@ -93,10 +77,5 @@ public class RequirementServiceImpl implements RequirementService {
     Insprector getInspectorById(String inspectorId) {
         return insprectorRepository.findById(inspectorId)
                 .orElseThrow(() -> new AppException(ErrorCode.INSPECTOR_NOT_EXISTED));
-    }
-
-    AssetStatus getAssetStatusById(String assetStatusId) {
-        return assetStatusRepository.findById(assetStatusId)
-                .orElseThrow(() -> new AppException(ErrorCode.ASSET_STATUS_NOT_FOUND));
     }
 }
