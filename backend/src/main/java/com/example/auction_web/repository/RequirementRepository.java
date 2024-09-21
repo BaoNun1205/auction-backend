@@ -9,6 +9,5 @@ import java.util.List;
 @Repository
 public interface RequirementRepository extends JpaRepository<Requirement, String> {
     List<Requirement> findRequirementsByUser_UserId(String userId);
-    List<Requirement> findRequirementsByAssetStatus_AssetStatusId(String assetStatusId);
     List<Requirement> findRequirementsByInsprector_InsprectorId(String insprectorId);
 }

@@ -35,7 +35,6 @@ public class SecurityConfig {
     private final String[] PUBLIC_ENDPOINTS = {
             "/users", "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh",
             "/verification/account-registration",
-            "/rt-auction/join", "rt-product/**"
     };
 
     @Autowired
@@ -45,9 +44,8 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .authorizeHttpRequests(request -> request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS)
-                        .anonymous().requestMatchers(HttpMethod.GET, "/rt-auction/")
-                .permitAll()
+                .authorizeHttpRequests(request -> request
+                        .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
                 .anyRequest()
                 .authenticated());
 
@@ -66,9 +64,12 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         // Thêm các origin mà bạn muốn cho phép
-        config.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:5500"));
+        config.setAllowedOrigins(List.of(
+                "http://localhost:5173",
+                "http://127.0.0.1:5500"
+        ));
         // Cho phép tất cả các phương thức HTTP
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedMethods(List.of("*"));
         // Cho phép tất cả các headers
         config.setAllowedHeaders(List.of("*"));
 

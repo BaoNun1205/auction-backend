@@ -37,6 +37,7 @@ public enum ErrorCode {
     EMAIL_VERIFICATION_TOKEN_NOT_EXIST(1031, "Email verification token not existed", HttpStatus.NOT_FOUND),
     EVENT_NOT_EXIST(1032, "Event not existed", HttpStatus.NOT_FOUND),
     FAVOURITE_NOT_EXISTED(1033, "Favourite not existed", HttpStatus.NOT_FOUND),
+    DEPOSIT_PRICE_IS_GREATER_THAN_MAX_DEPOSIT(1034, "Deposit price is greater than max deposit", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

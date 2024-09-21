@@ -12,6 +12,5 @@ public interface RequirementService {
     List<RequirementResponse> getAllRequirements();
     List<RequirementResponse> getRequirementsByVendorId(String vendorId);
     List<RequirementResponse> getRequirementsByInspectorId(String inspectorId);
-    List<RequirementResponse> getRequirementsByAssetStatusId(String assetStatusId);
     RequirementResponse getRequirementById(String requirementId);
 }

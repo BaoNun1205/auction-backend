@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 public class AuctionSessionUpdateRequest {
     LocalDateTime startTime;
     LocalDateTime endTime;
+    String status;
     Boolean delFlag;
     LocalDateTime updatedAt;
 }

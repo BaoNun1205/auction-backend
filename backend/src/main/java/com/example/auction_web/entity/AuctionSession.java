@@ -44,6 +44,7 @@ public class AuctionSession {
     @Column(precision = 15, scale = 0)
     BigDecimal bidIncrement;
 
+    String status;
     Boolean delFlag;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
