@@ -32,6 +32,10 @@ import java.util.List;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
+
+    @Value("${jwt.signerKey}")
+    private String signerKey;
+
     private final String[] PUBLIC_ENDPOINTS = {
             "/users", "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh",
             "/verification/account-registration",
@@ -40,11 +44,13 @@ public class SecurityConfig {
     @Autowired
     private CustomJwtDecoder customJwtDecoder;
 
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(request -> request
+                        .requestMatchers("/rt-product/**").permitAll()
                         .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
                 .anyRequest()
                 .authenticated());
@@ -60,14 +66,19 @@ public class SecurityConfig {
     }
 
     @Bean
+    public JwtDecoder jwtDecoder() {
+        SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), "HS512");
+        return NimbusJwtDecoder.withSecretKey(secretKeySpec)
+                .macAlgorithm(MacAlgorithm.HS512)
+                .build();
+    }
+
+    @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         // Thêm các origin mà bạn muốn cho phép
-        config.setAllowedOrigins(List.of(
-                "http://localhost:5173",
-                "http://127.0.0.1:5500"
-        ));
+        config.setAllowedOrigins(List.of("http://127.0.0.1:5500"));
         // Cho phép tất cả các phương thức HTTP
         config.setAllowedMethods(List.of("*"));
         // Cho phép tất cả các headers
@@ -80,7 +91,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    JwtAuthenticationConverter jwtAuthenticationConverter() {
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
         jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");
 
@@ -91,7 +102,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    PasswordEncoder passwordEncoder() {
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(10);
     }
 }

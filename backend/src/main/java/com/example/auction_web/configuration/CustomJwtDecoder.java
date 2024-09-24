@@ -3,6 +3,12 @@ package com.example.auction_web.configuration;
 import com.example.auction_web.dto.request.auth.IntrospectRequest;
 import com.example.auction_web.service.auth.AuthenticationService;
 import com.nimbusds.jose.JOSEException;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
@@ -14,10 +20,14 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.text.ParseException;
+import java.util.Date;
 import java.util.Objects;
+import java.util.function.Function;
 
 @Component
 public class CustomJwtDecoder implements JwtDecoder {
+    private SecretKeySpec key;
+
     @Value("${jwt.signerKey}")
     private String signerKey;
 
@@ -46,5 +56,34 @@ public class CustomJwtDecoder implements JwtDecoder {
         }
 
         return nimbusJwtDecoder.decode(token);
+    }
+
+    // "claims" are attributes or information embedded within the token
+    private <T> T extractClaims(String token, Function<Claims, T> claimsTFunction) throws
+            ExpiredJwtException, UnsupportedJwtException, MalformedJwtException, SignatureException, IllegalArgumentException {
+        key = new SecretKeySpec(signerKey.getBytes(), "HS512");
+        return claimsTFunction.apply(Jwts.parser()
+                .verifyWith(key)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload());
+
+    }
+
+    public String extractUsername(String token) {
+        return extractClaims(token, Claims::getSubject);
+    }
+
+    private Date extractExpiration(String token) {
+        return extractClaims(token, Claims::getExpiration);
+    }
+
+    // Check if token is expired
+    public boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
+    }
+
+    public boolean isTokenValid(String token) {
+        return !isTokenExpired(token);
     }
 }
