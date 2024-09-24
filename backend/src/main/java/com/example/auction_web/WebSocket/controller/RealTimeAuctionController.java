@@ -9,6 +9,7 @@ import com.example.auction_web.dto.request.DepositCreateRequest;
 import com.example.auction_web.dto.response.ApiResponse;
 import com.example.auction_web.dto.response.AuctionSessionResponse;
 import com.example.auction_web.enums.AUCTION_STATUS;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -59,7 +60,7 @@ public class RealTimeAuctionController {
         try {
             List<AuctionSessionResponse> auctionSessionResponses = realTimeAuctionHandlerService.getAllAuctionSessions();
             AuctionMessageResponse auctionMessageResponse = AuctionMessageResponse.builder()
-                    .status(AUCTION_STATUS.TIME_UPDATE)
+                    .status(AUCTION_STATUS.TIME_UPDATE.toString())
                     .messageTime(Instant.now())
                     .build();
             for (AuctionSessionResponse auctionSessionResponse : auctionSessionResponses) {
@@ -75,7 +76,7 @@ public class RealTimeAuctionController {
         try {
             List<AuctionSessionResponse> auctionSessionResponses = realTimeAuctionHandlerService.getAllAuctionSessions();
             AuctionMessageResponse auctionMessageResponse = AuctionMessageResponse.builder()
-                    .status(AUCTION_STATUS.STARTED)
+                    .status(AUCTION_STATUS.STARTED.toString())
                     .messageTime(Instant.now())
                     .build();
             Instant now = Instant.now();
@@ -98,7 +99,7 @@ public class RealTimeAuctionController {
         try {
             List<AuctionSessionResponse> auctionSessionResponses = realTimeAuctionHandlerService.getAllAuctionSessions();
             AuctionMessageResponse auctionMessageResponse = AuctionMessageResponse.builder()
-                    .status(AUCTION_STATUS.FINISHED)
+                    .status(AUCTION_STATUS.FINISHED.toString())
                     .messageTime(Instant.now())
                     .build();
 

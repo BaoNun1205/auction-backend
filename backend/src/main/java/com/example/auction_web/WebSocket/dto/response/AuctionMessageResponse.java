@@ -16,6 +16,6 @@ import java.time.Instant;
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class AuctionMessageResponse {
-    AUCTION_STATUS status;
+    String status;
     Instant messageTime;
 }
