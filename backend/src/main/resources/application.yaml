@@ -34,3 +34,8 @@ redis:
   host: "redis-19216.c266.us-east-1-3.ec2.redns.redis-cloud.com"
   port: "19216"
   password: "dVDInguT3Iw5sP9cpjUPhO4J5QMBfgbm"
+
+cloudinary:
+    cloud-name: "da7ocjpcu"
+    api-key: "243495346747181"
+    api-secret: "bD1q8wkCmh1HV0blM7zyFdrrSVk"
