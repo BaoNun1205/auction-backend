@@ -19,8 +19,23 @@ import java.util.List;
 public class CategoryController {
     CategoryService categoryService;
 
+    @GetMapping("/{categoryId}")
+    ApiResponse<CategoryResponse> getCategory(@PathVariable String categoryId) {
+        return ApiResponse.<CategoryResponse>builder()
+                .code(HttpStatus.OK.value())
+                .result(categoryService.getCategory(categoryId))
+                .build();
+    }
+    @GetMapping
+    ApiResponse<List<CategoryResponse>> getAll() {
+        return ApiResponse.<List<CategoryResponse>>builder()
+                .code(HttpStatus.OK.value())
+                .result(categoryService.getAllCategories())
+                .build();
+    }
+
     @PostMapping
-    ApiResponse<CategoryResponse> crateCategory(@RequestBody CategoryCreateRequest request) {
+    ApiResponse<CategoryResponse> crateCategory(@ModelAttribute CategoryCreateRequest request) {
         return ApiResponse.<CategoryResponse>builder()
                 .code(HttpStatus.OK.value())
                 .result(categoryService.createCategory(request))
@@ -35,11 +50,9 @@ public class CategoryController {
                 .build();
     }
 
-    @GetMapping
-    ApiResponse<List<CategoryResponse>> getAll() {
-        return ApiResponse.<List<CategoryResponse>>builder()
-                .code(HttpStatus.OK.value())
-                .result(categoryService.getAllCategories())
-                .build();
+    @DeleteMapping("/{categoryId}")
+    ApiResponse<String> delete(@PathVariable String categoryId){
+        categoryService.deleteCategory(categoryId);
+        return ApiResponse.<String>builder().result("Category has been deleted").build();
     }
 }
