@@ -41,6 +41,10 @@ public class SecurityConfig {
             "/verification/account-registration",
     };
 
+    private final String[] PUBLIC_ENDPOINTS_GET = {
+            "/category"
+    };
+
     @Autowired
     private CustomJwtDecoder customJwtDecoder;
 
@@ -52,6 +56,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/rt-product/**").permitAll()
                         .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
+                        .requestMatchers(HttpMethod.GET, PUBLIC_ENDPOINTS_GET).permitAll()
                 .anyRequest()
                 .authenticated());
 
@@ -78,7 +83,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         // Thêm các origin mà bạn muốn cho phép
-        config.setAllowedOrigins(List.of("http://127.0.0.1:5500"));
+        config.setAllowedOrigins(List.of("http://127.0.0.1:5500", "http://localhost:5173"));
         // Cho phép tất cả các phương thức HTTP
         config.setAllowedMethods(List.of("*"));
         // Cho phép tất cả các headers
