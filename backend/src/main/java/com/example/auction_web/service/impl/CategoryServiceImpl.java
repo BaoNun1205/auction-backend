@@ -35,7 +35,33 @@ public class CategoryServiceImpl implements CategoryService {
 
     public List<CategoryResponse> getAllCategories() {
         return categoryRepository.findAll().stream()
-                .filter(category -> !category.getDelFlag())
+                .map(categoryMapper::toCategoryResponse)
+                .toList();
+    }
+
+    public List<CategoryResponse> filterCategories(Boolean status, String keyword) {
+        if (status == null && (keyword == null || keyword.isEmpty())) {
+            return categoryRepository.findAll().stream()
+                    .map(categoryMapper::toCategoryResponse)
+                    .toList();
+        }
+
+        // Nếu chỉ có status
+        if (status != null && (keyword == null || keyword.isEmpty())) {
+            return categoryRepository.findByDelFlag(status).stream()
+                    .map(categoryMapper::toCategoryResponse)
+                    .toList();
+        }
+
+        // Nếu chỉ có keyword
+        if (status == null) {
+            return categoryRepository.findByCategoryNameContainingIgnoreCase(keyword).stream()
+                    .map(categoryMapper::toCategoryResponse)
+                    .toList();
+        }
+
+        // Nếu có cả status và keyword
+        return categoryRepository.findByDelFlagAndCategoryNameContainingIgnoreCase(status, keyword).stream()
                 .map(categoryMapper::toCategoryResponse)
                 .toList();
     }
@@ -43,29 +69,23 @@ public class CategoryServiceImpl implements CategoryService {
     @PreAuthorize("hasRole('ADMIN')")
     public CategoryResponse createCategory(CategoryCreateRequest request) {
         try {
-            // Tải ảnh lên Cloudinary và lấy URL
-            String imageUrl = fileUploadService.uploadFile(request.getImage()); // Giả sử bạn có trường MultipartFile image trong request
+            // Upload file và lấy URL của hình ảnh
+            String imageUrl = fileUploadService.uploadFile(request.getImage());
 
-            // Chuyển đổi request thành category
-//            Category category = categoryMapper.toCategory(request);
-            Category category = new Category();
-            category.setCategoryName(request.getCategoryName());
-            category.setImage(imageUrl);
+            Category category = Category.builder()
+                    .categoryName(request.getCategoryName())
+                    .image(imageUrl)
+                    .slug(CreateSlug.createSlug(request.getCategoryName()))
+                    .build();
 
-            // Cập nhật slug cho category
-            String slug = CreateSlug.createSlug(category.getCategoryName());
-            category.setSlug(slug);
-
-            // Lưu category vào database
             category = categoryRepository.save(category);
 
             return categoryMapper.toCategoryResponse(category);
         } catch (IOException e) {
-            e.printStackTrace();
-            // Xử lý lỗi nếu cần
-            return null; // Hoặc ném ra một ngoại lệ thích hợp
+            throw new AppException(ErrorCode.FILE_UPLOAD_FAILED);
         }
     }
+
 
     @PreAuthorize("hasRole('ADMIN')")
     public CategoryResponse updateCategory(String id, CategoryUpdateRequest request) {
@@ -79,6 +99,13 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_EXISTED));
         category.setDelFlag(true);
+        categoryRepository.save(category);
+    }
+
+    public void restoreCategory(String id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_EXISTED));
+        category.setDelFlag(false);
         categoryRepository.save(category);
     }
 }
