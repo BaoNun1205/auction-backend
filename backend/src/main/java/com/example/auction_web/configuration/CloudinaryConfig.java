@@ -7,9 +7,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
-@Component
+import java.util.HashMap;
+import java.util.Map;
+
 @Configuration
-public class CLoudinaryConfig {
+public class CloudinaryConfig {
 
     @Value("${cloudinary.cloud-name}")
     private String cloudName;
@@ -20,14 +22,12 @@ public class CLoudinaryConfig {
     @Value("${cloudinary.api-secret}")
     private String apiSecret;
 
-
     @Bean
-    Cloudinary getCloudinary() {
-        Cloudinary cloudinary = new Cloudinary(ObjectUtils.asMap(
-                "cloud_name", cloudName,
-                "api_key", apiKey,
-                "api_secret", apiSecret,
-                "secure", true));
-        return cloudinary;
+    Cloudinary cloudinary() {
+        Map<String, String> config = new HashMap<>();
+        config.put("cloud_name", cloudName);
+        config.put("api_key", apiKey);
+        config.put("api_secret", apiSecret);
+        return new Cloudinary(config);
     }
 }

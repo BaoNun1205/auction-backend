@@ -2,6 +2,7 @@ package com.example.auction_web.controller;
 
 import com.example.auction_web.dto.request.CategoryCreateRequest;
 import com.example.auction_web.dto.request.CategoryUpdateRequest;
+import com.example.auction_web.dto.request.auth.CategoryFilterRequest;
 import com.example.auction_web.dto.response.ApiResponse;
 import com.example.auction_web.dto.response.CategoryResponse;
 import com.example.auction_web.service.CategoryService;
@@ -19,8 +20,32 @@ import java.util.List;
 public class CategoryController {
     CategoryService categoryService;
 
+    @GetMapping("/{categoryId}")
+    ApiResponse<CategoryResponse> getCategory(@PathVariable String categoryId) {
+        return ApiResponse.<CategoryResponse>builder()
+                .code(HttpStatus.OK.value())
+                .result(categoryService.getCategory(categoryId))
+                .build();
+    }
+    @GetMapping
+    ApiResponse<List<CategoryResponse>> getAll() {
+        return ApiResponse.<List<CategoryResponse>>builder()
+                .code(HttpStatus.OK.value())
+                .result(categoryService.getAllCategories())
+                .build();
+    }
+
+    @PostMapping("/filter")
+    public ApiResponse<List<CategoryResponse>> filterCategories(@RequestBody CategoryFilterRequest filterRequest) {
+        List<CategoryResponse> filteredCategories = categoryService.filterCategories(filterRequest.getStatus(), filterRequest.getKeyword());
+        return ApiResponse.<List<CategoryResponse>>builder()
+                .code(HttpStatus.OK.value())
+                .result(filteredCategories)
+                .build();
+    }
+
     @PostMapping
-    ApiResponse<CategoryResponse> crateCategory(@RequestBody CategoryCreateRequest request) {
+    ApiResponse<CategoryResponse> crateCategory(@ModelAttribute CategoryCreateRequest request) {
         return ApiResponse.<CategoryResponse>builder()
                 .code(HttpStatus.OK.value())
                 .result(categoryService.createCategory(request))
@@ -35,11 +60,15 @@ public class CategoryController {
                 .build();
     }
 
-    @GetMapping
-    ApiResponse<List<CategoryResponse>> getAll() {
-        return ApiResponse.<List<CategoryResponse>>builder()
-                .code(HttpStatus.OK.value())
-                .result(categoryService.getAllCategories())
-                .build();
+    @PutMapping("/restore/{categoryId}")
+    ApiResponse<String> restoreCategory(@PathVariable String categoryId) {
+        categoryService.restoreCategory(categoryId);
+        return ApiResponse.<String>builder().result("Category has been restored").build();
+    }
+
+    @DeleteMapping("/{categoryId}")
+    ApiResponse<String> delete(@PathVariable String categoryId){
+        categoryService.deleteCategory(categoryId);
+        return ApiResponse.<String>builder().result("Category has been deleted").build();
     }
 }

@@ -1,5 +1,7 @@
 package com.example.auction_web.service.impl;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.example.auction_web.dto.request.ImageAssetCreateRequest;
 import com.example.auction_web.dto.request.ImageAssetUpdateRequest;
 import com.example.auction_web.dto.response.ImageAssetResponse;
@@ -14,8 +16,11 @@ import com.example.auction_web.service.ImageAssetService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -24,19 +29,6 @@ public class ImageAssetServiceImpl implements ImageAssetService {
     ImageAssetRepository imageAssetRepository;
     AssetRepository assetRepository;
     ImageAssetMapper imageAssetMapper;
-
-    public ImageAssetResponse createImageAsset(ImageAssetCreateRequest request) {
-        var imageAsset = imageAssetMapper.toImageAsset(request);
-        setAssetReference(imageAsset, request);
-        return imageAssetMapper.toImageAssetResponse(imageAssetRepository.save(imageAsset));
-    }
-
-    public ImageAssetResponse updateImageAsset(String id, ImageAssetUpdateRequest request) {
-        ImageAsset imageAsset = imageAssetRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.IMAGE_ASSET_NOT_EXISTED));
-        imageAssetMapper.updateImageAsset(imageAsset, request);
-        return imageAssetMapper.toImageAssetResponse(imageAssetRepository.save(imageAsset));
-    }
 
     public List<ImageAssetResponse> findAllImageAssets() {
         return imageAssetRepository.findAll().stream()
