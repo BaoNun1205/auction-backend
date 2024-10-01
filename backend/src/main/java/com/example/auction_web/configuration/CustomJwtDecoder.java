@@ -26,7 +26,6 @@ import java.util.function.Function;
 
 @Component
 public class CustomJwtDecoder implements JwtDecoder {
-    private SecretKeySpec key;
 
     @Value("${jwt.signerKey}")
     private String signerKey;
@@ -56,34 +55,5 @@ public class CustomJwtDecoder implements JwtDecoder {
         }
 
         return nimbusJwtDecoder.decode(token);
-    }
-
-    // "claims" are attributes or information embedded within the token
-    private <T> T extractClaims(String token, Function<Claims, T> claimsTFunction) throws
-            ExpiredJwtException, UnsupportedJwtException, MalformedJwtException, SignatureException, IllegalArgumentException {
-        key = new SecretKeySpec(signerKey.getBytes(), "HS512");
-        return claimsTFunction.apply(Jwts.parser()
-                .verifyWith(key)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload());
-
-    }
-
-    public String extractUsername(String token) {
-        return extractClaims(token, Claims::getSubject);
-    }
-
-    private Date extractExpiration(String token) {
-        return extractClaims(token, Claims::getExpiration);
-    }
-
-    // Check if token is expired
-    public boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
-    }
-
-    public boolean isTokenValid(String token) {
-        return !isTokenExpired(token);
     }
 }

@@ -9,25 +9,26 @@ import com.example.auction_web.dto.request.DepositCreateRequest;
 import com.example.auction_web.dto.response.ApiResponse;
 import com.example.auction_web.dto.response.AuctionSessionResponse;
 import com.example.auction_web.enums.AUCTION_STATUS;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @EnableScheduling
@@ -36,6 +37,7 @@ import java.util.List;
 public class RealTimeAuctionController {
     RealTimeAuctionHandlerService realTimeAuctionHandlerService;
     SimpMessagingTemplate simpleMessageTemplate;
+
 
     @MessageMapping("/rt-auction/join/{auctionSessionId}")
     @SendTo("/rt-product/auction-update/{auctionSessionId}")
@@ -61,7 +63,7 @@ public class RealTimeAuctionController {
             List<AuctionSessionResponse> auctionSessionResponses = realTimeAuctionHandlerService.getAllAuctionSessions();
             AuctionMessageResponse auctionMessageResponse = AuctionMessageResponse.builder()
                     .status(AUCTION_STATUS.TIME_UPDATE.toString())
-                    .messageTime(Instant.now())
+                    .messageTime(LocalDateTime.now())
                     .build();
             for (AuctionSessionResponse auctionSessionResponse : auctionSessionResponses) {
                 this.simpleMessageTemplate.convertAndSend("/rt-product/auction-update/" + auctionSessionResponse.getAuctionSessionId(), auctionMessageResponse);
@@ -77,18 +79,19 @@ public class RealTimeAuctionController {
             List<AuctionSessionResponse> auctionSessionResponses = realTimeAuctionHandlerService.getAllAuctionSessions();
             AuctionMessageResponse auctionMessageResponse = AuctionMessageResponse.builder()
                     .status(AUCTION_STATUS.STARTED.toString())
-                    .messageTime(Instant.now())
+                    .messageTime(LocalDateTime.now())
                     .build();
-            Instant now = Instant.now();
-            Duration duration = Duration.ofSeconds(1); //1s
-            for (AuctionSessionResponse auctionSessionResponse : auctionSessionResponses) {
-                Instant startTime = auctionSessionResponse.getStartTime().atZone(ZoneId.systemDefault()).toInstant();
-                Duration diff = Duration.between(now, startTime);
+            LocalDateTime now = LocalDateTime.now(); // Lấy thời gian hiện tại
 
-                if (Math.abs(diff.toMillis()) <= duration.toMillis()) {
+            for (AuctionSessionResponse auctionSessionResponse : auctionSessionResponses) {
+                LocalDateTime startTime = auctionSessionResponse.getStartTime(); // Lấy thời gian bắt đầu từ auctionSessionResponse
+                long diffInMillis = Math.abs(ChronoUnit.MILLIS.between(now, startTime)); // Tính chênh lệch thời gian
+
+                if (diffInMillis <= 1000) { // Kiểm tra nếu chênh lệch nhỏ hơn hoặc bằng 1 giây
                     this.simpleMessageTemplate.convertAndSend("/rt-product/auction-update/" + auctionSessionResponse.getAuctionSessionId(), auctionMessageResponse);
                 }
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -100,17 +103,15 @@ public class RealTimeAuctionController {
             List<AuctionSessionResponse> auctionSessionResponses = realTimeAuctionHandlerService.getAllAuctionSessions();
             AuctionMessageResponse auctionMessageResponse = AuctionMessageResponse.builder()
                     .status(AUCTION_STATUS.FINISHED.toString())
-                    .messageTime(Instant.now())
+                    .messageTime(LocalDateTime.now())
                     .build();
 
-            Instant now = Instant.now();
-            Duration duration = Duration.ofSeconds(1); //1s
+            LocalDateTime now = LocalDateTime.now(); // Lấy thời gian hiện tại
             for (AuctionSessionResponse auctionSessionResponse : auctionSessionResponses) {
-                Instant endTime = auctionSessionResponse.getEndTime().atZone(ZoneId.systemDefault()).toInstant();
-                Duration diff = Duration.between(now, endTime);
+                LocalDateTime startTime = auctionSessionResponse.getStartTime(); // Lấy thời gian bắt đầu từ auctionSessionResponse
+                long diffInMillis = Math.abs(ChronoUnit.MILLIS.between(now, startTime)); // Tính chênh lệch thời gian
 
-                if (Math.abs(diff.toMillis()) <= duration.toMillis()) {
-                    realTimeAuctionHandlerService.completeASession(auctionSessionResponse.getAuctionSessionId());
+                if (diffInMillis <= 1000) {
                     this.simpleMessageTemplate.convertAndSend("/rt-product/auction-update/" + auctionSessionResponse.getAuctionSessionId(), auctionMessageResponse);
                 }
             }
