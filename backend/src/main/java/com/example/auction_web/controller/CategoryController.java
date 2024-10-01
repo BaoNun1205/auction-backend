@@ -2,6 +2,7 @@ package com.example.auction_web.controller;
 
 import com.example.auction_web.dto.request.CategoryCreateRequest;
 import com.example.auction_web.dto.request.CategoryUpdateRequest;
+import com.example.auction_web.dto.request.auth.CategoryFilterRequest;
 import com.example.auction_web.dto.response.ApiResponse;
 import com.example.auction_web.dto.response.CategoryResponse;
 import com.example.auction_web.service.CategoryService;
@@ -34,6 +35,15 @@ public class CategoryController {
                 .build();
     }
 
+    @PostMapping("/filter")
+    public ApiResponse<List<CategoryResponse>> filterCategories(@RequestBody CategoryFilterRequest filterRequest) {
+        List<CategoryResponse> filteredCategories = categoryService.filterCategories(filterRequest.getStatus(), filterRequest.getKeyword());
+        return ApiResponse.<List<CategoryResponse>>builder()
+                .code(HttpStatus.OK.value())
+                .result(filteredCategories)
+                .build();
+    }
+
     @PostMapping
     ApiResponse<CategoryResponse> crateCategory(@ModelAttribute CategoryCreateRequest request) {
         return ApiResponse.<CategoryResponse>builder()
@@ -48,6 +58,12 @@ public class CategoryController {
                 .code(HttpStatus.OK.value())
                 .result(categoryService.updateCategory(categoryId, request))
                 .build();
+    }
+
+    @PutMapping("/restore/{categoryId}")
+    ApiResponse<String> restoreCategory(@PathVariable String categoryId) {
+        categoryService.restoreCategory(categoryId);
+        return ApiResponse.<String>builder().result("Category has been restored").build();
     }
 
     @DeleteMapping("/{categoryId}")
