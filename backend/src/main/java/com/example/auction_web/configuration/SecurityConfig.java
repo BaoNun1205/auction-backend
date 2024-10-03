@@ -80,7 +80,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         // Thêm các origin mà bạn muốn cho phép
-        config.setAllowedOrigins(List.of("http://127.0.0.1:5500"));
+        config.setAllowedOriginPatterns(List.of("http://localhost:5500", "http://127.0.0.1:5500"));
         // Cho phép tất cả các phương thức HTTP
         config.setAllowedMethods(List.of("*"));
         // Cho phép tất cả các headers

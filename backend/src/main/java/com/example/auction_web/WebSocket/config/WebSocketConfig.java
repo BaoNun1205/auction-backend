@@ -31,18 +31,23 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtGra
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.config.annotation.*;
+import org.springframework.web.socket.server.HandshakeInterceptor;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.System.out;
+
 @Configuration
 @EnableWebSocketMessageBroker
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    CustomJwtDecoder customJwtDecoder;
+    @Autowired
+    private final CustomJwtDecoder customJwtDecoder;
+    @Autowired
     private final JwtAuthenticationConverter jwtAuthenticationConverter;
 
     @Override
@@ -78,17 +83,16 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         return false;
     }
 
+
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration
-                .taskExecutor().corePoolSize(10)
-                .maxPoolSize(20)
-                .keepAliveSeconds(60);
         registration
                 .interceptors(new ChannelInterceptor() {
             @Override
             public Message<?> preSend(Message<?> message, MessageChannel channel) {
                 StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+
+                out.println("accessor: " + accessor);
 
                 if (accessor.getCommand() != StompCommand.CONNECT) {
                     // Handle other stomp commands if needed
@@ -96,33 +100,41 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 }
 
                 List<String> authHeaders = accessor.getNativeHeader("Authorization");
+                out.println("authHeaders: " + authHeaders);
                 if (authHeaders == null || authHeaders.isEmpty()) {
                     throw new AppException(ErrorCode.UNAUTHENTICATED);
                 }
 
                 String bearerToken = authHeaders.get(0);
                 String token = resolveToken(bearerToken);
+                out.println("token: " + token);
                 if (token == null) {
                     throw new AppException(ErrorCode.UNAUTHENTICATED);
                 }
 
+                out.println("Tiep theo");
                 try {
+                    out.println("Xác thuc JWT");
                     Jwt jwt = customJwtDecoder.decode(token);
+                    if (jwt != null) {
+                        out.println("jwt: " + jwt);
+                    } else {
+                        out.println("jwt is null");
+                    }
                     Authentication authentication = jwtAuthenticationConverter.convert(jwt);
+                    out.println("authentication: " + authentication);
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 } catch (JwtException e) {
+                    out.println("Exception: " + e);
                     throw new AppException(ErrorCode.UNAUTHENTICATED);
                 }
-
+                out.println("message: " + message);
                 return message;
             }
         });
     }
 
-    @Override
-    public void configureClientOutboundChannel(ChannelRegistration registration) {
-        registration.taskExecutor().corePoolSize(10).maxPoolSize(20).keepAliveSeconds(60);
-    }
+
 
     private String resolveToken(String bearerToken) {
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {

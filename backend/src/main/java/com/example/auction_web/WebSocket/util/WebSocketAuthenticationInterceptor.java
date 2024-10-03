@@ -22,44 +22,27 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WebSocketAuthenticationInterceptor implements ChannelInterceptor {
 
-    private final CustomJwtDecoder jwtUtil;
-    private final JwtAuthenticationConverter jwtAuthenticationConverter;
+    private final CustomJwtDecoder jwtDecoder;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 
-        if (accessor.getCommand() != StompCommand.CONNECT) {
-            // Handle other stomp commands if needed
-            return message;
-        }
+        // Lấy JWT từ header
+        String token = accessor.getFirstNativeHeader("Authorization");
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
 
-        List<String> authHeaders = accessor.getNativeHeader("Authorization");
-        if (authHeaders == null || authHeaders.isEmpty()) {
-            throw new AppException(ErrorCode.UNAUTHENTICATED);
-        }
-
-        String bearerToken = authHeaders.get(0);
-        String token = resolveToken(bearerToken);
-        if (token == null) {
-            throw new AppException(ErrorCode.UNAUTHENTICATED);
-        }
-
-        try {
-            Jwt jwt = jwtUtil.decode(token);
-            Authentication authentication = jwtAuthenticationConverter.convert(jwt);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        } catch (JwtException e) {
-            throw new AppException(ErrorCode.UNAUTHENTICATED);
+            try {
+                // Xác thực JWT
+                jwtDecoder.decode(token);
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Invalid JWT Token", e);
+            }
+        } else {
+            throw new IllegalArgumentException("Authorization header is missing or malformed");
         }
 
         return message;
-    }
-
-    private String resolveToken(String bearerToken) {
-        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
-        return null;
     }
 }
