@@ -16,6 +16,7 @@ import java.util.List;
 public interface TypeMapper {
     // Phương thức ánh xạ từ String (categoryId) sang Category
     @Mapping(target = "category", ignore = true)
+    @Mapping(target = "image", ignore = true)
     Type toType(TypeCreateRequest request);
 
     List<Type> toTypes(List<TypeCreateRequest> requests);

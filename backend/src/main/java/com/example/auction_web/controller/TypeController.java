@@ -2,7 +2,9 @@ package com.example.auction_web.controller;
 
 import com.example.auction_web.dto.request.TypeCreateRequest;
 import com.example.auction_web.dto.request.TypeUpdateRequest;
+import com.example.auction_web.dto.request.auth.CategoryFilterRequest;
 import com.example.auction_web.dto.response.ApiResponse;
+import com.example.auction_web.dto.response.CategoryResponse;
 import com.example.auction_web.dto.response.TypeResponse;
 import com.example.auction_web.entity.Category;
 import com.example.auction_web.entity.Type;
@@ -22,7 +24,7 @@ public class TypeController {
     TypeService typeService;
 
     @PostMapping
-    ApiResponse<TypeResponse> createType(@RequestBody TypeCreateRequest request) {
+    ApiResponse<TypeResponse> createType(@ModelAttribute TypeCreateRequest request) {
         return ApiResponse.<TypeResponse>builder()
                 .code(HttpStatus.OK.value())
                 .result(typeService.createType(request))
@@ -33,7 +35,16 @@ public class TypeController {
     ApiResponse<List<TypeResponse>> getAllTypes() {
         return ApiResponse.<List<TypeResponse>>builder()
                 .code(HttpStatus.OK.value())
-                .result(typeService.findAllTypes())
+                .result(typeService.getAllTypes())
+                .build();
+    }
+
+    @PostMapping("/filter")
+    public ApiResponse<List<TypeResponse>> filterCategories(@RequestBody CategoryFilterRequest filterRequest) {
+        List<TypeResponse> filteredTypes = typeService.filterTypes(filterRequest.getStatus(), filterRequest.getKeyword());
+        return ApiResponse.<List<TypeResponse>>builder()
+                .code(HttpStatus.OK.value())
+                .result(filteredTypes)
                 .build();
     }
 
@@ -51,5 +62,17 @@ public class TypeController {
                 .code(HttpStatus.OK.value())
                 .result(typeService.findTypesByCategoryName(categoryName))
                 .build();
+    }
+
+    @PutMapping("/restore/{typeId}")
+    ApiResponse<String> restoreCategory(@PathVariable String typeId) {
+        typeService.restoreType(typeId);
+        return ApiResponse.<String>builder().result("Type has been restored").build();
+    }
+
+    @DeleteMapping("/{typeId}")
+    ApiResponse<String> delete(@PathVariable String typeId){
+        typeService.deleteType(typeId);
+        return ApiResponse.<String>builder().result("Type has been deleted").build();
     }
 }
