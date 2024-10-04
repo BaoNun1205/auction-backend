@@ -19,22 +19,6 @@ import java.util.List;
 public class ImageAssetController {
     ImageAssetService imageAssetService;
 
-    @PostMapping
-    ApiResponse<ImageAssetResponse> createImageAsset(@RequestBody ImageAssetCreateRequest request) {
-        return ApiResponse.<ImageAssetResponse>builder()
-                .code(HttpStatus.OK.value())
-                .result(imageAssetService.createImageAsset(request))
-                .build();
-    }
-
-    @PutMapping("/{id}")
-    ApiResponse<ImageAssetResponse> updateImageAsset(@PathVariable String id, @RequestBody ImageAssetUpdateRequest request) {
-        return ApiResponse.<ImageAssetResponse>builder()
-                .code(HttpStatus.OK.value())
-                .result(imageAssetService.updateImageAsset(id, request))
-                .build();
-    }
-
     @GetMapping
     ApiResponse<List<ImageAssetResponse>> getAllImageAssets() {
         return ApiResponse.<List<ImageAssetResponse>>builder()

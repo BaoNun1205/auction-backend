@@ -9,7 +9,11 @@ import java.util.List;
 
 //@FieldDefaults(level = lombok.AccessLevel.PUBLIC)
 public interface CategoryService {
-    CategoryResponse createCategory(CategoryCreateRequest request);
     List<CategoryResponse> getAllCategories();
+    List<CategoryResponse> filterCategories(Boolean status, String keyword);
+    CategoryResponse getCategory(String id);
+    CategoryResponse createCategory(CategoryCreateRequest request);
     CategoryResponse updateCategory(String id, CategoryUpdateRequest request);
+    void deleteCategory(String id);
+    void restoreCategory(String id);
 }
