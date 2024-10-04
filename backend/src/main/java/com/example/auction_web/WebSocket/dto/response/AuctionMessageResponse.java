@@ -9,6 +9,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -17,5 +18,5 @@ import java.time.Instant;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class AuctionMessageResponse {
     String status;
-    Instant messageTime;
+    LocalDateTime messageTime;
 }
