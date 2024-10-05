@@ -22,6 +22,4 @@ public class UserCreateRequest {
     String email;
     String phone;
     String token;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
 }
