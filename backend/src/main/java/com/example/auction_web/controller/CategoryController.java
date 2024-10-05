@@ -35,9 +35,11 @@ public class CategoryController {
                 .build();
     }
 
-    @PostMapping("/filter")
-    public ApiResponse<List<CategoryResponse>> filterCategories(@RequestBody CategoryFilterRequest filterRequest) {
-        List<CategoryResponse> filteredCategories = categoryService.filterCategories(filterRequest.getStatus(), filterRequest.getKeyword());
+    @GetMapping("/filter")
+    public ApiResponse<List<CategoryResponse>> filterCategories(
+            @RequestParam(required = false) Boolean status,
+            @RequestParam(required = false) String keyword) {
+        List<CategoryResponse> filteredCategories = categoryService.filterCategories(status, keyword);
         return ApiResponse.<List<CategoryResponse>>builder()
                 .code(HttpStatus.OK.value())
                 .result(filteredCategories)
