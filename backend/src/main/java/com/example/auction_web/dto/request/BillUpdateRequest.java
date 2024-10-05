@@ -19,6 +19,4 @@ public class BillUpdateRequest {
     String depositId;
     BigDecimal bidPrice;
     BigDecimal profitPrice;
-    Boolean delFlag;
-    LocalDateTime updatedAt;
 }

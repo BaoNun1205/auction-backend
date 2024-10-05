@@ -17,7 +17,4 @@ import java.time.LocalDateTime;
 public class FavouriteCreateRequest {
     String userId;
     String assetId;
-    Boolean delFlag;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
 }

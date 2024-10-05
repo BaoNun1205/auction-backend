@@ -1,5 +1,7 @@
 package com.example.auction_web.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,12 +18,15 @@ import java.time.LocalDateTime;
 public class AddressCreateRequest {
     String userId;
     String recipientName;
-    String provinceId;
-    String districtId;
-    String wardId;
+    String province;
+    String district;
+    String ward;
     String addressDetail;
+
+    @NotBlank(message = "Phone cannot be blank")
+    @Pattern(
+            regexp = "^\\+?[0-9]{7,15}$",
+            message = "Phone number is invalid"
+    )
     String phone;
-    Boolean delFlag;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
 }

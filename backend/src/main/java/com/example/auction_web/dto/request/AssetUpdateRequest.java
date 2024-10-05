@@ -16,13 +16,10 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class AssetUpdateRequest {
     String assetName;
-    String slug;
     String mainImage;
     String assetDescription;
     BigDecimal assetPrice;
     String typeId;
     String assetStatusId;
     String status;
-    Boolean delFlag;
-    LocalDateTime updatedAt;
 }

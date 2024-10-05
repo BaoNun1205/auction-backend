@@ -20,9 +20,5 @@ public class RequirementCreateRequest {
     String assetDescription;
     BigDecimal assetPrice;
     String inspectorId;
-    String assetStatusId;
     String status;
-    Boolean delFlag;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
 }

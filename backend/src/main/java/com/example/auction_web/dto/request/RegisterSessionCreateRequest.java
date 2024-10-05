@@ -16,7 +16,4 @@ import java.time.LocalDateTime;
 public class RegisterSessionCreateRequest {
     String userId;
     String auctionSessionId;
-    Boolean delFlag;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
 }

@@ -18,7 +18,4 @@ public class DepositCreateRequest {
     String auctionSessionId;
     String userId;
     BigDecimal depositPrice;
-    Boolean delFlag;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
 }

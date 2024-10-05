@@ -19,7 +19,4 @@ public class AuctionHistoryCreateRequest {
     String userId;
     BigDecimal bidPrice;
     LocalDateTime bidTime;
-    Boolean delFlag;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
 }

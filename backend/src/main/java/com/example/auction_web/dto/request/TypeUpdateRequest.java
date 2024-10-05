@@ -15,8 +15,5 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class TypeUpdateRequest {
     String typeName;
-    String slug;
     String image;
-    Boolean delFlag;
-    LocalDateTime updatedAt;
 }

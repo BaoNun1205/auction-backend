@@ -38,6 +38,18 @@ public class User {
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        this.enabled = false;
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
     @ManyToMany
     Set<Role> roles;
 
