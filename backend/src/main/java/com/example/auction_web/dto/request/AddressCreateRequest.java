@@ -16,12 +16,9 @@ import java.time.LocalDateTime;
 public class AddressCreateRequest {
     String userId;
     String recipientName;
-    String provinceId;
-    String districtId;
-    String wardId;
+    String province;
+    String district;
+    String ward;
     String addressDetail;
     String phone;
-    Boolean delFlag;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
 }

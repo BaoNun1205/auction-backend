@@ -16,6 +16,4 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class DepositUpdateRequest {
     BigDecimal depositPrice;
-    Boolean delFlag;
-    LocalDateTime updatedAt;
 }

@@ -16,7 +16,4 @@ import java.time.LocalDateTime;
 public class InsprectorCreateRequest {
     String userId;
     String license;
-    Boolean delFlag;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
 }

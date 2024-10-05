@@ -17,7 +17,4 @@ import java.time.LocalDateTime;
 public class BalanceUserCreateRequest {
     String userId;
     BigDecimal accountBalance;
-    Boolean delFlag;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
 }

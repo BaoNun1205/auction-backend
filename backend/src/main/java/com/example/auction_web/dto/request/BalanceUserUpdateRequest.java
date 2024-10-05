@@ -16,6 +16,4 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class BalanceUserUpdateRequest {
     BigDecimal accountBalance;
-    Boolean delFlag;
-    LocalDateTime updatedAt;
 }

@@ -15,6 +15,4 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class ImageAssetUpdateRequest {
     String imageAsset;
-    Boolean delFlag;
-    LocalDateTime updatedAt;
 }

@@ -20,7 +20,4 @@ public class BillCreateRequest {
     String depositId;
     BigDecimal bidPrice;
     BigDecimal profitPrice;
-    Boolean delFlag;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
 }

@@ -17,15 +17,10 @@ import java.time.LocalDateTime;
 public class AssetCreateRequest {
     String vendorId;
     String assetName;
-    String slug;
     String mainImage;
     String assetDescription;
     BigDecimal assetPrice;
     String inspectorId;
     String typeId;
-    String assetStatusId;
     String status;
-    Boolean delFlag;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
 }

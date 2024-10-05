@@ -17,7 +17,4 @@ public class EventCreateRequest {
     String description;
     LocalDateTime startTime;
     LocalDateTime endTime;
-    Boolean delFlag;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
 }

@@ -23,7 +23,4 @@ public class AuctionSessionCreateRequest {
     BigDecimal startingBids;
     BigDecimal bidIncrement;
     String status;
-    Boolean delFlag;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
 }

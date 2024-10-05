@@ -17,6 +17,4 @@ public class EventUpdateRequest {
     String description;
     LocalDateTime startTime;
     LocalDateTime endTime;
-    Boolean delFlag;
-    LocalDateTime updatedAt;
 }

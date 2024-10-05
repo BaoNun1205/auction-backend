@@ -16,7 +16,4 @@ import java.time.LocalDateTime;
 public class ImageAssetCreateRequest {
     String assetId;
     String imageAsset;
-    Boolean delFlag;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
 }

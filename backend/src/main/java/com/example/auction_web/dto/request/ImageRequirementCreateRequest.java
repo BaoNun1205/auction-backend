@@ -16,7 +16,4 @@ import java.time.LocalDateTime;
 public class ImageRequirementCreateRequest {
     String requirementId;
     String image;
-    Boolean delFlag;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
 }
