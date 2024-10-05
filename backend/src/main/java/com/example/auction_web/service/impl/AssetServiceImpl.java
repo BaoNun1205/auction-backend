@@ -13,6 +13,7 @@ import com.example.auction_web.repository.AssetRepository;
 import com.example.auction_web.repository.TypeRepository;
 import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.AssetService;
+import com.example.auction_web.utils.CreateSlug;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,7 @@ public class AssetServiceImpl implements AssetService {
 
     public AssetResponse createAsset(AssetCreateRequest request) {
         var asset = assetMapper.toAsset(request);
+        asset.setSlug(CreateSlug.createSlug(asset.getAssetName()));
         setAssetReference(request, asset);
         return assetMapper.toAssetResponse(assetRepository.save(asset));
     }
