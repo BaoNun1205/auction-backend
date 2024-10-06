@@ -2,6 +2,7 @@ package com.example.auction_web.controller;
 
 import com.example.auction_web.dto.request.AssetCreateRequest;
 import com.example.auction_web.dto.request.AssetUpdateRequest;
+import com.example.auction_web.dto.request.filter.AssetFilterRequest;
 import com.example.auction_web.dto.response.ApiResponse;
 import com.example.auction_web.dto.response.AssetResponse;
 import com.example.auction_web.service.AssetService;
@@ -10,6 +11,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -20,7 +22,7 @@ public class AssetController {
     AssetService assetService;
 
     @PostMapping
-    ApiResponse<AssetResponse> createAsset(@RequestBody AssetCreateRequest request) {
+    ApiResponse<AssetResponse> createAsset(@ModelAttribute AssetCreateRequest request){
         return ApiResponse.<AssetResponse>builder()
                 .code(HttpStatus.OK.value())
                 .result(assetService.createAsset(request))
@@ -35,19 +37,37 @@ public class AssetController {
                 .build();
     }
 
-    @GetMapping
-    ApiResponse<List<AssetResponse>> getAssets() {
+    @GetMapping("/filter")
+    ApiResponse<List<AssetResponse>> filterAssets(@RequestParam(required = false) String vendorId,
+                                                  @RequestParam(required = false) String assetName,
+                                                  @RequestParam(required = false) BigDecimal minPrice,
+                                                  @RequestParam(required = false) BigDecimal maxPrice,
+                                                  @RequestParam(required = false) String insprectorId,
+                                                  @RequestParam(required = false) String typeId,
+                                                  @RequestParam(required = false) String status) {
         return ApiResponse.<List<AssetResponse>>builder()
                 .code(HttpStatus.OK.value())
-                .result(assetService.getAllAssets())
+                .result(assetService.filterAssets(vendorId, assetName,
+                        minPrice, maxPrice, insprectorId,
+                        typeId, status))
                 .build();
     }
 
-    @GetMapping("/asset/name/{assetName}")
-    ApiResponse<List<AssetResponse>> getAssetByAssetName(@PathVariable String assetName) {
-        return ApiResponse.<List<AssetResponse>>builder()
+    @PutMapping("/restore/{assetId}")
+    ApiResponse<String> restoreAsset(@PathVariable String assetId) {
+        assetService.restoreAsset(assetId);
+        return ApiResponse.<String>builder()
                 .code(HttpStatus.OK.value())
-                .result(assetService.getAssetByAssetName(assetName))
+                .result("Asset restored successfully")
+                .build();
+    }
+
+    @DeleteMapping("/{assetId}")
+    ApiResponse<String> deleteAsset(@PathVariable String assetId) {
+        assetService.deleteAsset(assetId);
+        return ApiResponse.<String>builder()
+                .code(HttpStatus.OK.value())
+                .result("Asset deleted successfully")
                 .build();
     }
 }

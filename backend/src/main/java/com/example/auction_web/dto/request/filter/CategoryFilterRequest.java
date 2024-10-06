@@ -1,4 +1,4 @@
-package com.example.auction_web.dto.request.auth;
+package com.example.auction_web.dto.request.filter;
 
 import lombok.Data;
 

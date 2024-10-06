@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -17,7 +18,7 @@ import java.time.LocalDateTime;
 public class AssetCreateRequest {
     String vendorId;
     String assetName;
-    String mainImage;
+    MultipartFile mainImage;
     String assetDescription;
     BigDecimal assetPrice;
     String inspectorId;

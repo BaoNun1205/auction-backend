@@ -4,11 +4,15 @@ import com.example.auction_web.dto.request.AssetCreateRequest;
 import com.example.auction_web.dto.request.AssetUpdateRequest;
 import com.example.auction_web.dto.response.AssetResponse;
 
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface AssetService {
     AssetResponse createAsset(AssetCreateRequest request);
     AssetResponse updateAsset(String id, AssetUpdateRequest request);
-    List<AssetResponse> getAllAssets();
-    List<AssetResponse> getAssetByAssetName(String assetName);
+    List<AssetResponse> filterAssets(String vendorId, String assetName, BigDecimal minPrice, BigDecimal maxPrice,
+                                     String insprectorId, String typeId, String status);
+    void deleteAsset(String id);
+    void restoreAsset(String id);
 }
