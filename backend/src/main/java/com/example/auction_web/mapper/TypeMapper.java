@@ -21,7 +21,8 @@ public interface TypeMapper {
 
     List<Type> toTypes(List<TypeCreateRequest> requests);
 
-    @Mapping(source = "category", target = "category", qualifiedByName = "categoryToString")
+    @Mapping(target = "categoryId", source = "category.categoryId")
+    @Mapping(target = "categoryName", source = "category.categoryName")
     TypeResponse toTypeResponse(Type type);
 
     List<TypeResponse> toTypeResponses(List<Type> types);
