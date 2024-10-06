@@ -10,6 +10,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -17,6 +18,7 @@ import java.util.List;
 public interface AssetMapper {
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "type", ignore = true)
+    @Mapping(target = "mainImage", source = "mainImage", qualifiedByName = "mapMultipartFileToString")
     Asset toAsset(AssetCreateRequest assetCreationRequest);
 
     @Mapping(source = "user", target = "vendorId", qualifiedByName = "userToString")
@@ -35,5 +37,10 @@ public interface AssetMapper {
     @Named("typeToString")
     default String typeToString(Type type) {
         return type != null ? type.getTypeId() : null;
+    }
+
+    @Named("mapMultipartFileToString")
+    default String mapMultipartFileToString(MultipartFile mainImage) {
+        return mainImage != null ? mainImage.getOriginalFilename() : null;
     }
 }

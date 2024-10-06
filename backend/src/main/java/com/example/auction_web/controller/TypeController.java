@@ -2,12 +2,9 @@ package com.example.auction_web.controller;
 
 import com.example.auction_web.dto.request.TypeCreateRequest;
 import com.example.auction_web.dto.request.TypeUpdateRequest;
-import com.example.auction_web.dto.request.auth.CategoryFilterRequest;
+import com.example.auction_web.dto.request.filter.CategoryFilterRequest;
 import com.example.auction_web.dto.response.ApiResponse;
-import com.example.auction_web.dto.response.CategoryResponse;
 import com.example.auction_web.dto.response.TypeResponse;
-import com.example.auction_web.entity.Category;
-import com.example.auction_web.entity.Type;
 import com.example.auction_web.service.TypeService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

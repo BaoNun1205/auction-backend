@@ -2,7 +2,7 @@ package com.example.auction_web.controller;
 
 import com.example.auction_web.dto.request.CategoryCreateRequest;
 import com.example.auction_web.dto.request.CategoryUpdateRequest;
-import com.example.auction_web.dto.request.auth.CategoryFilterRequest;
+import com.example.auction_web.dto.request.filter.CategoryFilterRequest;
 import com.example.auction_web.dto.response.ApiResponse;
 import com.example.auction_web.dto.response.CategoryResponse;
 import com.example.auction_web.service.CategoryService;

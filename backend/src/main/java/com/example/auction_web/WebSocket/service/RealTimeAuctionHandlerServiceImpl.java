@@ -36,10 +36,7 @@ public class RealTimeAuctionHandlerServiceImpl implements RealTimeAuctionHandler
         }
         RegisterSessionCreateRequest registerSessionCreateRequest = new RegisterSessionCreateRequest(
                 request.getUserId(),
-                auctionSessionId,
-                false,
-                request.getCreatedAt(),
-                request.getCreatedAt()
+                auctionSessionId
         );
         registerSessionService.createRegisterSession(registerSessionCreateRequest);
         return new SessionJoinResponse(

@@ -44,8 +44,8 @@ public class Insprector {
         this.updatedAt = LocalDateTime.now();
     }
 
-    @OneToOne(mappedBy = "insprector", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    Asset asset;
+    @OneToMany(mappedBy = "insprector", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<Asset> assets;
 
     @OneToMany(mappedBy = "insprector", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<Requirement> requirement;

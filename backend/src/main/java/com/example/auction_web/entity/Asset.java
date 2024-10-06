@@ -37,7 +37,7 @@ public class Asset {
     @Column(precision = 15, scale = 0)
     BigDecimal assetPrice;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "insprectorId", referencedColumnName = "insprectorId")
     Insprector insprector;
 
