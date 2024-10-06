@@ -39,6 +39,7 @@ public enum ErrorCode {
     FAVOURITE_NOT_EXISTED(1033, "Favourite not existed", HttpStatus.NOT_FOUND),
     DEPOSIT_PRICE_IS_GREATER_THAN_MAX_DEPOSIT(1034, "Deposit price is greater than max deposit", HttpStatus.BAD_REQUEST),
     FILE_UPLOAD_FAILED(1035, "File upload failed", HttpStatus.INTERNAL_SERVER_ERROR),
+    USER_CREATE_INVALID(1036, "User create invalid", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
