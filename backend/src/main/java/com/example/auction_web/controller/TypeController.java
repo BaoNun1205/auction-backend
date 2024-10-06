@@ -39,9 +39,11 @@ public class TypeController {
                 .build();
     }
 
-    @PostMapping("/filter")
-    public ApiResponse<List<TypeResponse>> filterCategories(@RequestBody CategoryFilterRequest filterRequest) {
-        List<TypeResponse> filteredTypes = typeService.filterTypes(filterRequest.getStatus(), filterRequest.getKeyword());
+    @GetMapping("/filter")
+    public ApiResponse<List<TypeResponse>> filterCategories(
+            @RequestParam(required = false) Boolean status,
+            @RequestParam(required = false) String keyword) {
+        List<TypeResponse> filteredTypes = typeService.filterTypes(status, keyword);
         return ApiResponse.<List<TypeResponse>>builder()
                 .code(HttpStatus.OK.value())
                 .result(filteredTypes)

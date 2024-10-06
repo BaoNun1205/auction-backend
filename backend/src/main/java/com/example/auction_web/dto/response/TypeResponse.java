@@ -15,7 +15,8 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class TypeResponse {
     String typeId;
-    String category;
+    String categoryId;
+    String categoryName;
     String typeName;
     String slug;
     String image;
