@@ -30,7 +30,10 @@ public class ApplicationInitConfig {
     static final String ADMIN_USER_NAME = "admin";
 
     @NonFinal
-    static final String ADMIN_PASSWORD = "admin";
+    static final String ADMIN_EMAIL = "webonlineauction@gmail.com";
+
+    @NonFinal
+    static final String ADMIN_PASSWORD = "admin@123A";
 
     @Bean
     @ConditionalOnProperty(
@@ -56,6 +59,7 @@ public class ApplicationInitConfig {
 
                 User user = User.builder()
                         .username(ADMIN_USER_NAME)
+                        .email(ADMIN_EMAIL)
                         .password(passwordEncoder.encode(ADMIN_PASSWORD))
                         .roles(roles)
                         .enabled(true)
