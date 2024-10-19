@@ -59,14 +59,19 @@ public class RequirementServiceImpl implements RequirementService {
                 .toList();
     }
 
-    public RequirementResponse getRequirementById(String requirementId) {
+    public Requirement getRequirementById(String requirementId) {
+        return requirementRepository.findById(requirementId)
+                .orElseThrow(() -> new AppException(ErrorCode.REQUIREMENT_NOT_EXISTED));
+    }
+
+    public RequirementResponse getRequirementResponseById(String requirementId) {
         return requirementMapper.toRequirementResponse(requirementRepository.findById(requirementId)
                 .orElseThrow(() -> new AppException(ErrorCode.REQUIREMENT_NOT_EXISTED)));
     }
 
     void setRequirementReference(RequirementCreateRequest requirementCreateRequest, Requirement requirement) {
         requirement.setUser(getVendorById(requirementCreateRequest.getVendorId()));
-        requirement.setInsprector(getInspectorById(requirementCreateRequest.getInspectorId()));
+//        requirement.setInsprector(getInspectorById(requirementCreateRequest.getInspectorId()));
     }
 
     User getVendorById(String vendorId) {

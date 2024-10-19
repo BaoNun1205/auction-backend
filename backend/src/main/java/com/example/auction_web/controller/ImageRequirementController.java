@@ -19,14 +19,6 @@ import java.util.List;
 public class ImageRequirementController {
     ImageRequirementService imageRequirementService;
 
-    @PostMapping
-    ApiResponse<ImageRequirementResponse> createImageRequirement(@RequestBody ImageRequirementCreateRequest request) {
-        return ApiResponse.<ImageRequirementResponse>builder()
-                .code(HttpStatus.OK.value())
-                .result(imageRequirementService.createImageRequirement(request))
-                .build();
-    }
-
     @PutMapping("/{imageRequirementId}")
     ApiResponse<ImageRequirementResponse> updateImageRequirement(@PathVariable String imageRequirementId, @RequestBody ImageRequirementUpdateRequest request) {
         return ApiResponse.<ImageRequirementResponse>builder()
