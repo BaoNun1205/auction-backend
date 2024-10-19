@@ -4,12 +4,16 @@ import com.example.auction_web.dto.request.RequirementCreateRequest;
 import com.example.auction_web.dto.request.RequirementUpdateRequest;
 import com.example.auction_web.dto.response.ApiResponse;
 import com.example.auction_web.dto.response.RequirementResponse;
+import com.example.auction_web.entity.Requirement;
+import com.example.auction_web.service.ImageRequirementService;
 import com.example.auction_web.service.RequirementService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -18,12 +22,25 @@ import java.util.List;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class RequirementController {
     RequirementService requirementService;
+    ImageRequirementService imageRequirementService;
 
     @PostMapping
-    ApiResponse<RequirementResponse> createRequirement(@RequestBody RequirementCreateRequest request) {
+    public ApiResponse<RequirementResponse> createRequirement(
+            @ModelAttribute RequirementCreateRequest request) {
+
+        // Tạo Requirement
+        RequirementResponse requirementResponse = requirementService.createRequirement(request);
+
+        Requirement requirement = requirementService.getRequirementById(requirementResponse.getRequirementId());
+
+        // Tạo ảnh cho Requirement
+        if (request.getImages() != null && !request.getImages().isEmpty()) {
+            imageRequirementService.createImageRequirement(request.getImages(), requirement);
+        }
+
         return ApiResponse.<RequirementResponse>builder()
                 .code(HttpStatus.OK.value())
-                .result(requirementService.createRequirement(request))
+                .result(requirementResponse)
                 .build();
     }
 
@@ -63,7 +80,7 @@ public class RequirementController {
     ApiResponse<RequirementResponse> getRequirementById(@PathVariable String requirementId) {
         return ApiResponse.<RequirementResponse>builder()
                 .code(HttpStatus.OK.value())
-                .result(requirementService.getRequirementById(requirementId))
+                .result(requirementService.getRequirementResponseById(requirementId))
                 .build();
     }
 }

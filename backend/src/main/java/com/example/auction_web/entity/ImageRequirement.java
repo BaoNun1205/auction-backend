@@ -24,8 +24,8 @@ public class ImageRequirement {
     @JoinColumn(name = "requirementId", referencedColumnName = "requirementId")
     Requirement requirement;
 
-   String image;
-   Boolean delFlag;
+    String image;
+    Boolean delFlag;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 

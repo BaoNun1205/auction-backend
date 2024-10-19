@@ -14,11 +14,9 @@ import org.mapstruct.Named;
 @Mapper(componentModel = "spring")
 public interface RequirementMapper {
     @Mapping(target = "user", ignore = true)
-    @Mapping(target = "insprector", ignore = true)
     Requirement toRequirement(RequirementCreateRequest request);
 
     @Mapping(target = "vendorId", source = "user", qualifiedByName = "userToString")
-    @Mapping(target = "inspectorId", source = "insprector", qualifiedByName = "inspectorToString")
     RequirementResponse toRequirementResponse(Requirement requirement);
 
     void updateRequirement(@MappingTarget Requirement requirement, RequirementUpdateRequest request);

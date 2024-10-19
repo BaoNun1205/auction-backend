@@ -1,5 +1,6 @@
 package com.example.auction_web.dto.request;
 
+import jakarta.mail.Multipart;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,5 +16,5 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class ImageRequirementCreateRequest {
     String requirementId;
-    String image;
+    Multipart image;
 }
