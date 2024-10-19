@@ -57,66 +57,66 @@ public class RealTimeAuctionController {
                 .build();
     }
 
-    @Scheduled(fixedRate = 1000)
-    public void sendCurrentTime() {
-        try {
-            List<AuctionSessionResponse> auctionSessionResponses = realTimeAuctionHandlerService.getAllAuctionSessions();
-            AuctionMessageResponse auctionMessageResponse = AuctionMessageResponse.builder()
-                    .status(AUCTION_STATUS.TIME_UPDATE.toString())
-                    .messageTime(LocalDateTime.now())
-                    .build();
-            for (AuctionSessionResponse auctionSessionResponse : auctionSessionResponses) {
-                this.simpleMessageTemplate.convertAndSend("/rt-product/auction-update/" + auctionSessionResponse.getAuctionSessionId(), auctionMessageResponse);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Scheduled(fixedRate = 1000)
-    public void sendStartNotification() {
-        try {
-            List<AuctionSessionResponse> auctionSessionResponses = realTimeAuctionHandlerService.getAllAuctionSessions();
-            AuctionMessageResponse auctionMessageResponse = AuctionMessageResponse.builder()
-                    .status(AUCTION_STATUS.STARTED.toString())
-                    .messageTime(LocalDateTime.now())
-                    .build();
-            LocalDateTime now = LocalDateTime.now(); // Lấy thời gian hiện tại
-
-            for (AuctionSessionResponse auctionSessionResponse : auctionSessionResponses) {
-                LocalDateTime startTime = auctionSessionResponse.getStartTime(); // Lấy thời gian bắt đầu từ auctionSessionResponse
-                long diffInMillis = Math.abs(ChronoUnit.MILLIS.between(now, startTime)); // Tính chênh lệch thời gian
-
-                if (diffInMillis <= 1000) { // Kiểm tra nếu chênh lệch nhỏ hơn hoặc bằng 1 giây
-                    this.simpleMessageTemplate.convertAndSend("/rt-product/auction-update/" + auctionSessionResponse.getAuctionSessionId(), auctionMessageResponse);
-                }
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Scheduled(fixedRate = 1000)
-    public void sendEndNotification() {
-        try {
-            List<AuctionSessionResponse> auctionSessionResponses = realTimeAuctionHandlerService.getAllAuctionSessions();
-            AuctionMessageResponse auctionMessageResponse = AuctionMessageResponse.builder()
-                    .status(AUCTION_STATUS.FINISHED.toString())
-                    .messageTime(LocalDateTime.now())
-                    .build();
-
-            LocalDateTime now = LocalDateTime.now(); // Lấy thời gian hiện tại
-            for (AuctionSessionResponse auctionSessionResponse : auctionSessionResponses) {
-                LocalDateTime startTime = auctionSessionResponse.getStartTime(); // Lấy thời gian bắt đầu từ auctionSessionResponse
-                long diffInMillis = Math.abs(ChronoUnit.MILLIS.between(now, startTime)); // Tính chênh lệch thời gian
-
-                if (diffInMillis <= 1000) {
-                    this.simpleMessageTemplate.convertAndSend("/rt-product/auction-update/" + auctionSessionResponse.getAuctionSessionId(), auctionMessageResponse);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+//    @Scheduled(fixedRate = 1000)
+//    public void sendCurrentTime() {
+//        try {
+//            List<AuctionSessionResponse> auctionSessionResponses = realTimeAuctionHandlerService.getAllAuctionSessions();
+//            AuctionMessageResponse auctionMessageResponse = AuctionMessageResponse.builder()
+//                    .status(AUCTION_STATUS.TIME_UPDATE.toString())
+//                    .messageTime(LocalDateTime.now())
+//                    .build();
+//            for (AuctionSessionResponse auctionSessionResponse : auctionSessionResponses) {
+//                this.simpleMessageTemplate.convertAndSend("/rt-product/auction-update/" + auctionSessionResponse.getAuctionSessionId(), auctionMessageResponse);
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    @Scheduled(fixedRate = 1000)
+//    public void sendStartNotification() {
+//        try {
+//            List<AuctionSessionResponse> auctionSessionResponses = realTimeAuctionHandlerService.getAllAuctionSessions();
+//            AuctionMessageResponse auctionMessageResponse = AuctionMessageResponse.builder()
+//                    .status(AUCTION_STATUS.STARTED.toString())
+//                    .messageTime(LocalDateTime.now())
+//                    .build();
+//            LocalDateTime now = LocalDateTime.now(); // Lấy thời gian hiện tại
+//
+//            for (AuctionSessionResponse auctionSessionResponse : auctionSessionResponses) {
+//                LocalDateTime startTime = auctionSessionResponse.getStartTime(); // Lấy thời gian bắt đầu từ auctionSessionResponse
+//                long diffInMillis = Math.abs(ChronoUnit.MILLIS.between(now, startTime)); // Tính chênh lệch thời gian
+//
+//                if (diffInMillis <= 1000) { // Kiểm tra nếu chênh lệch nhỏ hơn hoặc bằng 1 giây
+//                    this.simpleMessageTemplate.convertAndSend("/rt-product/auction-update/" + auctionSessionResponse.getAuctionSessionId(), auctionMessageResponse);
+//                }
+//            }
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    @Scheduled(fixedRate = 1000)
+//    public void sendEndNotification() {
+//        try {
+//            List<AuctionSessionResponse> auctionSessionResponses = realTimeAuctionHandlerService.getAllAuctionSessions();
+//            AuctionMessageResponse auctionMessageResponse = AuctionMessageResponse.builder()
+//                    .status(AUCTION_STATUS.FINISHED.toString())
+//                    .messageTime(LocalDateTime.now())
+//                    .build();
+//
+//            LocalDateTime now = LocalDateTime.now(); // Lấy thời gian hiện tại
+//            for (AuctionSessionResponse auctionSessionResponse : auctionSessionResponses) {
+//                LocalDateTime startTime = auctionSessionResponse.getStartTime(); // Lấy thời gian bắt đầu từ auctionSessionResponse
+//                long diffInMillis = Math.abs(ChronoUnit.MILLIS.between(now, startTime)); // Tính chênh lệch thời gian
+//
+//                if (diffInMillis <= 1000) {
+//                    this.simpleMessageTemplate.convertAndSend("/rt-product/auction-update/" + auctionSessionResponse.getAuctionSessionId(), auctionMessageResponse);
+//                }
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 }
