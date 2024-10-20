@@ -42,6 +42,20 @@ public class RequirementServiceImpl implements RequirementService {
         return requirementMapper.toRequirementResponse(requirementRepository.save(requirement));
     }
 
+    public void approvedRequirement(String requirementId) {
+        Requirement requirement = requirementRepository.findById(requirementId)
+                .orElseThrow(() -> new AppException(ErrorCode.REQUIREMENT_NOT_EXISTED));
+        requirement.setStatus("1");
+        requirementRepository.save(requirement);
+    }
+
+    public void rejectRequirement(String requirementId) {
+        Requirement requirement = requirementRepository.findById(requirementId)
+                .orElseThrow(() -> new AppException(ErrorCode.REQUIREMENT_NOT_EXISTED));
+        requirement.setStatus("2");
+        requirementRepository.save(requirement);
+    }
+
     public List<RequirementResponse> getAllRequirements() {
         return requirementRepository.findAll().stream()
                 .map(requirementMapper::toRequirementResponse)
@@ -65,7 +79,7 @@ public class RequirementServiceImpl implements RequirementService {
                 .orElseThrow(() -> new AppException(ErrorCode.REQUIREMENT_NOT_EXISTED));
     }
 
-    public List<RequirementResponse> filterRequirements(Boolean status, String keyword) {
+    public List<RequirementResponse> filterRequirements(String status, String keyword) {
         return requirementRepository.findAll().stream()
                 .filter(requirement -> Optional.ofNullable(status)
                         .map(s -> requirement.getStatus().equals(s))
