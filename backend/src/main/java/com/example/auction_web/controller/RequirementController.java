@@ -47,7 +47,7 @@ public class RequirementController {
 
     @GetMapping("/filter")
     public ApiResponse<List<RequirementResponse>> filterRequirements(
-            @RequestParam(required = false) Boolean status,
+            @RequestParam(required = false) String status,
             @RequestParam(required = false) String keyword) {
         List<RequirementResponse> filteredRequirements = requirementService.filterRequirements(status, keyword);
         return ApiResponse.<List<RequirementResponse>>builder()
@@ -61,6 +61,24 @@ public class RequirementController {
         return ApiResponse.<RequirementResponse>builder()
                 .code(HttpStatus.OK.value())
                 .result(requirementService.updateRequirement(requirementId, request))
+                .build();
+    }
+
+    @PutMapping("/approved/{requirementId}")
+    ApiResponse<String> approvedRequirement(@PathVariable String requirementId) {
+        requirementService.approvedRequirement(requirementId);
+        return ApiResponse.<String>builder()
+                .code(HttpStatus.OK.value())
+                .result("Approved requirement successfully")
+                .build();
+    }
+
+    @PutMapping("/rejected/{requirementId}")
+    ApiResponse<String> rejectRequirement(@PathVariable String requirementId) {
+        requirementService.rejectRequirement(requirementId);
+        return ApiResponse.<String>builder()
+                .code(HttpStatus.OK.value())
+                .result("Reject requirement successfully")
                 .build();
     }
 
