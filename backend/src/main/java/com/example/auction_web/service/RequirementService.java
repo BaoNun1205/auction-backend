@@ -15,4 +15,5 @@ public interface RequirementService {
     List<RequirementResponse> getRequirementsByInspectorId(String inspectorId);
     RequirementResponse getRequirementResponseById(String requirementId);
     Requirement getRequirementById(String requirementId);
+    List<RequirementResponse> filterRequirements(Boolean status, String keyword);
 }

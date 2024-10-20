@@ -18,6 +18,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -62,6 +63,18 @@ public class RequirementServiceImpl implements RequirementService {
     public Requirement getRequirementById(String requirementId) {
         return requirementRepository.findById(requirementId)
                 .orElseThrow(() -> new AppException(ErrorCode.REQUIREMENT_NOT_EXISTED));
+    }
+
+    public List<RequirementResponse> filterRequirements(Boolean status, String keyword) {
+        return requirementRepository.findAll().stream()
+                .filter(requirement -> Optional.ofNullable(status)
+                        .map(s -> requirement.getStatus().equals(s))
+                        .orElse(true))
+                .filter(requirement -> Optional.ofNullable(keyword)
+                        .map(k -> requirement.getAssetName().toLowerCase().contains(k.toLowerCase()))
+                        .orElse(true))
+                .map(requirementMapper::toRequirementResponse)
+                .toList();
     }
 
     public RequirementResponse getRequirementResponseById(String requirementId) {

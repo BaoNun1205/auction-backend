@@ -3,6 +3,7 @@ package com.example.auction_web.controller;
 import com.example.auction_web.dto.request.RequirementCreateRequest;
 import com.example.auction_web.dto.request.RequirementUpdateRequest;
 import com.example.auction_web.dto.response.ApiResponse;
+import com.example.auction_web.dto.response.CategoryResponse;
 import com.example.auction_web.dto.response.RequirementResponse;
 import com.example.auction_web.entity.Requirement;
 import com.example.auction_web.service.ImageRequirementService;
@@ -41,6 +42,17 @@ public class RequirementController {
         return ApiResponse.<RequirementResponse>builder()
                 .code(HttpStatus.OK.value())
                 .result(requirementResponse)
+                .build();
+    }
+
+    @GetMapping("/filter")
+    public ApiResponse<List<RequirementResponse>> filterRequirements(
+            @RequestParam(required = false) Boolean status,
+            @RequestParam(required = false) String keyword) {
+        List<RequirementResponse> filteredRequirements = requirementService.filterRequirements(status, keyword);
+        return ApiResponse.<List<RequirementResponse>>builder()
+                .code(HttpStatus.OK.value())
+                .result(filteredRequirements)
                 .build();
     }
 
