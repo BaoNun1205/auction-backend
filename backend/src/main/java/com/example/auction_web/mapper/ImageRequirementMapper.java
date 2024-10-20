@@ -12,6 +12,8 @@ import org.mapstruct.Named;
 
 @Mapper(componentModel = "spring")
 public interface ImageRequirementMapper {
+
+    @Mapping(target = "image", ignore = true)
     @Mapping(target = "requirement", ignore = true)
     ImageRequirement toImageRequirement(ImageRequirementCreateRequest request);
 
