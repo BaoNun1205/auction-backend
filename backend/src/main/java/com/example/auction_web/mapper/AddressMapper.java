@@ -17,15 +17,9 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface AddressMapper {
-    @Mapping(target = "user", ignore = true)
     Address toAddress(AddressCreateRequest request);
 
     AddressResponse toAddressResponse(Address address);
     List<AddressResponse> toAddressResponses(List<Address> addresses);
     void updateAddress(@MappingTarget Address address, AddressUpdateRequest request);
-
-    @Named("userToString")
-    default String userToString(User user) {
-        return user != null ? user.getUserId() : null;
-    }
 }
