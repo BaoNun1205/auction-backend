@@ -36,7 +36,7 @@ public class Requirement {
     @JoinColumn(name = "insprectorId", referencedColumnName = "insprectorId")
     Insprector insprector;
 
-    Boolean status;
+    String status;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 
@@ -44,7 +44,7 @@ public class Requirement {
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
-        this.status = false;
+        this.status = "0";
     }
 
     @PreUpdate
