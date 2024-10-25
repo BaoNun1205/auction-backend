@@ -1,5 +1,6 @@
 package com.example.auction_web.dto.response;
 
+import com.example.auction_web.entity.ImageRequirement;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,6 +9,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -16,14 +18,15 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class RequirementResponse {
     String requirementId;
-    String vendorId;
+    String vendor;
     String assetName;
     String assetDescription;
     BigDecimal assetPrice;
-    String inspectorId;
+    String inspector;
     String assetStatusId;
     String status;
     Boolean delFlag;
+    List<ImageRequirementResponse> imageRequirements;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 }

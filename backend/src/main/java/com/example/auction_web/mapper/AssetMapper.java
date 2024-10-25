@@ -18,7 +18,8 @@ import java.util.List;
 public interface AssetMapper {
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "type", ignore = true)
-    @Mapping(target = "mainImage", source = "mainImage", qualifiedByName = "mapMultipartFileToString")
+    @Mapping(target = "insprector", ignore = true)
+//    @Mapping(target = "mainImage", source = "mainImage", qualifiedByName = "mapMultipartFileToString")
     Asset toAsset(AssetCreateRequest assetCreationRequest);
 
     @Mapping(source = "user", target = "vendorId", qualifiedByName = "userToString")

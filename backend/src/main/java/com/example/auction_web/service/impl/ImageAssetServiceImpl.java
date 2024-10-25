@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +30,17 @@ public class ImageAssetServiceImpl implements ImageAssetService {
     ImageAssetRepository imageAssetRepository;
     AssetRepository assetRepository;
     ImageAssetMapper imageAssetMapper;
+
+    public void createImageAsset(List<String> images, Asset asset) {
+        List<ImageAsset> imageAssetList = new ArrayList<>();
+        for (String image : images) {
+            ImageAsset imageAsset = new ImageAsset();
+            imageAsset.setAsset(asset);
+            imageAsset.setImageAsset(image);
+            imageAssetList.add(imageAsset);
+        }
+        imageAssetRepository.saveAll(imageAssetList);
+    }
 
     public List<ImageAssetResponse> findAllImageAssets() {
         return imageAssetRepository.findAll().stream()

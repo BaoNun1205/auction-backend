@@ -14,6 +14,7 @@ import com.example.auction_web.repository.TypeRepository;
 import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.AssetService;
 import com.example.auction_web.service.FileUploadService;
+import com.example.auction_web.service.ImageAssetService;
 import com.example.auction_web.service.specification.AssetSpecification;
 import com.example.auction_web.utils.CreateSlug;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +34,7 @@ public class AssetServiceImpl implements AssetService {
     AssetRepository assetRepository;
     UserRepository userRepository;
     TypeRepository typeRepository;
-    FileUploadService fileUploadService;
+    ImageAssetService imageAssetService;
     AssetMapper assetMapper;
 
 
@@ -43,11 +44,14 @@ public class AssetServiceImpl implements AssetService {
             var asset = assetMapper.toAsset(request);
 
             asset.setSlug(CreateSlug.createSlug(asset.getAssetName()));
-            asset.setMainImage(fileUploadService.uploadFile(request.getMainImage()));
-            setAssetReference(request, asset);
+            asset.setMainImage(request.getImages().getFirst());
 
-            return assetMapper.toAssetResponse(assetRepository.save(asset));
-        } catch (IOException e) {
+            Asset newAsset = assetRepository.save(asset);
+
+            imageAssetService.createImageAsset(request.getImages(), newAsset);
+
+            return assetMapper.toAssetResponse(newAsset);
+        } catch (Exception e) {
             throw new AppException(ErrorCode.FILE_UPLOAD_FAILED);
         }
     }

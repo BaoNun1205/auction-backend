@@ -25,6 +25,10 @@ public class Asset {
     @GeneratedValue(strategy = GenerationType.UUID)
     String assetId;
 
+    @OneToOne
+    @GeneratedValue(strategy = GenerationType.UUID)
+    Requirement requirement;
+
     @ManyToOne
     @JoinColumn(name = "vendorId", referencedColumnName = "userId")
     User user;
