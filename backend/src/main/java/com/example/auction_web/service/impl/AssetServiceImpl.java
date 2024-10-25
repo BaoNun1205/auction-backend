@@ -18,6 +18,9 @@ import com.example.auction_web.service.specification.AssetSpecification;
 import com.example.auction_web.utils.CreateSlug;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -25,6 +28,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
@@ -62,7 +66,8 @@ public class AssetServiceImpl implements AssetService {
     }
 
     public List<AssetResponse> filterAssets(String vendorId, String assetName, BigDecimal minPrice, BigDecimal maxPrice,
-                                            String insprectorId, String typeId, String status) {
+                                            String insprectorId, String typeId, String status, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
         if (isAllParamsNullOrEmpty(vendorId, assetName, minPrice, maxPrice, insprectorId, typeId, status)) {
             return assetRepository.findAll().stream()
                     .map(assetMapper::toAssetResponse)
@@ -77,7 +82,7 @@ public class AssetServiceImpl implements AssetService {
                 .and(AssetSpecification.hasTypeId(typeId))
                 .and(AssetSpecification.hasStatus(status));
 
-        return assetRepository.findAll(specification).stream()
+        return assetRepository.findAll(specification, pageable).stream()
                 .map(assetMapper::toAssetResponse)
                 .toList();
     }
