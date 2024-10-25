@@ -12,7 +12,7 @@ public interface AssetService {
     AssetResponse createAsset(AssetCreateRequest request);
     AssetResponse updateAsset(String id, AssetUpdateRequest request);
     List<AssetResponse> filterAssets(String vendorId, String assetName, BigDecimal minPrice, BigDecimal maxPrice,
-                                     String insprectorId, String typeId, String status);
+                                     String insprectorId, String typeId, String status, int page, int size);
     void deleteAsset(String id);
     void restoreAsset(String id);
 }
