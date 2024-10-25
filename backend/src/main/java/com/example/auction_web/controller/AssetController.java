@@ -44,12 +44,14 @@ public class AssetController {
                                                   @RequestParam(required = false) BigDecimal maxPrice,
                                                   @RequestParam(required = false) String insprectorId,
                                                   @RequestParam(required = false) String typeId,
-                                                  @RequestParam(required = false) String status) {
+                                                  @RequestParam(required = false) String status,
+                                                  @RequestParam(required = false) Integer page,
+                                                  @RequestParam(required = false) Integer size) {
         return ApiResponse.<List<AssetResponse>>builder()
                 .code(HttpStatus.OK.value())
                 .result(assetService.filterAssets(vendorId, assetName,
                         minPrice, maxPrice, insprectorId,
-                        typeId, status))
+                        typeId, status, page, size))
                 .build();
     }
 
