@@ -12,9 +12,13 @@ import com.example.auction_web.repository.CategoryRepository;
 import com.example.auction_web.repository.TypeRepository;
 import com.example.auction_web.service.FileUploadService;
 import com.example.auction_web.service.TypeService;
+import com.example.auction_web.service.specification.TypeSpecification;
 import com.example.auction_web.utils.CreateSlug;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -30,29 +34,19 @@ public class TypeServiceImpl implements TypeService {
     TypeMapper typeMapper;
     FileUploadService fileUploadService;
 
-    public List<TypeResponse> filterTypes(Boolean status, String keyword) {
-        if (status == null && (keyword == null || keyword.isEmpty())) {
+    public List<TypeResponse> filterTypes(Boolean status, String keyword, Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        if (isAllParamsNullOrEmpty(status, keyword)) {
             return typeRepository.findAll().stream()
                     .map(typeMapper::toTypeResponse)
                     .toList();
         }
 
-        // Nếu chỉ có status
-        if (status != null && (keyword == null || keyword.isEmpty())) {
-            return typeRepository.findByDelFlag(status).stream()
-                    .map(typeMapper::toTypeResponse)
-                    .toList();
-        }
+        Specification<Type> specification = Specification
+                .where(TypeSpecification.hasTypeNameContaining(keyword))
+                .and(TypeSpecification.hasStatus(status));
 
-        // Nếu chỉ có keyword
-        if (status == null) {
-            return typeRepository.findByTypeNameContainingIgnoreCase(keyword).stream()
-                    .map(typeMapper::toTypeResponse)
-                    .toList();
-        }
-
-        // Nếu có cả status và keyword
-        return typeRepository.findByDelFlagAndTypeNameContainingIgnoreCase(status, keyword).stream()
+        return typeRepository.findAll(specification, pageable).stream()
                 .map(typeMapper::toTypeResponse)
                 .toList();
     }
@@ -110,5 +104,9 @@ public class TypeServiceImpl implements TypeService {
         return typeRepository.findTypesByCategory_CategoryName(categoryName).stream()
                 .map(typeMapper::toTypeResponse)
                 .toList();
+    }
+
+    private Boolean isAllParamsNullOrEmpty(Boolean status, String keyword) {
+        return status == null && (keyword == null || keyword.isEmpty());
     }
 }

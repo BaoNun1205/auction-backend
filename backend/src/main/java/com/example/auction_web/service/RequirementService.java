@@ -12,10 +12,9 @@ public interface RequirementService {
     RequirementResponse updateRequirement(String requirementId, RequirementUpdateRequest request);
     void approvedRequirement(String requirementId);
     void rejectRequirement(String requirementId);
-    List<RequirementResponse> getAllRequirements();
     List<RequirementResponse> getRequirementsByVendorId(String vendorId);
     List<RequirementResponse> getRequirementsByInspectorId(String inspectorId);
     RequirementResponse getRequirementResponseById(String requirementId);
     Requirement getRequirementById(String requirementId);
-    List<RequirementResponse> filterRequirements(String status, String keyword);
+    List<RequirementResponse> filterRequirements(String status, String keyword, Integer page, Integer size);
 }

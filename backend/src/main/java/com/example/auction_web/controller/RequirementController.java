@@ -45,11 +45,13 @@ public class RequirementController {
                 .build();
     }
 
-    @GetMapping("/filter")
+    @GetMapping
     public ApiResponse<List<RequirementResponse>> filterRequirements(
             @RequestParam(required = false) String status,
-            @RequestParam(required = false) String keyword) {
-        List<RequirementResponse> filteredRequirements = requirementService.filterRequirements(status, keyword);
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
+        List<RequirementResponse> filteredRequirements = requirementService.filterRequirements(status, keyword, page, size);
         return ApiResponse.<List<RequirementResponse>>builder()
                 .code(HttpStatus.OK.value())
                 .result(filteredRequirements)
@@ -79,14 +81,6 @@ public class RequirementController {
         return ApiResponse.<String>builder()
                 .code(HttpStatus.OK.value())
                 .result("Reject requirement successfully")
-                .build();
-    }
-
-    @GetMapping
-    ApiResponse<List<RequirementResponse>> getAllRequirements() {
-        return ApiResponse.<List<RequirementResponse>>builder()
-                .code(HttpStatus.OK.value())
-                .result(requirementService.getAllRequirements())
                 .build();
     }
 
