@@ -7,7 +7,7 @@ import com.example.auction_web.dto.response.TypeResponse;
 import java.util.List;
 
 public interface TypeService {
-    List<TypeResponse> filterTypes(Boolean status, String keyword);
+    List<TypeResponse> filterTypes(Boolean status, String keyword, Integer page, Integer size);
     TypeResponse createType(TypeCreateRequest request);
     TypeResponse updateType(String typeId, TypeUpdateRequest request);
     List<TypeResponse> getAllTypes();

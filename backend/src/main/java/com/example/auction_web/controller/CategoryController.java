@@ -27,15 +27,8 @@ public class CategoryController {
                 .result(categoryService.getCategory(categoryId))
                 .build();
     }
-    @GetMapping
-    ApiResponse<List<CategoryResponse>> getAll() {
-        return ApiResponse.<List<CategoryResponse>>builder()
-                .code(HttpStatus.OK.value())
-                .result(categoryService.getAllCategories())
-                .build();
-    }
 
-    @GetMapping("/filter")
+    @GetMapping
     public ApiResponse<List<CategoryResponse>> filterCategories(
             @RequestParam(required = false) Boolean status,
             @RequestParam(required = false) String keyword,

@@ -13,8 +13,12 @@ import com.example.auction_web.repository.RequirementRepository;
 import com.example.auction_web.repository.auth.InsprectorRepository;
 import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.RequirementService;
+import com.example.auction_web.service.specification.RequirementSpecification;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -56,12 +60,6 @@ public class RequirementServiceImpl implements RequirementService {
         requirementRepository.save(requirement);
     }
 
-    public List<RequirementResponse> getAllRequirements() {
-        return requirementRepository.findAll().stream()
-                .map(requirementMapper::toRequirementResponse)
-                .toList();
-    }
-
     public List<RequirementResponse> getRequirementsByVendorId(String vendorId) {
         return requirementRepository.findRequirementsByUser_UserId(vendorId).stream()
                 .map(requirementMapper::toRequirementResponse)
@@ -79,14 +77,19 @@ public class RequirementServiceImpl implements RequirementService {
                 .orElseThrow(() -> new AppException(ErrorCode.REQUIREMENT_NOT_EXISTED));
     }
 
-    public List<RequirementResponse> filterRequirements(String status, String keyword) {
-        return requirementRepository.findAll().stream()
-                .filter(requirement -> Optional.ofNullable(status)
-                        .map(s -> requirement.getStatus().equals(s))
-                        .orElse(true))
-                .filter(requirement -> Optional.ofNullable(keyword)
-                        .map(k -> requirement.getAssetName().toLowerCase().contains(k.toLowerCase()))
-                        .orElse(true))
+    public List<RequirementResponse> filterRequirements(String status, String keyword, Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        if (isAllParamsNullOrEmpty(status, keyword)) {
+            return requirementRepository.findAll(pageable).stream()
+                    .map(requirementMapper::toRequirementResponse)
+                    .toList();
+        }
+
+        Specification<Requirement> specification = Specification
+                .where(RequirementSpecification.hasStatus(status))
+                .and(RequirementSpecification.hasAssetNameContaining(keyword));
+
+        return requirementRepository.findAll(specification, pageable).stream()
                 .map(requirementMapper::toRequirementResponse)
                 .toList();
     }
@@ -109,5 +112,9 @@ public class RequirementServiceImpl implements RequirementService {
     Insprector getInspectorById(String inspectorId) {
         return insprectorRepository.findById(inspectorId)
                 .orElseThrow(() -> new AppException(ErrorCode.INSPECTOR_NOT_EXISTED));
+    }
+
+    private Boolean isAllParamsNullOrEmpty(String status, String keyword) {
+        return (status == null || status.isEmpty()) && (keyword == null || keyword.isEmpty());
     }
 }
