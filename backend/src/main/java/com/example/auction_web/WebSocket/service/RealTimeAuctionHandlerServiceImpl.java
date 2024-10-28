@@ -54,7 +54,7 @@ public class RealTimeAuctionHandlerServiceImpl implements RealTimeAuctionHandler
         if (depositPrice.compareTo(maxDeposit) > 0) {
             throw new AppException(ErrorCode.DEPOSIT_PRICE_IS_GREATER_THAN_MAX_DEPOSIT);
         }
-        UserResponse userResponse = userService.getUser(request.getUserId());
+        UserResponse userResponse = userService.getUserResponse(request.getUserId());
         AuctionSessionResponse auctionSessionResponse = auctionSessionService.getAuctionSessionById(auctionSessionId);
         depositService.createDeposit(request);
         return DepositAddResponse.builder()

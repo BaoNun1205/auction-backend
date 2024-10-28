@@ -1,6 +1,5 @@
 package com.example.auction_web.entity;
 
-import com.example.auction_web.entity.auth.Insprector;
 import com.example.auction_web.entity.auth.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -26,15 +25,15 @@ public class Requirement {
 
     @ManyToOne
     @JoinColumn(name = "vendorId", referencedColumnName = "userId")
-    User user;
+    User vendor;
 
     String assetName;
     String assetDescription;
     BigDecimal assetPrice;
 
     @ManyToOne
-    @JoinColumn(name = "insprectorId", referencedColumnName = "insprectorId")
-    Insprector insprector;
+    @JoinColumn(name = "inspectorId", referencedColumnName = "userId")
+    User inspector;
 
     String status;
     LocalDateTime createdAt;
@@ -54,4 +53,7 @@ public class Requirement {
 
     @OneToMany(mappedBy = "requirement", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<ImageRequirement> imageRequirements;
+
+    @OneToOne(mappedBy = "requirement", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    Asset asset;
 }

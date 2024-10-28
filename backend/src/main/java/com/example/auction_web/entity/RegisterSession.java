@@ -33,6 +33,8 @@ public class RegisterSession {
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 
+
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();

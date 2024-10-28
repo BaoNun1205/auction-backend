@@ -59,14 +59,16 @@ public class UserServiceImpl implements UserService {
         return userMapper.toUserResponse(user);
     }
 
-    @Override
     @PostAuthorize("returnObject.email == authentication.name")
-    public UserResponse getUser(String id) {
+    public UserResponse getUserResponse(String id) {
         return userMapper.toUserResponse(
                 userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
     }
 
-    @Override
+    public User getUser(String id) {
+        return userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+    }
+
     @PostAuthorize("returnObject.email == authentication.name")
     public UserResponse getUserByUsername(String username) {
         return userMapper.toUserResponse(
@@ -74,7 +76,6 @@ public class UserServiceImpl implements UserService {
         );
     }
 
-    @Override
     @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponse> getUsers() {
         return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();

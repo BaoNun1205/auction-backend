@@ -18,7 +18,6 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface AddressMapper {
     Address toAddress(AddressCreateRequest request);
-
     AddressResponse toAddressResponse(Address address);
     List<AddressResponse> toAddressResponses(List<Address> addresses);
     void updateAddress(@MappingTarget Address address, AddressUpdateRequest request);
