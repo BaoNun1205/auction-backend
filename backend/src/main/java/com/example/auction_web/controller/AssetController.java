@@ -6,6 +6,7 @@ import com.example.auction_web.dto.request.filter.AssetFilterRequest;
 import com.example.auction_web.dto.response.ApiResponse;
 import com.example.auction_web.dto.response.AssetResponse;
 import com.example.auction_web.service.AssetService;
+import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
