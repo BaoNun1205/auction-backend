@@ -1,4 +1,4 @@
-package com.example.auction_web.dto.request;
+package com.example.auction_web.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +13,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class InsprectorCreateRequest {
+public class InspectorResponse {
+    String insprectorId;
     String userId;
     String license;
+    Boolean delFlag;
+    LocalDateTime createdAt;
+    LocalDateTime updatedAt;
 }

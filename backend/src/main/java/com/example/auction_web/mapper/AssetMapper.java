@@ -18,7 +18,8 @@ import java.util.List;
 public interface AssetMapper {
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "type", ignore = true)
-    @Mapping(target = "mainImage", source = "mainImage", qualifiedByName = "mapMultipartFileToString")
+    @Mapping(target = "inspector", ignore = true)
+//    @Mapping(target = "mainImage", source = "mainImage", qualifiedByName = "mapMultipartFileToString")
     Asset toAsset(AssetCreateRequest assetCreationRequest);
 
     @Mapping(source = "user", target = "vendorId", qualifiedByName = "userToString")
@@ -42,5 +43,14 @@ public interface AssetMapper {
     @Named("mapMultipartFileToString")
     default String mapMultipartFileToString(MultipartFile mainImage) {
         return mainImage != null ? mainImage.getOriginalFilename() : null;
+    }
+
+    default User map(String vendorId) {
+        if (vendorId == null) {
+            return null;
+        }
+        User user = new User();
+        user.setUserId(vendorId);
+        return user;
     }
 }
