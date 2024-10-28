@@ -3,14 +3,14 @@ package com.example.auction_web.service.impl;
 import com.example.auction_web.dto.request.RequirementCreateRequest;
 import com.example.auction_web.dto.request.RequirementUpdateRequest;
 import com.example.auction_web.dto.response.RequirementResponse;
+import com.example.auction_web.entity.Inspector;
 import com.example.auction_web.entity.Requirement;
-import com.example.auction_web.entity.auth.Insprector;
 import com.example.auction_web.entity.auth.User;
 import com.example.auction_web.exception.AppException;
 import com.example.auction_web.exception.ErrorCode;
 import com.example.auction_web.mapper.RequirementMapper;
+import com.example.auction_web.repository.InspectorRepository;
 import com.example.auction_web.repository.RequirementRepository;
-import com.example.auction_web.repository.auth.InsprectorRepository;
 import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.RequirementService;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ import java.util.Optional;
 public class RequirementServiceImpl implements RequirementService {
     RequirementRepository requirementRepository;
     UserRepository userRepository;
-    InsprectorRepository insprectorRepository;
+    InspectorRepository inspectorRepository;
     RequirementMapper requirementMapper;
 
     public RequirementResponse createRequirement(RequirementCreateRequest request) {
@@ -42,10 +42,11 @@ public class RequirementServiceImpl implements RequirementService {
         return requirementMapper.toRequirementResponse(requirementRepository.save(requirement));
     }
 
-    public void approvedRequirement(String requirementId) {
+    public void approvedRequirement(String requirementId, User inspector) {
         Requirement requirement = requirementRepository.findById(requirementId)
                 .orElseThrow(() -> new AppException(ErrorCode.REQUIREMENT_NOT_EXISTED));
         requirement.setStatus("1");
+        requirement.setInspector(inspector);
         requirementRepository.save(requirement);
     }
 
@@ -63,13 +64,13 @@ public class RequirementServiceImpl implements RequirementService {
     }
 
     public List<RequirementResponse> getRequirementsByVendorId(String vendorId) {
-        return requirementRepository.findRequirementsByUser_UserId(vendorId).stream()
+        return requirementRepository.findRequirementsByVendor_UserId(vendorId).stream()
                 .map(requirementMapper::toRequirementResponse)
                 .toList();
     }
 
     public List<RequirementResponse> getRequirementsByInspectorId(String inspectorId) {
-        return requirementRepository.findRequirementsByInsprector_InsprectorId(inspectorId).stream()
+        return requirementRepository.findRequirementsByInspector_UserId(inspectorId).stream()
                 .map(requirementMapper::toRequirementResponse)
                 .toList();
     }
@@ -97,7 +98,7 @@ public class RequirementServiceImpl implements RequirementService {
     }
 
     void setRequirementReference(RequirementCreateRequest requirementCreateRequest, Requirement requirement) {
-        requirement.setUser(getVendorById(requirementCreateRequest.getVendorId()));
+        requirement.setVendor(getVendorById(requirementCreateRequest.getVendorId()));
 //        requirement.setInsprector(getInspectorById(requirementCreateRequest.getInspectorId()));
     }
 
@@ -106,8 +107,8 @@ public class RequirementServiceImpl implements RequirementService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
     }
 
-    Insprector getInspectorById(String inspectorId) {
-        return insprectorRepository.findById(inspectorId)
+    Inspector getInspectorById(String inspectorId) {
+        return inspectorRepository.findById(inspectorId)
                 .orElseThrow(() -> new AppException(ErrorCode.INSPECTOR_NOT_EXISTED));
     }
 }

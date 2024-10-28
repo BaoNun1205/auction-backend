@@ -7,7 +7,9 @@ import com.example.auction_web.dto.response.CategoryResponse;
 import com.example.auction_web.dto.response.RequirementResponse;
 import com.example.auction_web.entity.Requirement;
 import com.example.auction_web.service.ImageRequirementService;
+import com.example.auction_web.service.InspectorService;
 import com.example.auction_web.service.RequirementService;
+import com.example.auction_web.service.auth.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/requirement")
@@ -24,6 +27,7 @@ import java.util.List;
 public class RequirementController {
     RequirementService requirementService;
     ImageRequirementService imageRequirementService;
+    UserService userService;
 
     @PostMapping
     public ApiResponse<RequirementResponse> createRequirement(
@@ -64,9 +68,12 @@ public class RequirementController {
                 .build();
     }
 
-    @PutMapping("/approved/{requirementId}")
-    ApiResponse<String> approvedRequirement(@PathVariable String requirementId) {
-        requirementService.approvedRequirement(requirementId);
+    @PutMapping("/approved")
+    ApiResponse<String> approvedRequirement(
+            @RequestParam String requirementId,
+            @RequestParam String inspectorId) {
+
+        requirementService.approvedRequirement(requirementId, userService.getUser(inspectorId));
         return ApiResponse.<String>builder()
                 .code(HttpStatus.OK.value())
                 .result("Approved requirement successfully")

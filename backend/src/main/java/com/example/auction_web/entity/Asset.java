@@ -1,6 +1,5 @@
 package com.example.auction_web.entity;
 
-import com.example.auction_web.entity.auth.Insprector;
 import com.example.auction_web.entity.auth.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -26,7 +25,7 @@ public class Asset {
     String assetId;
 
     @OneToOne
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @JoinColumn(name = "requirementId", referencedColumnName = "requirementId")
     Requirement requirement;
 
     @ManyToOne
@@ -42,8 +41,8 @@ public class Asset {
     BigDecimal assetPrice;
 
     @ManyToOne
-    @JoinColumn(name = "insprectorId", referencedColumnName = "insprectorId")
-    Insprector insprector;
+    @JoinColumn(name = "inspectorId", referencedColumnName = "inspectorId")
+    Inspector inspector;
 
     @ManyToOne
     @JoinColumn(name = "typeId", referencedColumnName = "typeId")

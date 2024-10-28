@@ -3,24 +3,21 @@ package com.example.auction_web.mapper;
 import com.example.auction_web.dto.request.RequirementCreateRequest;
 import com.example.auction_web.dto.request.RequirementUpdateRequest;
 import com.example.auction_web.dto.response.RequirementResponse;
-import com.example.auction_web.entity.ImageRequirement;
+import com.example.auction_web.entity.Inspector;
 import com.example.auction_web.entity.Requirement;
-import com.example.auction_web.entity.auth.Insprector;
 import com.example.auction_web.entity.auth.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Mapper(componentModel = "spring")
 public interface RequirementMapper {
-    @Mapping(target = "user", ignore = true)
+    @Mapping(target = "vendor", ignore = true)
     Requirement toRequirement(RequirementCreateRequest request);
 
-    @Mapping(target = "vendor", source = "user", qualifiedByName = "userToString")
+    @Mapping(target = "vendor", source = "vendor", qualifiedByName = "userToString")
+    @Mapping(target = "inspector", source = "inspector", qualifiedByName = "userToString")
     RequirementResponse toRequirementResponse(Requirement requirement);
 
     void updateRequirement(@MappingTarget Requirement requirement, RequirementUpdateRequest request);
@@ -41,7 +38,7 @@ public interface RequirementMapper {
 //    }
 
     @Named("inspectorToString")
-    default String inspectorToString(Insprector insprector) {
-        return insprector != null ? insprector.getUser().getUsername() : null;
+    default String inspectorToString(Inspector inspector) {
+        return inspector != null ? inspector.getUser().getUsername() : null;
     }
 }

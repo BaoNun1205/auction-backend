@@ -17,6 +17,7 @@ import java.util.List;
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class AssetCreateRequest {
+    String requirementId;
     String vendorId;
     String assetName;
     String assetDescription;
