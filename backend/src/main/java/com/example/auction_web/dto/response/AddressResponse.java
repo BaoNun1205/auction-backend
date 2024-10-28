@@ -1,5 +1,7 @@
 package com.example.auction_web.dto.response;
 
+import com.example.auction_web.dto.response.auth.UserResponse;
+import com.example.auction_web.entity.auth.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,11 +17,11 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class AddressResponse {
     String addressId;
-    String userId;
+    UserResponse user;
     String recipientName;
-    String provinceId;
-    String districtId;
-    String wardId;
+    String province;
+    String district;
+    String ward;
     String addressDetail;
     String phone;
     Boolean delFlag;

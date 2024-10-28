@@ -3,18 +3,22 @@ package com.example.auction_web.service.impl;
 import com.example.auction_web.dto.request.RequirementCreateRequest;
 import com.example.auction_web.dto.request.RequirementUpdateRequest;
 import com.example.auction_web.dto.response.RequirementResponse;
+import com.example.auction_web.entity.Inspector;
 import com.example.auction_web.entity.Requirement;
-import com.example.auction_web.entity.auth.Insprector;
 import com.example.auction_web.entity.auth.User;
 import com.example.auction_web.exception.AppException;
 import com.example.auction_web.exception.ErrorCode;
 import com.example.auction_web.mapper.RequirementMapper;
+import com.example.auction_web.repository.InspectorRepository;
 import com.example.auction_web.repository.RequirementRepository;
-import com.example.auction_web.repository.auth.InsprectorRepository;
 import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.RequirementService;
+import com.example.auction_web.service.specification.RequirementSpecification;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,7 +30,7 @@ import java.util.Optional;
 public class RequirementServiceImpl implements RequirementService {
     RequirementRepository requirementRepository;
     UserRepository userRepository;
-    InsprectorRepository insprectorRepository;
+    InspectorRepository inspectorRepository;
     RequirementMapper requirementMapper;
 
     public RequirementResponse createRequirement(RequirementCreateRequest request) {
@@ -42,20 +46,29 @@ public class RequirementServiceImpl implements RequirementService {
         return requirementMapper.toRequirementResponse(requirementRepository.save(requirement));
     }
 
-    public List<RequirementResponse> getAllRequirements() {
-        return requirementRepository.findAll().stream()
-                .map(requirementMapper::toRequirementResponse)
-                .toList();
+    public void approvedRequirement(String requirementId, User inspector) {
+        Requirement requirement = requirementRepository.findById(requirementId)
+                .orElseThrow(() -> new AppException(ErrorCode.REQUIREMENT_NOT_EXISTED));
+        requirement.setStatus("1");
+        requirement.setInspector(inspector);
+        requirementRepository.save(requirement);
+    }
+
+    public void rejectRequirement(String requirementId) {
+        Requirement requirement = requirementRepository.findById(requirementId)
+                .orElseThrow(() -> new AppException(ErrorCode.REQUIREMENT_NOT_EXISTED));
+        requirement.setStatus("2");
+        requirementRepository.save(requirement);
     }
 
     public List<RequirementResponse> getRequirementsByVendorId(String vendorId) {
-        return requirementRepository.findRequirementsByUser_UserId(vendorId).stream()
+        return requirementRepository.findRequirementsByVendor_UserId(vendorId).stream()
                 .map(requirementMapper::toRequirementResponse)
                 .toList();
     }
 
     public List<RequirementResponse> getRequirementsByInspectorId(String inspectorId) {
-        return requirementRepository.findRequirementsByInsprector_InsprectorId(inspectorId).stream()
+        return requirementRepository.findRequirementsByInspector_UserId(inspectorId).stream()
                 .map(requirementMapper::toRequirementResponse)
                 .toList();
     }
@@ -65,14 +78,19 @@ public class RequirementServiceImpl implements RequirementService {
                 .orElseThrow(() -> new AppException(ErrorCode.REQUIREMENT_NOT_EXISTED));
     }
 
-    public List<RequirementResponse> filterRequirements(Boolean status, String keyword) {
-        return requirementRepository.findAll().stream()
-                .filter(requirement -> Optional.ofNullable(status)
-                        .map(s -> requirement.getStatus().equals(s))
-                        .orElse(true))
-                .filter(requirement -> Optional.ofNullable(keyword)
-                        .map(k -> requirement.getAssetName().toLowerCase().contains(k.toLowerCase()))
-                        .orElse(true))
+    public List<RequirementResponse> filterRequirements(String status, String keyword, Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        if (isAllParamsNullOrEmpty(status, keyword)) {
+            return requirementRepository.findAll(pageable).stream()
+                    .map(requirementMapper::toRequirementResponse)
+                    .toList();
+        }
+
+        Specification<Requirement> specification = Specification
+                .where(RequirementSpecification.hasStatus(status))
+                .and(RequirementSpecification.hasAssetNameContaining(keyword));
+
+        return requirementRepository.findAll(specification, pageable).stream()
                 .map(requirementMapper::toRequirementResponse)
                 .toList();
     }
@@ -83,7 +101,7 @@ public class RequirementServiceImpl implements RequirementService {
     }
 
     void setRequirementReference(RequirementCreateRequest requirementCreateRequest, Requirement requirement) {
-        requirement.setUser(getVendorById(requirementCreateRequest.getVendorId()));
+        requirement.setVendor(getVendorById(requirementCreateRequest.getVendorId()));
 //        requirement.setInsprector(getInspectorById(requirementCreateRequest.getInspectorId()));
     }
 
@@ -92,8 +110,12 @@ public class RequirementServiceImpl implements RequirementService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
     }
 
-    Insprector getInspectorById(String inspectorId) {
-        return insprectorRepository.findById(inspectorId)
+    Inspector getInspectorById(String inspectorId) {
+        return inspectorRepository.findById(inspectorId)
                 .orElseThrow(() -> new AppException(ErrorCode.INSPECTOR_NOT_EXISTED));
+    }
+
+    private Boolean isAllParamsNullOrEmpty(String status, String keyword) {
+        return (status == null || status.isEmpty()) && (keyword == null || keyword.isEmpty());
     }
 }

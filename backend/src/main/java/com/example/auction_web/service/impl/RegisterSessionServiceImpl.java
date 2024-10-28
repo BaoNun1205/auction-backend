@@ -12,10 +12,12 @@ import com.example.auction_web.repository.AuctionSessionRepository;
 import com.example.auction_web.repository.RegisterSessionRepository;
 import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.RegisterSessionService;
+import com.example.auction_web.utils.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -25,13 +27,19 @@ public class RegisterSessionServiceImpl implements RegisterSessionService {
     RegisterSessionRepository registerSessionRepository;
     UserRepository userRepository;
     AuctionSessionRepository auctionSessionRepository;
-
     RegisterSessionMapper registerSessionMapper;
+    NotificationService notificationService;
 
     @Override
     public RegisterSessionResponse createRegisterSession(RegisterSessionCreateRequest request) {
         var registerSession = registerSessionMapper.toRegisterSession(request);
         setRegisterReference(request, registerSession);
+        var user = getUserById(request.getUserId());
+        var auctionSession = getAuctionSessionById(request.getAuctionSessionId());
+
+        LocalDateTime notificationTime = auctionSession.getStartTime().minusMinutes(30);
+        notificationService.scheduleNotification(user.getEmail(), auctionSession, notificationTime);
+
         return registerSessionMapper.toRegisterSessionResponse(registerSessionRepository.save(registerSession));
     }
 

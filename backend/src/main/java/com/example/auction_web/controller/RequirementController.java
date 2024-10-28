@@ -7,7 +7,9 @@ import com.example.auction_web.dto.response.CategoryResponse;
 import com.example.auction_web.dto.response.RequirementResponse;
 import com.example.auction_web.entity.Requirement;
 import com.example.auction_web.service.ImageRequirementService;
+import com.example.auction_web.service.InspectorService;
 import com.example.auction_web.service.RequirementService;
+import com.example.auction_web.service.auth.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/requirement")
@@ -24,6 +27,7 @@ import java.util.List;
 public class RequirementController {
     RequirementService requirementService;
     ImageRequirementService imageRequirementService;
+    UserService userService;
 
     @PostMapping
     public ApiResponse<RequirementResponse> createRequirement(
@@ -45,11 +49,13 @@ public class RequirementController {
                 .build();
     }
 
-    @GetMapping("/filter")
+    @GetMapping
     public ApiResponse<List<RequirementResponse>> filterRequirements(
-            @RequestParam(required = false) Boolean status,
-            @RequestParam(required = false) String keyword) {
-        List<RequirementResponse> filteredRequirements = requirementService.filterRequirements(status, keyword);
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
+        List<RequirementResponse> filteredRequirements = requirementService.filterRequirements(status, keyword, page, size);
         return ApiResponse.<List<RequirementResponse>>builder()
                 .code(HttpStatus.OK.value())
                 .result(filteredRequirements)
@@ -64,11 +70,24 @@ public class RequirementController {
                 .build();
     }
 
-    @GetMapping
-    ApiResponse<List<RequirementResponse>> getAllRequirements() {
-        return ApiResponse.<List<RequirementResponse>>builder()
+    @PutMapping("/approved")
+    ApiResponse<String> approvedRequirement(
+            @RequestParam String requirementId,
+            @RequestParam String inspectorId) {
+
+        requirementService.approvedRequirement(requirementId, userService.getUser(inspectorId));
+        return ApiResponse.<String>builder()
                 .code(HttpStatus.OK.value())
-                .result(requirementService.getAllRequirements())
+                .result("Approved requirement successfully")
+                .build();
+    }
+
+    @PutMapping("/rejected/{requirementId}")
+    ApiResponse<String> rejectRequirement(@PathVariable String requirementId) {
+        requirementService.rejectRequirement(requirementId);
+        return ApiResponse.<String>builder()
+                .code(HttpStatus.OK.value())
+                .result("Reject requirement successfully")
                 .build();
     }
 

@@ -10,14 +10,19 @@ import com.example.auction_web.mapper.CategoryMapper;
 import com.example.auction_web.repository.CategoryRepository;
 import com.example.auction_web.service.CategoryService;
 import com.example.auction_web.service.FileUploadService;
+import com.example.auction_web.service.specification.CategorySpecification;
 import com.example.auction_web.utils.CreateSlug;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
@@ -33,35 +38,19 @@ public class CategoryServiceImpl implements CategoryService {
         );
     }
 
-    public List<CategoryResponse> getAllCategories() {
-        return categoryRepository.findAll().stream()
-                .map(categoryMapper::toCategoryResponse)
-                .toList();
-    }
-
-    public List<CategoryResponse> filterCategories(Boolean status, String keyword) {
-        if (status == null && (keyword == null || keyword.isEmpty())) {
+    public List<CategoryResponse> filterCategories(Boolean status, String keyword, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        if (isAllParamsNullOrEmpty(status, keyword)) {
             return categoryRepository.findAll().stream()
                     .map(categoryMapper::toCategoryResponse)
                     .toList();
         }
 
-        // Nếu chỉ có status
-        if (status != null && (keyword == null || keyword.isEmpty())) {
-            return categoryRepository.findByDelFlag(status).stream()
-                    .map(categoryMapper::toCategoryResponse)
-                    .toList();
-        }
+        Specification<Category> specification = Specification
+                .where(CategorySpecification.hasCategoryNameContaining(keyword))
+                .and(CategorySpecification.hasStatus(status));
 
-        // Nếu chỉ có keyword
-        if (status == null) {
-            return categoryRepository.findByCategoryNameContainingIgnoreCase(keyword).stream()
-                    .map(categoryMapper::toCategoryResponse)
-                    .toList();
-        }
-
-        // Nếu có cả status và keyword
-        return categoryRepository.findByDelFlagAndCategoryNameContainingIgnoreCase(status, keyword).stream()
+        return categoryRepository.findAll(specification, pageable).stream()
                 .map(categoryMapper::toCategoryResponse)
                 .toList();
     }
@@ -107,5 +96,9 @@ public class CategoryServiceImpl implements CategoryService {
                 .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_EXISTED));
         category.setDelFlag(false);
         categoryRepository.save(category);
+    }
+
+    private Boolean isAllParamsNullOrEmpty(Boolean status, String keyword) {
+        return status == null && (keyword == null || keyword.isEmpty());
     }
 }

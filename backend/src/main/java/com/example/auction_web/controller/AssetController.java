@@ -6,6 +6,7 @@ import com.example.auction_web.dto.request.filter.AssetFilterRequest;
 import com.example.auction_web.dto.response.ApiResponse;
 import com.example.auction_web.dto.response.AssetResponse;
 import com.example.auction_web.service.AssetService;
+import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
@@ -44,12 +45,14 @@ public class AssetController {
                                                   @RequestParam(required = false) BigDecimal maxPrice,
                                                   @RequestParam(required = false) String insprectorId,
                                                   @RequestParam(required = false) String typeId,
-                                                  @RequestParam(required = false) String status) {
+                                                  @RequestParam(required = false) String status,
+                                                  @RequestParam(required = false) Integer page,
+                                                  @RequestParam(required = false) Integer size) {
         return ApiResponse.<List<AssetResponse>>builder()
                 .code(HttpStatus.OK.value())
                 .result(assetService.filterAssets(vendorId, assetName,
                         minPrice, maxPrice, insprectorId,
-                        typeId, status))
+                        typeId, status, page, size))
                 .build();
     }
 

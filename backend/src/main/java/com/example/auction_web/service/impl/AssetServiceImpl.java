@@ -4,20 +4,27 @@ import com.example.auction_web.dto.request.AssetCreateRequest;
 import com.example.auction_web.dto.request.AssetUpdateRequest;
 import com.example.auction_web.dto.response.AssetResponse;
 import com.example.auction_web.entity.Asset;
+import com.example.auction_web.entity.Requirement;
 import com.example.auction_web.entity.Type;
 import com.example.auction_web.entity.auth.User;
 import com.example.auction_web.exception.AppException;
 import com.example.auction_web.exception.ErrorCode;
 import com.example.auction_web.mapper.AssetMapper;
 import com.example.auction_web.repository.AssetRepository;
+import com.example.auction_web.repository.RequirementRepository;
 import com.example.auction_web.repository.TypeRepository;
 import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.AssetService;
 import com.example.auction_web.service.FileUploadService;
+import com.example.auction_web.service.ImageAssetService;
+import com.example.auction_web.service.RequirementService;
 import com.example.auction_web.service.specification.AssetSpecification;
 import com.example.auction_web.utils.CreateSlug;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -25,6 +32,8 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
@@ -33,9 +42,10 @@ public class AssetServiceImpl implements AssetService {
     AssetRepository assetRepository;
     UserRepository userRepository;
     TypeRepository typeRepository;
-    FileUploadService fileUploadService;
+    ImageAssetService imageAssetService;
     AssetMapper assetMapper;
-
+    RequirementRepository requirementRepository;
+    RequirementService requirementService;
 
     @PreAuthorize("hasRole('ADMIN')")
     public AssetResponse createAsset(AssetCreateRequest request){
@@ -43,11 +53,16 @@ public class AssetServiceImpl implements AssetService {
             var asset = assetMapper.toAsset(request);
 
             asset.setSlug(CreateSlug.createSlug(asset.getAssetName()));
-            asset.setMainImage(fileUploadService.uploadFile(request.getMainImage()));
-            setAssetReference(request, asset);
+            asset.setMainImage(request.getImages().getFirst());
 
-            return assetMapper.toAssetResponse(assetRepository.save(asset));
-        } catch (IOException e) {
+            Asset newAsset = assetRepository.save(asset);
+
+            imageAssetService.createImageAsset(request.getImages(), newAsset);
+
+            requirementService.getRequirementById(request.getRequirementId()).setStatus("3");
+
+            return assetMapper.toAssetResponse(newAsset);
+        } catch (Exception e) {
             throw new AppException(ErrorCode.FILE_UPLOAD_FAILED);
         }
     }
@@ -62,7 +77,8 @@ public class AssetServiceImpl implements AssetService {
     }
 
     public List<AssetResponse> filterAssets(String vendorId, String assetName, BigDecimal minPrice, BigDecimal maxPrice,
-                                            String insprectorId, String typeId, String status) {
+                                            String insprectorId, String typeId, String status, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
         if (isAllParamsNullOrEmpty(vendorId, assetName, minPrice, maxPrice, insprectorId, typeId, status)) {
             return assetRepository.findAll().stream()
                     .map(assetMapper::toAssetResponse)
@@ -77,7 +93,7 @@ public class AssetServiceImpl implements AssetService {
                 .and(AssetSpecification.hasTypeId(typeId))
                 .and(AssetSpecification.hasStatus(status));
 
-        return assetRepository.findAll(specification).stream()
+        return assetRepository.findAll(specification, pageable).stream()
                 .map(assetMapper::toAssetResponse)
                 .toList();
     }

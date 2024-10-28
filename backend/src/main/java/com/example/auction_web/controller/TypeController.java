@@ -29,18 +29,12 @@ public class TypeController {
     }
 
     @GetMapping
-    ApiResponse<List<TypeResponse>> getAllTypes() {
-        return ApiResponse.<List<TypeResponse>>builder()
-                .code(HttpStatus.OK.value())
-                .result(typeService.getAllTypes())
-                .build();
-    }
-
-    @GetMapping("/filter")
     public ApiResponse<List<TypeResponse>> filterCategories(
             @RequestParam(required = false) Boolean status,
-            @RequestParam(required = false) String keyword) {
-        List<TypeResponse> filteredTypes = typeService.filterTypes(status, keyword);
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer size) {
+        List<TypeResponse> filteredTypes = typeService.filterTypes(status, keyword, page, size);
         return ApiResponse.<List<TypeResponse>>builder()
                 .code(HttpStatus.OK.value())
                 .result(filteredTypes)

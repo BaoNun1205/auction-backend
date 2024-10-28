@@ -1,7 +1,7 @@
-package com.example.auction_web.entity.auth;
-
+package com.example.auction_web.entity;
 import com.example.auction_web.entity.Asset;
 import com.example.auction_web.entity.Requirement;
+import com.example.auction_web.entity.auth.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,10 +18,10 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class Insprector {
+public class Inspector {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    String insprectorId;
+    String inspectorId;
 
     @OneToOne
     @JoinColumn(name = "userId", referencedColumnName = "userId")
@@ -44,9 +44,6 @@ public class Insprector {
         this.updatedAt = LocalDateTime.now();
     }
 
-    @OneToMany(mappedBy = "insprector", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "inspector", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<Asset> assets;
-
-    @OneToMany(mappedBy = "insprector", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    List<Requirement> requirement;
 }
