@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface RequirementRepository extends JpaRepository<Requirement, String> {
-    List<Requirement> findRequirementsByVendor_UserId(String userId);
-    List<Requirement> findRequirementsByInspector_UserId(String inspectorId);
+    List<Requirement> findRequirementsByUser_UserId(String userId);
+    List<Requirement> findRequirementsByInsprector_InsprectorId(String insprectorId);
 }
