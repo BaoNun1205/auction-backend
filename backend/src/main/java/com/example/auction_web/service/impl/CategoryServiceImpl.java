@@ -38,6 +38,12 @@ public class CategoryServiceImpl implements CategoryService {
         );
     }
 
+    public List<CategoryResponse> getCategories() {
+        return categoryRepository.findCategoriesByDelFlag(false).stream()
+                .map(categoryMapper::toCategoryResponse)
+                .toList();
+    }
+
     public List<CategoryResponse> filterCategories(Boolean status, String keyword, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         if (isAllParamsNullOrEmpty(status, keyword)) {
