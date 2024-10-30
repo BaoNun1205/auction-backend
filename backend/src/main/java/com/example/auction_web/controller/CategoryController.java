@@ -7,6 +7,7 @@ import com.example.auction_web.dto.response.ApiResponse;
 import com.example.auction_web.dto.response.CategoryResponse;
 import com.example.auction_web.dto.response.DataResponse;
 import com.example.auction_web.service.CategoryService;
+import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
@@ -63,7 +64,7 @@ public class CategoryController {
         int total = categoryService.totalCategories(status, keyword);
         return ApiResponse.<DataResponse>builder()
                 .code(HttpStatus.OK.value())
-                .result((DataResponse) DataResponse.<List<CategoryResponse>>builder()
+                .result(DataResponse.<List<CategoryResponse>>builder()
                         .data(filteredCategories)
                         .total(total)
                         .build())

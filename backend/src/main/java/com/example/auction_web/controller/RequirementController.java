@@ -60,7 +60,7 @@ public class RequirementController {
         int total = requirementService.totalRequirements(status, keyword);
         return ApiResponse.<DataResponse>builder()
                 .code(HttpStatus.OK.value())
-                .result((DataResponse) DataResponse.<List<RequirementResponse>>builder()
+                .result(DataResponse.<List<RequirementResponse>>builder()
                         .data(filteredRequirements)
                         .total(total)
                         .build())

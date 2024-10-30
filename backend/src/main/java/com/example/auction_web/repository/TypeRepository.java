@@ -13,4 +13,5 @@ import java.util.List;
 public interface TypeRepository extends JpaRepository<Type, String> {
     List<Type> findTypesByCategory_CategoryName(String categoryName);
     Page<Type> findAll(Specification<Type> specification, Pageable pageable);
+    List<Type> findAll(Specification<Type> specification);
 }
