@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -19,6 +20,7 @@ public class CategoryResponse {
     String slug;
     String image;
     Boolean delFlag;
+    List<TypeResponse> types;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 }

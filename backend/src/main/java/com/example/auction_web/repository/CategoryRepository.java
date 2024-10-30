@@ -14,6 +14,7 @@ import java.util.List;
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, String> {
     Boolean existsByCategoryName(String categoryName);
+    List<Category> findCategoriesByDelFlag(Boolean delflag);
     Page<Category> findAll(Specification<Category> specification, Pageable pageable);
 
     List<Category> findAll(Specification<Category> specification);

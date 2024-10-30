@@ -45,6 +45,14 @@ public class CategoryController {
 //                .build();
 //    }
 
+    @GetMapping("/get-all")
+    ApiResponse<List<CategoryResponse>> getCategories(){
+        return ApiResponse.<List<CategoryResponse>>builder()
+                .code(HttpStatus.OK.value())
+                .result(categoryService.getCategories())
+                .build();
+    }
+
     @GetMapping
     public ApiResponse<DataResponse> filterCategories(
             @RequestParam(required = false) Boolean status,
