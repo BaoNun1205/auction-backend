@@ -4,6 +4,7 @@ import com.example.auction_web.dto.request.RequirementCreateRequest;
 import com.example.auction_web.dto.request.RequirementUpdateRequest;
 import com.example.auction_web.dto.response.ApiResponse;
 import com.example.auction_web.dto.response.CategoryResponse;
+import com.example.auction_web.dto.response.DataResponse;
 import com.example.auction_web.dto.response.RequirementResponse;
 import com.example.auction_web.entity.Requirement;
 import com.example.auction_web.service.ImageRequirementService;
@@ -50,15 +51,19 @@ public class RequirementController {
     }
 
     @GetMapping
-    public ApiResponse<List<RequirementResponse>> filterRequirements(
+    public ApiResponse<DataResponse> filterRequirements(
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {
         List<RequirementResponse> filteredRequirements = requirementService.filterRequirements(status, keyword, page, size);
-        return ApiResponse.<List<RequirementResponse>>builder()
+        int total = requirementService.totalRequirements(status, keyword);
+        return ApiResponse.<DataResponse>builder()
                 .code(HttpStatus.OK.value())
-                .result(filteredRequirements)
+                .result((DataResponse) DataResponse.<List<RequirementResponse>>builder()
+                        .data(filteredRequirements)
+                        .total(total)
+                        .build())
                 .build();
     }
 
