@@ -51,6 +51,18 @@ public class TypeServiceImpl implements TypeService {
                 .toList();
     }
 
+    public int totalTypes(Boolean status, String keyword) {
+        if (isAllParamsNullOrEmpty(status, keyword)) {
+            return typeRepository.findAll().size();
+        }
+
+        Specification<Type> specification = Specification
+                .where(TypeSpecification.hasTypeNameContaining(keyword))
+                .and(TypeSpecification.hasStatus(status));
+
+        return typeRepository.findAll(specification).size();
+    }
+
     @PreAuthorize("hasRole('ADMIN')")
     public TypeResponse createType(TypeCreateRequest request) {
         try {
