@@ -61,6 +61,18 @@ public class CategoryServiceImpl implements CategoryService {
                 .toList();
     }
 
+    public int totalCategories(Boolean status, String keyword) {
+        if (isAllParamsNullOrEmpty(status, keyword)) {
+            return categoryRepository.findAll().size();
+        }
+
+        Specification<Category> specification = Specification
+                .where(CategorySpecification.hasCategoryNameContaining(keyword))
+                .and(CategorySpecification.hasStatus(status));
+
+        return categoryRepository.findAll(specification).size();
+    }
+
     @PreAuthorize("hasRole('ADMIN')")
     public CategoryResponse createCategory(CategoryCreateRequest request) {
         try {

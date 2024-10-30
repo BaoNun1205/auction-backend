@@ -11,6 +11,7 @@ import java.util.List;
 public interface CategoryService {
     List<CategoryResponse> getCategories();
     List<CategoryResponse> filterCategories(Boolean status, String keyword, int page, int size);
+    int totalCategories(Boolean status, String keyword);
     CategoryResponse getCategory(String id);
     CategoryResponse createCategory(CategoryCreateRequest request);
     CategoryResponse updateCategory(String id, CategoryUpdateRequest request);
