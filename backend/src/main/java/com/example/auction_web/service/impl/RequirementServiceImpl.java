@@ -95,6 +95,18 @@ public class RequirementServiceImpl implements RequirementService {
                 .toList();
     }
 
+    public int totalRequirements(String status, String keyword) {
+        if (isAllParamsNullOrEmpty(status, keyword)) {
+            return requirementRepository.findAll().size();
+        }
+
+        Specification<Requirement> specification = Specification
+                .where(RequirementSpecification.hasStatus(status))
+                .and(RequirementSpecification.hasAssetNameContaining(keyword));
+
+        return requirementRepository.findAll(specification).size();
+    }
+
     public RequirementResponse getRequirementResponseById(String requirementId) {
         return requirementMapper.toRequirementResponse(requirementRepository.findById(requirementId)
                 .orElseThrow(() -> new AppException(ErrorCode.REQUIREMENT_NOT_EXISTED)));

@@ -19,4 +19,5 @@ public interface RequirementService {
     RequirementResponse getRequirementResponseById(String requirementId);
     Requirement getRequirementById(String requirementId);
     List<RequirementResponse> filterRequirements(String status, String keyword, Integer page, Integer size);
+    int totalRequirements(String status, String keyword);
 }
