@@ -5,6 +5,8 @@ import com.example.auction_web.dto.request.AssetUpdateRequest;
 import com.example.auction_web.dto.request.filter.AssetFilterRequest;
 import com.example.auction_web.dto.response.ApiResponse;
 import com.example.auction_web.dto.response.AssetResponse;
+import com.example.auction_web.dto.response.DataResponse;
+import com.example.auction_web.entity.Asset;
 import com.example.auction_web.service.AssetService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
@@ -38,21 +40,24 @@ public class AssetController {
                 .build();
     }
 
-    @GetMapping("/filter")
-    ApiResponse<List<AssetResponse>> filterAssets(@RequestParam(required = false) String vendorId,
-                                                  @RequestParam(required = false) String assetName,
-                                                  @RequestParam(required = false) BigDecimal minPrice,
-                                                  @RequestParam(required = false) BigDecimal maxPrice,
-                                                  @RequestParam(required = false) String insprectorId,
-                                                  @RequestParam(required = false) String typeId,
-                                                  @RequestParam(required = false) String status,
-                                                  @RequestParam(required = false) Integer page,
-                                                  @RequestParam(required = false) Integer size) {
-        return ApiResponse.<List<AssetResponse>>builder()
+    @GetMapping()
+    ApiResponse<DataResponse> filterAssets(@RequestParam(required = false) String vendorId,
+                                           @RequestParam(required = false) String assetName,
+                                           @RequestParam(required = false) BigDecimal minPrice,
+                                           @RequestParam(required = false) BigDecimal maxPrice,
+                                           @RequestParam(required = false) String insprectorId,
+                                           @RequestParam(required = false) String typeId,
+                                           @RequestParam(required = false) String status,
+                                           @RequestParam(required = false) Integer page,
+                                           @RequestParam(required = false) Integer size) {
+        List<AssetResponse> filteredAssets = assetService.filterAssets(vendorId, assetName, minPrice, maxPrice, insprectorId, typeId, status, page, size);
+        int total = assetService.totalAssets(vendorId, assetName, minPrice, maxPrice, insprectorId, typeId, status);
+        return ApiResponse.<DataResponse>builder()
                 .code(HttpStatus.OK.value())
-                .result(assetService.filterAssets(vendorId, assetName,
-                        minPrice, maxPrice, insprectorId,
-                        typeId, status, page, size))
+                .result(DataResponse.<List<AssetResponse>>builder()
+                        .data(filteredAssets)
+                        .total(total)
+                        .build())
                 .build();
     }
 

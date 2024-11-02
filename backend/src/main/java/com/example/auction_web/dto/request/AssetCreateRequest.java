@@ -24,5 +24,6 @@ public class AssetCreateRequest {
     BigDecimal assetPrice;
     String inspectorId;
     String typeId;
+    String status;
     List<String> images;
 }

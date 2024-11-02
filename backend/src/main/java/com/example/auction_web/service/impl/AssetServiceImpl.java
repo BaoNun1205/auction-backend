@@ -98,6 +98,23 @@ public class AssetServiceImpl implements AssetService {
                 .toList();
     }
 
+    public int totalAssets(String vendorId, String assetName, BigDecimal minPrice, BigDecimal maxPrice,
+                           String insprectorId, String typeId, String status) {
+        if (isAllParamsNullOrEmpty(vendorId, assetName, minPrice, maxPrice, insprectorId, typeId, status)) {
+            return assetRepository.findAll().size();
+        }
+
+        Specification<Asset> specification = Specification
+                .where(AssetSpecification.hasVendorId(vendorId))
+                .and(AssetSpecification.hasAssetNameContaining(assetName))
+                .and(AssetSpecification.hasPriceBetween(minPrice, maxPrice))
+                .and(AssetSpecification.hasInsprectorId(insprectorId))
+                .and(AssetSpecification.hasTypeId(typeId))
+                .and(AssetSpecification.hasStatus(status));
+
+        return assetRepository.findAll(specification).size();
+    }
+
     public void deleteAsset(String id) {
         Asset asset = assetRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.ASSET_NOT_EXISTED));

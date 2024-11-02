@@ -12,7 +12,6 @@ import java.util.List;
 
 @Repository
 public interface AssetRepository extends JpaRepository<Asset, String>, JpaSpecificationExecutor<Asset> {
-    List<Asset> findByAssetNameContaining(String assetName);
-    Boolean existsByAssetNameContaining(String assetName);
     Page<Asset> findAll(Specification<Asset> spec, Pageable pageAble);
+    List<Asset> findAll(Specification<Asset> spec);
 }
