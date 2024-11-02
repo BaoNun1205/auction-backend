@@ -41,7 +41,6 @@ public class TypeController {
                 .code(HttpStatus.OK.value())
                 .result(DataResponse.<List<TypeResponse>>builder()
                         .data(filteredTypes)
-                        .total(total)
                         .build())
                 .build();
     }
