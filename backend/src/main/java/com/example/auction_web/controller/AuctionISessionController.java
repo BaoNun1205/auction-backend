@@ -6,6 +6,7 @@ import com.example.auction_web.dto.request.AuctionSessionUpdateRequest;
 import com.example.auction_web.dto.request.RegisterSessionCreateRequest;
 import com.example.auction_web.dto.response.ApiResponse;
 import com.example.auction_web.dto.response.AuctionSessionResponse;
+import com.example.auction_web.dto.response.DataResponse;
 import com.example.auction_web.dto.response.RegisterSessionResponse;
 import com.example.auction_web.entity.AuctionSession;
 import com.example.auction_web.service.AuctionSessionService;
@@ -15,6 +16,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -50,10 +52,23 @@ public class AuctionISessionController {
     }
 
     @GetMapping
-    ApiResponse<List<AuctionSessionResponse>> getAllAuctionSessions() {
-        return ApiResponse.<List<AuctionSessionResponse>>builder()
+    ApiResponse<DataResponse> filterAuctionSession(
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) LocalDateTime fromDate,
+            @RequestParam(required = false) LocalDateTime toDate,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) int page,
+            @RequestParam(required = false) int size) {
+
+        List<AuctionSessionResponse> auctionSessionResponses = auctionSessionService.filterAuctionSession(status, fromDate, toDate, keyword, page, size);
+        int total = auctionSessionService.totalAuctionSession(status, fromDate, toDate, keyword);
+
+        return ApiResponse.<DataResponse>builder()
                 .code(HttpStatus.OK.value())
-                .result(auctionSessionService.getAllAuctionSessions())
+                .result(DataResponse.<List<AuctionSessionResponse>>builder()
+                        .data(auctionSessionResponses)
+                        .total(total)
+                        .build())
                 .build();
     }
 

@@ -16,12 +16,19 @@ import com.example.auction_web.repository.AuctionSessionRepository;
 import com.example.auction_web.repository.EventRepository;
 import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.AuctionSessionService;
+import com.example.auction_web.service.specification.AuctionSessionSpecification;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
+
+import static org.antlr.v4.runtime.tree.xpath.XPath.findAll;
 
 @Service
 @RequiredArgsConstructor
@@ -49,6 +56,37 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
         return auctionSessionRepository.findAll().stream()
                 .map(auctionSessionMapper::toAuctionItemResponse)
                 .toList();
+    }
+
+    public List<AuctionSessionResponse> filterAuctionSession(String status, LocalDateTime fromDate, LocalDateTime toDate, String keyword, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        if (isAllParamsNullOrEmpty(status, fromDate, toDate, keyword)) {
+            return auctionSessionRepository.findAll().stream()
+                    .map(auctionSessionMapper::toAuctionItemResponse)
+                    .toList();
+        }
+
+        Specification<AuctionSession> specification = Specification
+                .where(AuctionSessionSpecification.hasStatus(status))
+                .and(AuctionSessionSpecification.hasFromDateToDate(fromDate, toDate))
+                .and(AuctionSessionSpecification.hasKeyword(keyword));
+
+        return auctionSessionRepository.findAll(specification, pageable).stream()
+                .map(auctionSessionMapper::toAuctionItemResponse)
+                .toList();
+    }
+
+    public int totalAuctionSession(String status, LocalDateTime fromDate, LocalDateTime toDate, String keyword) {
+        if (isAllParamsNullOrEmpty(status, fromDate, toDate, keyword)) {
+            return auctionSessionRepository.findAll().size();
+        }
+
+        Specification<AuctionSession> specification = Specification
+                .where(AuctionSessionSpecification.hasStatus(status))
+                .and(AuctionSessionSpecification.hasFromDateToDate(fromDate, toDate))
+                .and(AuctionSessionSpecification.hasKeyword(keyword));
+
+        return auctionSessionRepository.findAll(specification).size();
     }
 
     public AuctionSessionResponse getAuctionSessionById(String auctionSessionId) {
@@ -85,5 +123,7 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
                 .orElseThrow(() -> new AppException(ErrorCode.ASSET_NOT_EXISTED));
     }
 
-
+    public boolean isAllParamsNullOrEmpty(String status, LocalDateTime fromDate, LocalDateTime toDate, String keyword) {
+        return (status == null || status.isEmpty()) && fromDate == null  && toDate == null && (keyword == null || keyword.isEmpty());
+    }
 }
