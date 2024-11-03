@@ -1,11 +1,13 @@
 package com.example.auction_web.controller;
 
+import com.example.auction_web.dto.request.AuctionSessionByStatusRequest;
 import com.example.auction_web.dto.request.AuctionSessionCreateRequest;
 import com.example.auction_web.dto.request.AuctionSessionUpdateRequest;
 import com.example.auction_web.dto.request.RegisterSessionCreateRequest;
 import com.example.auction_web.dto.response.ApiResponse;
 import com.example.auction_web.dto.response.AuctionSessionResponse;
 import com.example.auction_web.dto.response.RegisterSessionResponse;
+import com.example.auction_web.entity.AuctionSession;
 import com.example.auction_web.service.AuctionSessionService;
 import com.example.auction_web.service.RegisterSessionService;
 import lombok.RequiredArgsConstructor;
@@ -52,6 +54,14 @@ public class AuctionISessionController {
         return ApiResponse.<List<AuctionSessionResponse>>builder()
                 .code(HttpStatus.OK.value())
                 .result(auctionSessionService.getAllAuctionSessions())
+                .build();
+    }
+
+    @PatchMapping()
+    ApiResponse<List<AuctionSessionResponse>> getListAuctionSessionByStatus(@RequestBody AuctionSessionByStatusRequest request) {
+        return ApiResponse.<List<AuctionSessionResponse>>builder()
+                .code(HttpStatus.OK.value())
+                .result(auctionSessionService.getListAuctionSessionByStatus(request.getStatus()))
                 .build();
     }
 }

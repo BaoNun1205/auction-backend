@@ -29,30 +29,6 @@ public class CategoryController {
                 .result(categoryService.getCategory(categoryId))
                 .build();
     }
-//
-//    @GetMapping
-//    public ApiResponse<List<CategoryResponse>> filterCategories(
-//            @RequestParam(required = false) Boolean status,
-//            @RequestParam(required = false) String keyword,
-//            @RequestParam(required = false, defaultValue = "0") Integer page,
-//            @RequestParam(required = false, defaultValue = "10") Integer size) {
-//        List<CategoryResponse> filteredCategories = categoryService.filterCategories(status, keyword, page, size);
-//        return ApiResponse.<List<CategoryResponse>>builder()
-//                .code(HttpStatus.OK.value())
-//                .result((List<CategoryResponse>) DataResponse.<List<CategoryResponse>>builder()
-//                        .data(filteredCategories)
-//                        .total(filteredCategories.size())
-//                        .build())
-//                .build();
-//    }
-
-    @GetMapping("/get-all")
-    ApiResponse<List<CategoryResponse>> getCategories(){
-        return ApiResponse.<List<CategoryResponse>>builder()
-                .code(HttpStatus.OK.value())
-                .result(categoryService.getCategories())
-                .build();
-    }
 
     @GetMapping
     public ApiResponse<DataResponse> filterCategories(
