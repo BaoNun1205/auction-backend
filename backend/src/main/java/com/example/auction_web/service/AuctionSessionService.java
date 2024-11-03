@@ -12,4 +12,5 @@ public interface AuctionSessionService {
     List<AuctionSessionResponse> getAllAuctionSessions();
     AuctionSessionResponse getAuctionSessionById(String auctionSessionId);
     void completeAuctionSession(String auctionSessionId);
+    List<AuctionSessionResponse> getListAuctionSessionByStatus(String status);
 }

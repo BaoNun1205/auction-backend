@@ -56,6 +56,12 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
                 .orElseThrow(() -> new AppException(ErrorCode.AUCTION_SESSION_NOT_EXISTED)));
     }
 
+    public List<AuctionSessionResponse> getListAuctionSessionByStatus(String status) {
+        return auctionSessionRepository.findAuctionSessionByStatusOrderByStartTimeAsc(status).stream()
+                .map(auctionSessionMapper::toAuctionItemResponse)
+                .toList();
+    }
+
     @Transactional
     public void completeAuctionSession(String auctionSessionId) {
         AuctionSession auctionSession = auctionSessionRepository.findById(auctionSessionId)
@@ -78,4 +84,6 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
         return assetRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.ASSET_NOT_EXISTED));
     }
+
+
 }
