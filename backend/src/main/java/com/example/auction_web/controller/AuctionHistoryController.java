@@ -2,8 +2,10 @@ package com.example.auction_web.controller;
 
 import com.example.auction_web.dto.request.AuctionHistoryCreateRequest;
 import com.example.auction_web.dto.request.AuctionHistoryUpdateRequest;
+import com.example.auction_web.dto.request.AuctionSessionInfoRequest;
 import com.example.auction_web.dto.response.ApiResponse;
 import com.example.auction_web.dto.response.AuctionHistoryResponse;
+import com.example.auction_web.dto.response.AuctionSessionInfoResponse;
 import com.example.auction_web.service.AuctionHistoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -48,6 +50,14 @@ public class AuctionHistoryController {
         return ApiResponse.<AuctionHistoryResponse>builder()
                 .code(HttpStatus.OK.value())
                 .result(auctionHistoryService.getAuctionHistoriesByAuctionSessionId(auctionSessionId))
+                .build();
+    }
+
+    @PatchMapping("/infoAuctionSession")
+    ApiResponse<AuctionSessionInfoResponse> getAuctionSessionInfo(@RequestBody AuctionSessionInfoRequest request) {
+        return ApiResponse.<AuctionSessionInfoResponse>builder()
+                .code(HttpStatus.OK.value())
+                .result(auctionHistoryService.getAuctionSessionInfo(request.getAuctionSessionId()))
                 .build();
     }
 }

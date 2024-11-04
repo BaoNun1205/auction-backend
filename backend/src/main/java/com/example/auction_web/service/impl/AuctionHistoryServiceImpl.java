@@ -2,7 +2,9 @@ package com.example.auction_web.service.impl;
 
 import com.example.auction_web.dto.request.AuctionHistoryCreateRequest;
 import com.example.auction_web.dto.request.AuctionHistoryUpdateRequest;
+import com.example.auction_web.dto.request.AuctionSessionInfoRequest;
 import com.example.auction_web.dto.response.AuctionHistoryResponse;
+import com.example.auction_web.dto.response.AuctionSessionInfoResponse;
 import com.example.auction_web.entity.AuctionHistory;
 import com.example.auction_web.entity.AuctionSession;
 import com.example.auction_web.entity.auth.User;
@@ -42,6 +44,16 @@ public class AuctionHistoryServiceImpl implements AuctionHistoryService {
                 .orElseThrow(() -> new AppException(ErrorCode.AUCTION_HISTORY_NOT_EXISTED));
         auctionHistoryMapper.updateAuctionHistoryFromRequest(auctionHistory, request);
         return auctionHistoryMapper.toAuctionHistoryResponse(auctionHistoryRepository.save(auctionHistory));
+    }
+
+    public AuctionSessionInfoResponse getAuctionSessionInfo(String auctionSessionId) {
+        var totalAuctionHistoriesByAuctionSessionId = auctionHistoryRepository.countAuctionHistoriesByAuctionSession_AuctionSessionId(auctionSessionId);
+        var highestBidPriceByAuctionSessionId = auctionHistoryRepository.findMaxBidPriceByAuctionSession(auctionSessionId);
+
+        return AuctionSessionInfoResponse.builder()
+                .totalAuctionHistory(totalAuctionHistoriesByAuctionSessionId)
+                .highestBid(highestBidPriceByAuctionSessionId)
+                .build();
     }
 
     // get all AuctionHistories
