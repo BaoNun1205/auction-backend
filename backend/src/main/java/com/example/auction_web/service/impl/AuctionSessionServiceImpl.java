@@ -2,6 +2,7 @@ package com.example.auction_web.service.impl;
 
 import com.example.auction_web.dto.request.AuctionSessionCreateRequest;
 import com.example.auction_web.dto.request.AuctionSessionUpdateRequest;
+import com.example.auction_web.dto.response.AuctionSessionInfoDetail;
 import com.example.auction_web.dto.response.AuctionSessionResponse;
 import com.example.auction_web.entity.Asset;
 import com.example.auction_web.entity.AuctionSession;
@@ -14,6 +15,7 @@ import com.example.auction_web.mapper.AuctionSessionMapper;
 import com.example.auction_web.repository.AssetRepository;
 import com.example.auction_web.repository.AuctionSessionRepository;
 import com.example.auction_web.repository.EventRepository;
+import com.example.auction_web.repository.ImageAssetRepository;
 import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.AuctionSessionService;
 import com.example.auction_web.service.specification.AuctionSessionSpecification;
@@ -37,6 +39,7 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
     AuctionSessionRepository auctionSessionRepository;
     UserRepository userRepository;
     AssetRepository assetRepository;
+    ImageAssetRepository imageAssetRepository;
     AuctionSessionMapper auctionSessionMapper;
 
     public AuctionSessionResponse createAuctionSession(AuctionSessionCreateRequest request) {
@@ -52,10 +55,12 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
         return auctionSessionMapper.toAuctionItemResponse(auctionSessionRepository.save(auctionSession));
     }
 
-    public List<AuctionSessionResponse> getAllAuctionSessions() {
-        return auctionSessionRepository.findAll().stream()
-                .map(auctionSessionMapper::toAuctionItemResponse)
-                .toList();
+    public AuctionSessionInfoDetail getDetailAuctionSessionById(String auctionSessionId) {
+        AuctionSession auctionSession = auctionSessionRepository.findById(auctionSessionId)
+                .orElseThrow(() -> new AppException(ErrorCode.AUCTION_SESSION_NOT_EXISTED));
+        AuctionSessionInfoDetail auctionSessionInfoDetail = auctionSessionRepository.findAuctionSessionInfoDetailById(auctionSessionId);
+        auctionSessionInfoDetail.setListImage(imageAssetRepository.findImageAssetsByAsset_AssetId(auctionSession.getAsset().getAssetId()));
+        return auctionSessionInfoDetail;
     }
 
     public List<AuctionSessionResponse> filterAuctionSession(String status, LocalDateTime fromDate, LocalDateTime toDate, String keyword, int page, int size) {
