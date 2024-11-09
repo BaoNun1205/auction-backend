@@ -18,6 +18,7 @@ import com.example.auction_web.repository.EventRepository;
 import com.example.auction_web.repository.ImageAssetRepository;
 import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.AuctionSessionService;
+import com.example.auction_web.service.ImageAssetService;
 import com.example.auction_web.service.specification.AuctionSessionSpecification;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -30,8 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.antlr.v4.runtime.tree.xpath.XPath.findAll;
-
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
@@ -41,6 +40,7 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
     AssetRepository assetRepository;
     ImageAssetRepository imageAssetRepository;
     AuctionSessionMapper auctionSessionMapper;
+    ImageAssetService imageAssetService;
 
     public AuctionSessionResponse createAuctionSession(AuctionSessionCreateRequest request) {
         var auctionSession = auctionSessionMapper.toAuctionItem(request);
@@ -58,8 +58,8 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
     public AuctionSessionInfoDetail getDetailAuctionSessionById(String auctionSessionId) {
         AuctionSession auctionSession = auctionSessionRepository.findById(auctionSessionId)
                 .orElseThrow(() -> new AppException(ErrorCode.AUCTION_SESSION_NOT_EXISTED));
-        AuctionSessionInfoDetail auctionSessionInfoDetail = auctionSessionRepository.findAuctionSessionInfoDetailById(auctionSessionId);
-        auctionSessionInfoDetail.setListImage(imageAssetRepository.findImageAssetsByAsset_AssetId(auctionSession.getAsset().getAssetId()));
+        AuctionSessionInfoDetail auctionSessionInfoDetail = auctionSessionRepository.findAuctionSessionInfoDetailById(auctionSession.getAuctionSessionId());
+        auctionSessionInfoDetail.setListImage(imageAssetService.findAllImageAssetsByAssetId(auctionSession.getAsset().getAssetId()));
         return auctionSessionInfoDetail;
     }
 
