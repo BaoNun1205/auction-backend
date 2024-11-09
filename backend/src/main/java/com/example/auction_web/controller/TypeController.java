@@ -1,5 +1,6 @@
 package com.example.auction_web.controller;
 
+import com.cloudinary.Api;
 import com.example.auction_web.dto.request.TypeCreateRequest;
 import com.example.auction_web.dto.request.TypeUpdateRequest;
 import com.example.auction_web.dto.request.filter.CategoryFilterRequest;
@@ -29,6 +30,14 @@ public class TypeController {
                 .build();
     }
 
+    @GetMapping("/get-all")
+    ApiResponse<List<TypeResponse>> getTypes(){
+        return ApiResponse.<List<TypeResponse>>builder()
+                .code(HttpStatus.OK.value())
+                .result(typeService.getTypes())
+                .build();
+    }
+
     @GetMapping
     public ApiResponse<DataResponse> filterCategories(
             @RequestParam(required = false) Boolean status,
@@ -50,14 +59,6 @@ public class TypeController {
         return ApiResponse.<TypeResponse>builder()
                 .code(HttpStatus.OK.value())
                 .result(typeService.updateType(id, request))
-                .build();
-    }
-
-    @GetMapping("/category/{categoryName}")
-    ApiResponse<List<TypeResponse>> findTypeByCategory(@RequestParam String categoryName) {
-        return ApiResponse.<List<TypeResponse>>builder()
-                .code(HttpStatus.OK.value())
-                .result(typeService.findTypesByCategoryName(categoryName))
                 .build();
     }
 
