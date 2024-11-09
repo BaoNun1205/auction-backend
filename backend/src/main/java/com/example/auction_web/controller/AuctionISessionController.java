@@ -81,4 +81,12 @@ public class AuctionISessionController {
                 .result(auctionSessionService.getDetailAuctionSessionById(request.getAuctionSessionId()))
                 .build();
     }
+
+    @GetMapping("/{id}")
+    ApiResponse<AuctionSessionResponse> getAuctionSessionById(@PathVariable String id) {
+        return ApiResponse.<AuctionSessionResponse>builder()
+                .code(HttpStatus.OK.value())
+                .result(auctionSessionService.getAuctionSessionById(id))
+                .build();
+    }
 }
