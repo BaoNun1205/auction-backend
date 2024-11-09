@@ -10,8 +10,7 @@ public interface TypeService {
     List<TypeResponse> filterTypes(Boolean status, String keyword, Integer page, Integer size);
     TypeResponse createType(TypeCreateRequest request);
     TypeResponse updateType(String typeId, TypeUpdateRequest request);
-    List<TypeResponse> getAllTypes();
+    List<TypeResponse> getTypes();
     void deleteType(String id);
     void restoreType(String id);
-    List<TypeResponse> findTypesByCategoryName(String categoryName);
 }
