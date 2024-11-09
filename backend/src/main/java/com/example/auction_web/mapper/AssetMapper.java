@@ -16,13 +16,13 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface AssetMapper {
-    @Mapping(target = "user", ignore = true)
+    @Mapping(target = "vendor", ignore = true)
     @Mapping(target = "type", ignore = true)
     @Mapping(target = "inspector", ignore = true)
-//    @Mapping(target = "mainImage", source = "mainImage", qualifiedByName = "mapMultipartFileToString")
+    @Mapping(target = "requirement", ignore = true)
     Asset toAsset(AssetCreateRequest assetCreationRequest);
 
-    @Mapping(source = "user", target = "vendorId", qualifiedByName = "userToString")
+    @Mapping(source = "vendor", target = "vendorId", qualifiedByName = "userToString")
     @Mapping(source = "type", target = "typeId", qualifiedByName = "typeToString")
     AssetResponse toAssetResponse(Asset asset);
     List<AssetResponse> toAssetResponses(List<Asset> assets);

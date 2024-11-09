@@ -56,8 +56,8 @@ public class User {
     @ManyToMany
     Set<AuctionSession> auctionSessions;
 
-    @ManyToMany
-    Set<Asset> assets;
+    @OneToMany(mappedBy = "vendor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<Asset> assets;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     BalanceUser balanceUser;
