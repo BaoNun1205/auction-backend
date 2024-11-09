@@ -11,8 +11,7 @@ public interface TypeService {
     int totalTypes(Boolean status, String keyword);
     TypeResponse createType(TypeCreateRequest request);
     TypeResponse updateType(String typeId, TypeUpdateRequest request);
-    List<TypeResponse> getAllTypes();
+    List<TypeResponse> getTypes();
     void deleteType(String id);
     void restoreType(String id);
-    List<TypeResponse> findTypesByCategoryName(String categoryName);
 }

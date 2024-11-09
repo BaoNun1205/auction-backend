@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 public interface TypeRepository extends JpaRepository<Type, String> {
-    List<Type> findTypesByCategory_CategoryName(String categoryName);
+    List<Type> findTypesByDelFlag(Boolean delflag);
     Page<Type> findAll(Specification<Type> specification, Pageable pageable);
     List<Type> findAll(Specification<Type> specification);
 }
