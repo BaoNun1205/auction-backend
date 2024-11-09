@@ -32,7 +32,9 @@ public class NotificationService {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(email);
         message.setSubject("Auction Session Reminder");
-        message.setText("Auction session " + auctionSession.getAuctionSessionId() + " is about to start");
+        message.setText("Auction session " + auctionSession.getAsset().getAssetName() + " is about to start");
         javaMailSender.send(message);
     }
+
+
 }
