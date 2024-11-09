@@ -24,7 +24,7 @@ public interface RequirementMapper {
 
     @Named("userToString")
     default String userToString(User user) {
-        return user != null ? user.getUsername() : null;
+        return user != null ? user.getUserId() : null;
     }
 
 //    @Named("imageToString")
@@ -39,6 +39,6 @@ public interface RequirementMapper {
 
     @Named("inspectorToString")
     default String inspectorToString(Inspector inspector) {
-        return inspector != null ? inspector.getUser().getUsername() : null;
+        return inspector != null ? inspector.getUser().getUserId() : null;
     }
 }
