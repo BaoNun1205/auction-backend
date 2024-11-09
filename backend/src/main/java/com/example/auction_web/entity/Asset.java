@@ -30,7 +30,7 @@ public class Asset {
 
     @ManyToOne
     @JoinColumn(name = "vendorId", referencedColumnName = "userId")
-    User user;
+    User vendor;
 
     String assetName;
     String slug;
