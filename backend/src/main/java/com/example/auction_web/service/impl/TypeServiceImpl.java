@@ -51,6 +51,18 @@ public class TypeServiceImpl implements TypeService {
                 .toList();
     }
 
+    public int totalTypes(Boolean status, String keyword) {
+        if (isAllParamsNullOrEmpty(status, keyword)) {
+            return typeRepository.findAll().size();
+        }
+
+        Specification<Type> specification = Specification
+                .where(TypeSpecification.hasTypeNameContaining(keyword))
+                .and(TypeSpecification.hasStatus(status));
+
+        return typeRepository.findAll(specification).size();
+    }
+
     @PreAuthorize("hasRole('ADMIN')")
     public TypeResponse createType(TypeCreateRequest request) {
         try {
@@ -77,8 +89,8 @@ public class TypeServiceImpl implements TypeService {
         return typeMapper.toTypeResponse(typeRepository.save(type));
     }
 
-    public List<TypeResponse> getAllTypes() {
-        return typeRepository.findAll().stream()
+    public List<TypeResponse> getTypes() {
+        return typeRepository.findTypesByDelFlag(false).stream()
                 .map(typeMapper::toTypeResponse)
                 .toList();
     }
@@ -95,15 +107,6 @@ public class TypeServiceImpl implements TypeService {
                 .orElseThrow(() -> new AppException(ErrorCode.TYPE_NOT_EXISTED));
         type.setDelFlag(false);
         typeRepository.save(type);
-    }
-
-    public List<TypeResponse> findTypesByCategoryName(String categoryName) {
-        if (!categoryRepository.existsByCategoryName(categoryName)) {
-            throw new AppException(ErrorCode.CATEGORY_NOT_EXISTED);
-        }
-        return typeRepository.findTypesByCategory_CategoryName(categoryName).stream()
-                .map(typeMapper::toTypeResponse)
-                .toList();
     }
 
     private Boolean isAllParamsNullOrEmpty(Boolean status, String keyword) {

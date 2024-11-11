@@ -48,6 +48,12 @@ public class ImageAssetServiceImpl implements ImageAssetService {
                 .toList();
     }
 
+    public List<ImageAssetResponse> findAllImageAssetsByAssetId(String assetId) {
+        return imageAssetRepository.findImageAssetsByAsset_AssetId(assetId).stream()
+                .map(imageAssetMapper::toImageAssetResponse)
+                .toList();
+    }
+
     public List<ImageAssetResponse> findImageAssetByAssetId(String assetId) {
         if (!assetRepository.existsById(assetId)) {
             throw new AppException(ErrorCode.ASSET_NOT_EXISTED);

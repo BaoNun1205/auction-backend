@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class AssetResponse {
+    String assetId;
     String vendorId;
     String assetName;
     String slug;
@@ -23,7 +24,6 @@ public class AssetResponse {
     BigDecimal assetPrice;
     String inspectorId;
     String typeId;
-    String assetStatusId;
     String status;
     Boolean delFlag;
     LocalDateTime createdAt;

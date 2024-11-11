@@ -53,6 +53,6 @@ public class InspectorServiceImpl implements InspectorService {
         if (!userRepository.existsById(userId)) {
             throw new AppException(ErrorCode.USER_NOT_EXISTED);
         }
-        return inspectorMapper.toInspectorResponse(inspectorRepository.findByUser_UserId(userId));
+        return inspectorMapper.toInspectorResponse(inspectorRepository.findInspectorByUser_UserId(userId));
     }
 }

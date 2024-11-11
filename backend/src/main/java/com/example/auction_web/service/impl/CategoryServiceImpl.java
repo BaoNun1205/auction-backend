@@ -38,6 +38,12 @@ public class CategoryServiceImpl implements CategoryService {
         );
     }
 
+    public List<CategoryResponse> getCategories() {
+        return categoryRepository.findCategoriesByDelFlag(false).stream()
+                .map(categoryMapper::toCategoryResponse)
+                .toList();
+    }
+
     public List<CategoryResponse> filterCategories(Boolean status, String keyword, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         if (isAllParamsNullOrEmpty(status, keyword)) {
@@ -53,6 +59,18 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryRepository.findAll(specification, pageable).stream()
                 .map(categoryMapper::toCategoryResponse)
                 .toList();
+    }
+
+    public int totalCategories(Boolean status, String keyword) {
+        if (isAllParamsNullOrEmpty(status, keyword)) {
+            return categoryRepository.findAll().size();
+        }
+
+        Specification<Category> specification = Specification
+                .where(CategorySpecification.hasCategoryNameContaining(keyword))
+                .and(CategorySpecification.hasStatus(status));
+
+        return categoryRepository.findAll(specification).size();
     }
 
     @PreAuthorize("hasRole('ADMIN')")

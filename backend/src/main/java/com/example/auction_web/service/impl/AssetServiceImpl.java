@@ -3,7 +3,9 @@ package com.example.auction_web.service.impl;
 import com.example.auction_web.dto.request.AssetCreateRequest;
 import com.example.auction_web.dto.request.AssetUpdateRequest;
 import com.example.auction_web.dto.response.AssetResponse;
+import com.example.auction_web.dto.response.InspectorResponse;
 import com.example.auction_web.entity.Asset;
+import com.example.auction_web.entity.Inspector;
 import com.example.auction_web.entity.Requirement;
 import com.example.auction_web.entity.Type;
 import com.example.auction_web.entity.auth.User;
@@ -11,13 +13,11 @@ import com.example.auction_web.exception.AppException;
 import com.example.auction_web.exception.ErrorCode;
 import com.example.auction_web.mapper.AssetMapper;
 import com.example.auction_web.repository.AssetRepository;
+import com.example.auction_web.repository.InspectorRepository;
 import com.example.auction_web.repository.RequirementRepository;
 import com.example.auction_web.repository.TypeRepository;
 import com.example.auction_web.repository.auth.UserRepository;
-import com.example.auction_web.service.AssetService;
-import com.example.auction_web.service.FileUploadService;
-import com.example.auction_web.service.ImageAssetService;
-import com.example.auction_web.service.RequirementService;
+import com.example.auction_web.service.*;
 import com.example.auction_web.service.specification.AssetSpecification;
 import com.example.auction_web.utils.CreateSlug;
 import lombok.RequiredArgsConstructor;
@@ -44,8 +44,9 @@ public class AssetServiceImpl implements AssetService {
     TypeRepository typeRepository;
     ImageAssetService imageAssetService;
     AssetMapper assetMapper;
-    RequirementRepository requirementRepository;
     RequirementService requirementService;
+    InspectorService inspectorService;
+    InspectorRepository inspectorRepository;
 
     @PreAuthorize("hasRole('ADMIN')")
     public AssetResponse createAsset(AssetCreateRequest request){
@@ -54,17 +55,38 @@ public class AssetServiceImpl implements AssetService {
 
             asset.setSlug(CreateSlug.createSlug(asset.getAssetName()));
             asset.setMainImage(request.getImages().getFirst());
+            // Set user (vendor)
+            User vendor = userRepository.findById(request.getVendorId())
+                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+            asset.setVendor(vendor);
+
+            // Set inspector
+            Inspector inspector = inspectorRepository.findInspectorByUser_UserId(request.getInspectorId());
+            asset.setInspector(inspector);
+
+            // Set type
+            Type type = typeRepository.findById(request.getTypeId())
+                    .orElseThrow(() -> new AppException(ErrorCode.TYPE_NOT_EXISTED));
+            asset.setType(type);
+
+            // Set requirement and update its status
+            Requirement requirement = requirementService.getRequirementById(request.getRequirementId());
+            requirement.setStatus("3");
+            asset.setRequirement(requirement);
 
             Asset newAsset = assetRepository.save(asset);
 
             imageAssetService.createImageAsset(request.getImages(), newAsset);
 
-            requirementService.getRequirementById(request.getRequirementId()).setStatus("3");
-
             return assetMapper.toAssetResponse(newAsset);
         } catch (Exception e) {
             throw new AppException(ErrorCode.FILE_UPLOAD_FAILED);
         }
+    }
+
+    public AssetResponse getAssetById(String id) {
+        return assetMapper.toAssetResponse(assetRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.ASSET_NOT_EXISTED)));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -77,9 +99,9 @@ public class AssetServiceImpl implements AssetService {
     }
 
     public List<AssetResponse> filterAssets(String vendorId, String assetName, BigDecimal minPrice, BigDecimal maxPrice,
-                                            String insprectorId, String typeId, String status, int page, int size) {
+                                            String inspectorId, String typeId, String status, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        if (isAllParamsNullOrEmpty(vendorId, assetName, minPrice, maxPrice, insprectorId, typeId, status)) {
+        if (isAllParamsNullOrEmpty(vendorId, assetName, minPrice, maxPrice, inspectorId, typeId, status)) {
             return assetRepository.findAll().stream()
                     .map(assetMapper::toAssetResponse)
                     .toList();
@@ -89,13 +111,30 @@ public class AssetServiceImpl implements AssetService {
                 .where(AssetSpecification.hasVendorId(vendorId))
                 .and(AssetSpecification.hasAssetNameContaining(assetName))
                 .and(AssetSpecification.hasPriceBetween(minPrice, maxPrice))
-                .and(AssetSpecification.hasInsprectorId(insprectorId))
+                .and(AssetSpecification.hasInspectorId(inspectorId))
                 .and(AssetSpecification.hasTypeId(typeId))
                 .and(AssetSpecification.hasStatus(status));
 
         return assetRepository.findAll(specification, pageable).stream()
                 .map(assetMapper::toAssetResponse)
                 .toList();
+    }
+
+    public int totalAssets(String vendorId, String assetName, BigDecimal minPrice, BigDecimal maxPrice,
+                           String inspectorId, String typeId, String status) {
+        if (isAllParamsNullOrEmpty(vendorId, assetName, minPrice, maxPrice, inspectorId, typeId, status)) {
+            return assetRepository.findAll().size();
+        }
+
+        Specification<Asset> specification = Specification
+                .where(AssetSpecification.hasVendorId(vendorId))
+                .and(AssetSpecification.hasAssetNameContaining(assetName))
+                .and(AssetSpecification.hasPriceBetween(minPrice, maxPrice))
+                .and(AssetSpecification.hasInspectorId(inspectorId))
+                .and(AssetSpecification.hasTypeId(typeId))
+                .and(AssetSpecification.hasStatus(status));
+
+        return assetRepository.findAll(specification).size();
     }
 
     public void deleteAsset(String id) {
@@ -115,7 +154,7 @@ public class AssetServiceImpl implements AssetService {
     // setAssetReference method
     private void setAssetReference(Object request, Asset asset) {
         if (request instanceof AssetCreateRequest createRequest) {
-            asset.setUser(getUserById(createRequest.getVendorId()));
+            asset.setVendor(getUserById(createRequest.getVendorId()));
             asset.setType(getTypeById(createRequest.getTypeId()));
         } else if (request instanceof AssetUpdateRequest updateRequest) {
             asset.setType(getTypeById(updateRequest.getTypeId()));

@@ -1,9 +1,11 @@
 package com.example.auction_web.controller;
 
+import com.cloudinary.Api;
 import com.example.auction_web.dto.request.TypeCreateRequest;
 import com.example.auction_web.dto.request.TypeUpdateRequest;
 import com.example.auction_web.dto.request.filter.CategoryFilterRequest;
 import com.example.auction_web.dto.response.ApiResponse;
+import com.example.auction_web.dto.response.DataResponse;
 import com.example.auction_web.dto.response.TypeResponse;
 import com.example.auction_web.service.TypeService;
 import lombok.RequiredArgsConstructor;
@@ -28,16 +30,27 @@ public class TypeController {
                 .build();
     }
 
+    @GetMapping("/get-all")
+    ApiResponse<List<TypeResponse>> getTypes(){
+        return ApiResponse.<List<TypeResponse>>builder()
+                .code(HttpStatus.OK.value())
+                .result(typeService.getTypes())
+                .build();
+    }
+
     @GetMapping
-    public ApiResponse<List<TypeResponse>> filterCategories(
+    public ApiResponse<DataResponse> filterCategories(
             @RequestParam(required = false) Boolean status,
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "10") Integer size) {
         List<TypeResponse> filteredTypes = typeService.filterTypes(status, keyword, page, size);
-        return ApiResponse.<List<TypeResponse>>builder()
+        int total = typeService.totalTypes(status, keyword);
+        return ApiResponse.<DataResponse>builder()
                 .code(HttpStatus.OK.value())
-                .result(filteredTypes)
+                .result(DataResponse.<List<TypeResponse>>builder()
+                        .data(filteredTypes)
+                        .build())
                 .build();
     }
 
@@ -46,14 +59,6 @@ public class TypeController {
         return ApiResponse.<TypeResponse>builder()
                 .code(HttpStatus.OK.value())
                 .result(typeService.updateType(id, request))
-                .build();
-    }
-
-    @GetMapping("/category/{categoryName}")
-    ApiResponse<List<TypeResponse>> findTypeByCategory(@RequestParam String categoryName) {
-        return ApiResponse.<List<TypeResponse>>builder()
-                .code(HttpStatus.OK.value())
-                .result(typeService.findTypesByCategoryName(categoryName))
                 .build();
     }
 
