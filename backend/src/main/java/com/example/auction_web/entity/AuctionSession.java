@@ -31,7 +31,7 @@ public class AuctionSession {
     @JoinColumn(name = "assetId", referencedColumnName = "assetId")
     Asset asset;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "userId", referencedColumnName = "userId")
     User user;
 

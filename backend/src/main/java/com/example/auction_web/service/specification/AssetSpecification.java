@@ -39,12 +39,12 @@ public class AssetSpecification {
         };
     }
 
-    public static Specification<Asset> hasInsprectorId(String insprectorId) {
+    public static Specification<Asset> hasInspectorId(String inspectorId) {
         return (root, query, criteriaBuilder) -> {
-            if (insprectorId == null || insprectorId.isEmpty()) {
+            if (inspectorId == null || inspectorId.isEmpty()) {
                 return null;
             }
-            return criteriaBuilder.equal(root.get("insprector").get("insprectorId"), insprectorId);
+            return criteriaBuilder.equal(root.get("inspector").get("inspectorId"), inspectorId);
         };
     }
 

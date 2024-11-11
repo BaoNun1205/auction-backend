@@ -38,7 +38,7 @@ public class AuctionISessionController {
     }
 
     @PutMapping("/{id}")
-    ApiResponse<AuctionSessionResponse> updateAuctionSeesion(@PathVariable String id, @RequestBody AuctionSessionUpdateRequest request) {
+    ApiResponse<AuctionSessionResponse> updateAuctionSession(@PathVariable String id, @RequestBody AuctionSessionUpdateRequest request) {
         return ApiResponse.<AuctionSessionResponse>builder()
                 .code(HttpStatus.OK.value())
                 .result(auctionSessionService.updateAuctionSession(id, request))

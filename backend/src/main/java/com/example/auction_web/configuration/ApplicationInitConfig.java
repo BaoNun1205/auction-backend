@@ -1,8 +1,10 @@
 package com.example.auction_web.configuration;
 
 import com.example.auction_web.constant.PredefinedRole;
+import com.example.auction_web.entity.Inspector;
 import com.example.auction_web.entity.auth.Role;
 import com.example.auction_web.entity.auth.User;
+import com.example.auction_web.repository.InspectorRepository;
 import com.example.auction_web.repository.auth.RoleRepository;
 import com.example.auction_web.repository.auth.UserRepository;
 import lombok.AccessLevel;
@@ -40,7 +42,7 @@ public class ApplicationInitConfig {
             prefix = "spring",
             value = "datasource.driverClassName",
             havingValue = "com.mysql.cj.jdbc.Driver")
-    ApplicationRunner applicationRunner(UserRepository userRepository, RoleRepository roleRepository) {
+    ApplicationRunner applicationRunner(UserRepository userRepository, RoleRepository roleRepository, InspectorRepository inspectorRepository) {
         log.info("Initializing application.....");
         return args -> {
             if (userRepository.findByUsername(ADMIN_USER_NAME).isEmpty()) {
@@ -57,7 +59,7 @@ public class ApplicationInitConfig {
                 var roles = new HashSet<Role>();
                 roles.add(adminRole);
 
-                User user = User.builder()
+                User adminUser = User.builder()
                         .username(ADMIN_USER_NAME)
                         .email(ADMIN_EMAIL)
                         .password(passwordEncoder.encode(ADMIN_PASSWORD))
@@ -66,8 +68,17 @@ public class ApplicationInitConfig {
                         .build();
 
                 try {
-                    userRepository.save(user);
-                    log.warn("admin user has been created with default password: admin, please change it");
+                    userRepository.save(adminUser);
+                    log.warn("Admin user has been created with default password: admin, please change it");
+
+                    // Tạo và lưu Inspector cho User Admin
+                    Inspector inspector = Inspector.builder()
+                            .user(adminUser)
+                            .license("LICENSE123")
+                            .build();
+                    inspectorRepository.save(inspector);
+
+                    log.info("Inspector has been created for the admin user.");
                 } catch (Exception e){
                     log.warn("failed");
                 }

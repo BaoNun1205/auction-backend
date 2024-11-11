@@ -38,7 +38,6 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
     AuctionSessionRepository auctionSessionRepository;
     UserRepository userRepository;
     AssetRepository assetRepository;
-    ImageAssetRepository imageAssetRepository;
     AuctionSessionMapper auctionSessionMapper;
     ImageAssetService imageAssetService;
 
