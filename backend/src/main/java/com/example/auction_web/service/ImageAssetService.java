@@ -9,4 +9,5 @@ public interface ImageAssetService {
     void createImageAsset(List<String> images,Asset asset);
     List<ImageAssetResponse> findAllImageAssets();
     List<ImageAssetResponse> findImageAssetByAssetId(String assetId);
+    List<ImageAssetResponse> findAllImageAssetsByAssetId(String assetId);
 }

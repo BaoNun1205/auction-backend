@@ -21,5 +21,14 @@ public class AuctionSessionInfoDetail {
     String description;
     LocalDateTime startTime;
     LocalDateTime endTime;
-    List<ImageAsset> listImage;
+    List<ImageAssetResponse> listImage;
+
+    public AuctionSessionInfoDetail(String id, String assetName, String description, LocalDateTime startTime, LocalDateTime endTime) {
+        this.id = id;
+        this.assetName = assetName;
+        this.description = description;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
 }
