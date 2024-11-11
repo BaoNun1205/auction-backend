@@ -5,6 +5,7 @@ import com.example.auction_web.dto.request.AssetUpdateRequest;
 import com.example.auction_web.dto.request.filter.AssetFilterRequest;
 import com.example.auction_web.dto.response.ApiResponse;
 import com.example.auction_web.dto.response.AssetResponse;
+import com.example.auction_web.dto.response.AuctionSessionResponse;
 import com.example.auction_web.dto.response.DataResponse;
 import com.example.auction_web.entity.Asset;
 import com.example.auction_web.service.AssetService;
@@ -32,6 +33,14 @@ public class AssetController {
                 .build();
     }
 
+    @GetMapping("/{id}")
+    ApiResponse<AssetResponse> getAssetById(@PathVariable String id) {
+        return ApiResponse.<AssetResponse>builder()
+                .code(HttpStatus.OK.value())
+                .result(assetService.getAssetById(id))
+                .build();
+    }
+
     @PutMapping("/{id}")
     ApiResponse<AssetResponse> updateAsset(@PathVariable String id, @RequestBody AssetUpdateRequest request) {
         return ApiResponse.<AssetResponse>builder()
@@ -45,13 +54,13 @@ public class AssetController {
                                            @RequestParam(required = false) String assetName,
                                            @RequestParam(required = false) BigDecimal minPrice,
                                            @RequestParam(required = false) BigDecimal maxPrice,
-                                           @RequestParam(required = false) String insprectorId,
+                                           @RequestParam(required = false) String inspectorId,
                                            @RequestParam(required = false) String typeId,
                                            @RequestParam(required = false) String status,
                                            @RequestParam(required = false) Integer page,
                                            @RequestParam(required = false) Integer size) {
-        List<AssetResponse> filteredAssets = assetService.filterAssets(vendorId, assetName, minPrice, maxPrice, insprectorId, typeId, status, page, size);
-        int total = assetService.totalAssets(vendorId, assetName, minPrice, maxPrice, insprectorId, typeId, status);
+        List<AssetResponse> filteredAssets = assetService.filterAssets(vendorId, assetName, minPrice, maxPrice, inspectorId, typeId, status, page, size);
+        int total = assetService.totalAssets(vendorId, assetName, minPrice, maxPrice, inspectorId, typeId, status);
         return ApiResponse.<DataResponse>builder()
                 .code(HttpStatus.OK.value())
                 .result(DataResponse.<List<AssetResponse>>builder()

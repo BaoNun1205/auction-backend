@@ -84,6 +84,11 @@ public class AssetServiceImpl implements AssetService {
         }
     }
 
+    public AssetResponse getAssetById(String id) {
+        return assetMapper.toAssetResponse(assetRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.ASSET_NOT_EXISTED)));
+    }
+
     @PreAuthorize("hasRole('ADMIN')")
     public AssetResponse updateAsset(String id, AssetUpdateRequest request) {
         Asset asset = assetRepository.findById(id)
@@ -94,9 +99,9 @@ public class AssetServiceImpl implements AssetService {
     }
 
     public List<AssetResponse> filterAssets(String vendorId, String assetName, BigDecimal minPrice, BigDecimal maxPrice,
-                                            String insprectorId, String typeId, String status, int page, int size) {
+                                            String inspectorId, String typeId, String status, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        if (isAllParamsNullOrEmpty(vendorId, assetName, minPrice, maxPrice, insprectorId, typeId, status)) {
+        if (isAllParamsNullOrEmpty(vendorId, assetName, minPrice, maxPrice, inspectorId, typeId, status)) {
             return assetRepository.findAll().stream()
                     .map(assetMapper::toAssetResponse)
                     .toList();
@@ -106,7 +111,7 @@ public class AssetServiceImpl implements AssetService {
                 .where(AssetSpecification.hasVendorId(vendorId))
                 .and(AssetSpecification.hasAssetNameContaining(assetName))
                 .and(AssetSpecification.hasPriceBetween(minPrice, maxPrice))
-                .and(AssetSpecification.hasInsprectorId(insprectorId))
+                .and(AssetSpecification.hasInspectorId(inspectorId))
                 .and(AssetSpecification.hasTypeId(typeId))
                 .and(AssetSpecification.hasStatus(status));
 
@@ -116,8 +121,8 @@ public class AssetServiceImpl implements AssetService {
     }
 
     public int totalAssets(String vendorId, String assetName, BigDecimal minPrice, BigDecimal maxPrice,
-                           String insprectorId, String typeId, String status) {
-        if (isAllParamsNullOrEmpty(vendorId, assetName, minPrice, maxPrice, insprectorId, typeId, status)) {
+                           String inspectorId, String typeId, String status) {
+        if (isAllParamsNullOrEmpty(vendorId, assetName, minPrice, maxPrice, inspectorId, typeId, status)) {
             return assetRepository.findAll().size();
         }
 
@@ -125,7 +130,7 @@ public class AssetServiceImpl implements AssetService {
                 .where(AssetSpecification.hasVendorId(vendorId))
                 .and(AssetSpecification.hasAssetNameContaining(assetName))
                 .and(AssetSpecification.hasPriceBetween(minPrice, maxPrice))
-                .and(AssetSpecification.hasInsprectorId(insprectorId))
+                .and(AssetSpecification.hasInspectorId(inspectorId))
                 .and(AssetSpecification.hasTypeId(typeId))
                 .and(AssetSpecification.hasStatus(status));
 

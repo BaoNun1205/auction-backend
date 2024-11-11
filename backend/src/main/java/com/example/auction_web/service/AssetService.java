@@ -10,6 +10,7 @@ import java.util.List;
 
 public interface AssetService {
     AssetResponse createAsset(AssetCreateRequest request);
+    AssetResponse getAssetById(String id);
     AssetResponse updateAsset(String id, AssetUpdateRequest request);
     List<AssetResponse> filterAssets(String vendorId, String assetName, BigDecimal minPrice, BigDecimal maxPrice,
                                      String insprectorId, String typeId, String status, int page, int size);

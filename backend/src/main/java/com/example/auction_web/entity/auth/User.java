@@ -54,7 +54,15 @@ public class User {
     Set<Role> roles;
 
     @ManyToMany
-    Set<AuctionSession> auctionSessions;
+    @JoinTable(
+            name = "user_auction_registration",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "auction_session_id")
+    )
+    Set<AuctionSession> registeredSessions;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<AuctionSession> auctionSessions;
 
     @OneToMany(mappedBy = "vendor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<Asset> assets;
