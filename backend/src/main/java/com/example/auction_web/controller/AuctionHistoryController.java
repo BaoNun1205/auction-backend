@@ -53,11 +53,11 @@ public class AuctionHistoryController {
                 .build();
     }
 
-    @PatchMapping("/infoAuctionSession")
-    ApiResponse<AuctionSessionInfoResponse> getAuctionSessionInfo(@RequestBody AuctionSessionInfoRequest request) {
+    @GetMapping("/infoAuctionSession/{auctionSessionId}")
+    ApiResponse<AuctionSessionInfoResponse> getAuctionSessionInfo(@PathVariable String auctionSessionId) {
         return ApiResponse.<AuctionSessionInfoResponse>builder()
                 .code(HttpStatus.OK.value())
-                .result(auctionHistoryService.getAuctionSessionInfo(request.getAuctionSessionId()))
+                .result(auctionHistoryService.getAuctionSessionInfo(auctionSessionId))
                 .build();
     }
 }
