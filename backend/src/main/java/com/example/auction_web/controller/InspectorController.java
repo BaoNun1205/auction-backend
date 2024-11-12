@@ -17,13 +17,13 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
 public class InspectorController {
-    InspectorService insprectorService;
+    InspectorService inspectorService;
 
     @PostMapping
     ApiResponse<InspectorResponse> createInspector(@RequestBody InspectorCreateRequest request) {
         return ApiResponse.<InspectorResponse>builder()
                 .code(HttpStatus.OK.value())
-                .result(insprectorService.createInspector(request))
+                .result(inspectorService.createInspector(request))
                 .build();
     }
 
@@ -31,7 +31,7 @@ public class InspectorController {
     ApiResponse<InspectorResponse> updateInspector(@PathVariable String id, @RequestBody InspectorUpdateRequest request) {
         return ApiResponse.<InspectorResponse>builder()
                 .code(HttpStatus.OK.value())
-                .result(insprectorService.updateInspector(id, request))
+                .result(inspectorService.updateInspector(id, request))
                 .build();
     }
 
@@ -39,7 +39,7 @@ public class InspectorController {
     ApiResponse<List<InspectorResponse>> getInspectors() {
         return ApiResponse.<List<InspectorResponse>>builder()
                 .code(HttpStatus.OK.value())
-                .result(insprectorService.getAllInspectors())
+                .result(inspectorService.getAllInspectors())
                 .build();
     }
 }

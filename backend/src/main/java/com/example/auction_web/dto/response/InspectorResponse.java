@@ -1,5 +1,6 @@
 package com.example.auction_web.dto.response;
 
+import com.example.auction_web.dto.response.auth.UserResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,8 +15,8 @@ import java.time.LocalDateTime;
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class InspectorResponse {
-    String insprectorId;
-    String userId;
+    String inspectorId;
+    UserResponse user;
     String license;
     Boolean delFlag;
     LocalDateTime createdAt;

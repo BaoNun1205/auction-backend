@@ -18,7 +18,6 @@ public interface InspectorMapper {
     Inspector toInspector(InspectorCreateRequest request);
     List<Inspector> toInspectors(List<InspectorCreateRequest> requests);
 
-    @Mapping(source = "user", target = "userId", qualifiedByName = "userToString")
     InspectorResponse toInspectorResponse(Inspector inspector);
     List<InspectorResponse> toInspectorResponses(List<Inspector> inspectors);
     void updateInspector(@MappingTarget Inspector inspector, InspectorUpdateRequest request);

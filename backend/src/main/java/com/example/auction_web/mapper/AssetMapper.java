@@ -3,6 +3,7 @@ package com.example.auction_web.mapper;
 import com.example.auction_web.dto.request.AssetCreateRequest;
 import com.example.auction_web.dto.request.AssetUpdateRequest;
 import com.example.auction_web.dto.response.AssetResponse;
+import com.example.auction_web.dto.response.auth.UserResponse;
 import com.example.auction_web.entity.Asset;
 import com.example.auction_web.entity.Type;
 import com.example.auction_web.entity.auth.User;
@@ -22,8 +23,8 @@ public interface AssetMapper {
     @Mapping(target = "requirement", ignore = true)
     Asset toAsset(AssetCreateRequest assetCreationRequest);
 
-    @Mapping(source = "vendor", target = "vendorId", qualifiedByName = "userToString")
-    @Mapping(source = "type", target = "typeId", qualifiedByName = "typeToString")
+//    @Mapping(source = "vendor", target = "vendorId", qualifiedByName = "userToString")
+//    @Mapping(source = "type", target = "typeId", qualifiedByName = "typeToString")
     AssetResponse toAssetResponse(Asset asset);
     List<AssetResponse> toAssetResponses(List<Asset> assets);
 
