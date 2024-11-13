@@ -51,8 +51,8 @@ public class AuctionISessionController {
             @RequestParam(required = false) LocalDateTime fromDate,
             @RequestParam(required = false) LocalDateTime toDate,
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size) {
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer size) {
 
         List<AuctionSessionResponse> auctionSessionResponses = auctionSessionService.filterAuctionSession(status, fromDate, toDate, keyword, page, size);
         int total = auctionSessionService.totalAuctionSession(status, fromDate, toDate, keyword);

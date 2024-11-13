@@ -54,6 +54,7 @@ public class AuctionSession {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         this.delFlag = false;
+        this.status = "0";
     }
 
     @PreUpdate
