@@ -43,7 +43,7 @@ public class SecurityConfig {
     };
 
     private final String[] PUBLIC_ENDPOINTS_GET = {
-            "/category", "/type"
+            "/category/**", "/type/**", "/session/**", "/asset/**"
     };
 
     @Autowired
