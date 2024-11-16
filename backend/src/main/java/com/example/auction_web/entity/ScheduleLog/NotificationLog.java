@@ -1,4 +1,4 @@
-package com.example.auction_web.entity;
+package com.example.auction_web.entity.ScheduleLog;
 
 import jakarta.persistence.*;
 import lombok.Data;

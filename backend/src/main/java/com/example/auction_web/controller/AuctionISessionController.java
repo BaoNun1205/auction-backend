@@ -74,7 +74,7 @@ public class AuctionISessionController {
                 .build();
     }
 
-    @GetMapping("/{auctionSessionId}}")
+    @GetMapping("/{auctionSessionId}")
     ApiResponse<AuctionSessionInfoDetail> getAuctionSessionInfoDetail(@PathVariable String auctionSessionId) {
         return ApiResponse.<AuctionSessionInfoDetail>builder()
                 .code(HttpStatus.OK.value())

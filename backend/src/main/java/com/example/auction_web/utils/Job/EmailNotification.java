@@ -1,7 +1,7 @@
 package com.example.auction_web.utils.Job;
 
 import com.example.auction_web.entity.AuctionSession;
-import com.example.auction_web.entity.NotificationLog;
+import com.example.auction_web.entity.ScheduleLog.NotificationLog;
 import com.example.auction_web.repository.AuctionSessionRepository;
 import com.example.auction_web.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
