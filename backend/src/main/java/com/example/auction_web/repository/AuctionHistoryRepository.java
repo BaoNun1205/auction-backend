@@ -1,9 +1,10 @@
 package com.example.auction_web.repository;
 
-import com.example.auction_web.entity.Asset;
+import com.example.auction_web.dto.response.AuctionSessionInfoResponse;
 import com.example.auction_web.entity.AuctionHistory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
@@ -15,4 +16,12 @@ public interface AuctionHistoryRepository extends JpaRepository<AuctionHistory, 
 
     @Query("SELECT MAX(bidPrice) FROM AuctionHistory WHERE auctionSession.auctionSessionId = :auctionSessionId")
     BigDecimal findMaxBidPriceByAuctionSession(String auctionSessionId);
+
+    @Query("SELECT new com.example.auction_web.dto.response.AuctionSessionInfoResponse(" +
+            "COUNT(DISTINCT ah.user.userId), " +
+            "COUNT(ah), " +
+            "COALESCE(MAX(ah.bidPrice), CAST(0 AS BigDecimal))) " +
+            "FROM AuctionHistory ah " +
+            "WHERE ah.auctionSession.auctionSessionId = :auctionSessionId")
+    AuctionSessionInfoResponse findAuctionSessionInfo(@Param("auctionSessionId") String auctionSessionId);
 }
