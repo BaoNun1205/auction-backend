@@ -25,6 +25,7 @@ public interface AssetMapper {
 
 //    @Mapping(source = "vendor", target = "vendorId", qualifiedByName = "userToString")
 //    @Mapping(source = "type", target = "typeId", qualifiedByName = "typeToString")
+    @Mapping(target = "listImages", source = "imageAssets")
     AssetResponse toAssetResponse(Asset asset);
     List<AssetResponse> toAssetResponses(List<Asset> assets);
 
