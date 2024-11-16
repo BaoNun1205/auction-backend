@@ -38,7 +38,7 @@ public class RegisterSessionServiceImpl implements RegisterSessionService {
         var auctionSession = getAuctionSessionById(request.getAuctionSessionId());
 
         LocalDateTime notificationTime = auctionSession.getStartTime().minusMinutes(30);
-        notificationService.scheduleNotification(user.getEmail(), auctionSession, notificationTime);
+        notificationService.setSchedulerNotification(user.getEmail(), auctionSession.getAuctionSessionId(), notificationTime);
 
         return registerSessionMapper.toRegisterSessionResponse(registerSessionRepository.save(registerSession));
     }

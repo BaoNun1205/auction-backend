@@ -47,13 +47,7 @@ public class AuctionHistoryServiceImpl implements AuctionHistoryService {
     }
 
     public AuctionSessionInfoResponse getAuctionSessionInfo(String auctionSessionId) {
-        var totalAuctionHistoriesByAuctionSessionId = auctionHistoryRepository.countAuctionHistoriesByAuctionSession_AuctionSessionId(auctionSessionId);
-        var highestBidPriceByAuctionSessionId = auctionHistoryRepository.findMaxBidPriceByAuctionSession(auctionSessionId);
-
-        return AuctionSessionInfoResponse.builder()
-                .totalAuctionHistory(totalAuctionHistoriesByAuctionSessionId)
-                .highestBid(highestBidPriceByAuctionSessionId)
-                .build();
+        return auctionHistoryRepository.findAuctionSessionInfo(auctionSessionId);
     }
 
     // get all AuctionHistories

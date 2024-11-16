@@ -21,9 +21,6 @@ public interface AuctionSessionMapper {
     @Mapping(target = "asset", ignore = true)
     AuctionSession toAuctionItem(AuctionSessionCreateRequest request);
     List<AuctionSession> toAuctionItems(List<AuctionSessionCreateRequest> requests);
-
-    @Mapping(target = "assetId", source = "asset", qualifiedByName = "assetToString")
-    @Mapping(target = "userId", source = "user", qualifiedByName = "userToString")
     AuctionSessionResponse toAuctionItemResponse(AuctionSession auctionSession);
     List<AuctionSessionResponse> toAuctionItemResponses(List<AuctionSession> auctionSessions);
 

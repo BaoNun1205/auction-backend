@@ -62,7 +62,7 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
         return auctionSessionInfoDetail;
     }
 
-    public List<AuctionSessionResponse> filterAuctionSession(String status, LocalDateTime fromDate, LocalDateTime toDate, String keyword, int page, int size) {
+    public List<AuctionSessionResponse> filterAuctionSession(String status, LocalDateTime fromDate, LocalDateTime toDate, String keyword, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
         if (isAllParamsNullOrEmpty(status, fromDate, toDate, keyword)) {
             return auctionSessionRepository.findAll().stream()

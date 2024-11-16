@@ -45,3 +45,35 @@ cloudinary:
     cloud-name: "da7ocjpcu"
     api-key: "243495346747181"
     api-secret: "bD1q8wkCmh1HV0blM7zyFdrrSVk"
+
+quartz:
+  auto-startup: true
+  overwrite-existing-jobs: true
+  job-store-type: jdbc
+  jdbc:
+    initialize-schema: always
+    properties:
+        org:
+            quartz:
+            scheduler:
+                instanceName: MyScheduler
+                instanceId: AUTO
+            jobStore:
+                class: org.quartz.impl.jdbcjobstore.JobStoreTX
+                driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+                tablePrefix: QRTZ_
+                isClustered: true
+                clusterCheckinInterval: 20000
+                dataSource: myDS
+            threadPool:
+                class: org.quartz.simpl.SimpleThreadPool
+                threadCount: 25
+                threadPriority: 5
+            dataSource:
+                myDS:
+                driver: com.mysql.cj.jdbc.Driver
+                URL: jdbc:mysql://localhost:3306/auction_web
+                user: root
+                password: root
+                maxConnections: 5
+                validationQuery: select 1
