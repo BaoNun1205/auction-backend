@@ -1,5 +1,6 @@
 package com.example.auction_web.dto.response;
 
+import com.example.auction_web.dto.response.auth.UserResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,8 +18,8 @@ import java.time.LocalDateTime;
 public class AuctionSessionResponse {
     String auctionSessionId;
     String typeSession;
-    String assetId;
-    String userId;
+    AssetResponse asset;
+    UserResponse user;
     LocalDateTime startTime;
     LocalDateTime endTime;
     BigDecimal startingBids;
