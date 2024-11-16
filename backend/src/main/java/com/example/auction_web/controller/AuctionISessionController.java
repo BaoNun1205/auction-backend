@@ -74,19 +74,11 @@ public class AuctionISessionController {
                 .build();
     }
 
-    @GetMapping("/getAuctionSessionInfoDetail/{auctionSessionId}")
+    @GetMapping("/{auctionSessionId}}")
     ApiResponse<AuctionSessionInfoDetail> getAuctionSessionInfoDetail(@PathVariable String auctionSessionId) {
         return ApiResponse.<AuctionSessionInfoDetail>builder()
                 .code(HttpStatus.OK.value())
                 .result(auctionSessionService.getDetailAuctionSessionById(auctionSessionId))
-                .build();
-    }
-
-    @GetMapping("/{id}")
-    ApiResponse<AuctionSessionResponse> getAuctionSessionById(@PathVariable String id) {
-        return ApiResponse.<AuctionSessionResponse>builder()
-                .code(HttpStatus.OK.value())
-                .result(auctionSessionService.getAuctionSessionById(id))
                 .build();
     }
 }
