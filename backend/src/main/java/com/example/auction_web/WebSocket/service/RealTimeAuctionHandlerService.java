@@ -13,7 +13,4 @@ public interface RealTimeAuctionHandlerService {
 
     DepositAddResponse addDeposit(String auctionSessionId, DepositCreateRequest request);
 
-//    List<AuctionSessionResponse> getAllAuctionSessions();
-
-    void completeASession(String auctionSessionId);
 }

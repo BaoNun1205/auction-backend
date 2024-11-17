@@ -17,6 +17,7 @@ import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.AuctionHistoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,12 +31,18 @@ public class AuctionHistoryServiceImpl implements AuctionHistoryService {
     AuctionSessionRepository auctionSessionRepository;
     UserRepository userRepository;
     AuctionHistoryMapper auctionHistoryMapper;
+    SimpMessagingTemplate simpleMessageTemplate;
 
     //create AuctionHistory
     public AuctionHistoryResponse createAuctionHistory(AuctionHistoryCreateRequest request) {
         var auctionHistory = auctionHistoryMapper.toAuctionHistory(request);
         setAuctionHistoryReference(request, auctionHistory);
-        return auctionHistoryMapper.toAuctionHistoryResponse(auctionHistoryRepository.save(auctionHistory));
+
+        AuctionHistoryResponse auctionHistoryResponse = auctionHistoryMapper.toAuctionHistoryResponse(auctionHistoryRepository.save(auctionHistory));
+
+        AuctionSessionInfoResponse auctionSessionInfoResponse = auctionHistoryRepository.findAuctionSessionInfo(request.getAuctionSessionId());
+        simpleMessageTemplate.convertAndSend("/rt-product/bidPrice-update", auctionSessionInfoResponse);
+        return auctionHistoryResponse;
     }
 
     //Update AuctionHistory
