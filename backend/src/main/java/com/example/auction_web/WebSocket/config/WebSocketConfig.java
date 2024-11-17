@@ -111,8 +111,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         });
     }
 
-
-
     private String resolveToken(String bearerToken) {
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);

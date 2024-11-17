@@ -10,6 +10,7 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -22,6 +23,7 @@ public class AuctionSessionEndTimeJob implements Job {
     private AuctionSessionRepository auctionSessionRepository;
 
     private final SessionLogRepository sessionLogRepository;
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
@@ -35,6 +37,9 @@ public class AuctionSessionEndTimeJob implements Job {
                 auctionSession.setStatus(AUCTION_STATUS.FINISHED.toString());
                 auctionSessionRepository.save(auctionSession);
             }
+
+            simpMessagingTemplate.convertAndSend("/rt-product/auction-updates", "update-session");
+
 
             if (sessionLog != null) {
                 sessionLog.setSentTime(LocalDateTime.now());
