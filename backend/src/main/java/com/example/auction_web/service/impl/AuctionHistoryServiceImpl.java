@@ -15,11 +15,14 @@ import com.example.auction_web.repository.AuctionHistoryRepository;
 import com.example.auction_web.repository.AuctionSessionRepository;
 import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.AuctionHistoryService;
+import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -34,15 +37,26 @@ public class AuctionHistoryServiceImpl implements AuctionHistoryService {
     SimpMessagingTemplate simpleMessageTemplate;
 
     //create AuctionHistory
+    @Override
+    @Transactional
     public AuctionHistoryResponse createAuctionHistory(AuctionHistoryCreateRequest request) {
-        var auctionHistory = auctionHistoryMapper.toAuctionHistory(request);
-        setAuctionHistoryReference(request, auctionHistory);
+        try {
+            BigDecimal maxBidPrice = auctionHistoryRepository.findMaxBidPriceByAuctionSessionId(request.getAuctionSessionId());
 
-        AuctionHistoryResponse auctionHistoryResponse = auctionHistoryMapper.toAuctionHistoryResponse(auctionHistoryRepository.save(auctionHistory));
+            if (request.getBidPrice().compareTo(maxBidPrice) <= 0) {
+                throw new AppException(ErrorCode.BID_PRICE_MUST_GREATER_THAN_MAX_BID_PRICE);
+            }
+            var auctionHistory = auctionHistoryMapper.toAuctionHistory(request);
+            setAuctionHistoryReference(request, auctionHistory);
 
-        AuctionSessionInfoResponse auctionSessionInfoResponse = auctionHistoryRepository.findAuctionSessionInfo(request.getAuctionSessionId());
-        simpleMessageTemplate.convertAndSend("/rt-product/bidPrice-update", auctionSessionInfoResponse);
-        return auctionHistoryResponse;
+            AuctionHistoryResponse auctionHistoryResponse = auctionHistoryMapper.toAuctionHistoryResponse(auctionHistoryRepository.save(auctionHistory));
+
+            AuctionSessionInfoResponse auctionSessionInfoResponse = auctionHistoryRepository.findAuctionSessionInfo(request.getAuctionSessionId());
+            simpleMessageTemplate.convertAndSend("/rt-product/bidPrice-update", auctionSessionInfoResponse);
+            return auctionHistoryResponse;
+        } catch (OptimisticLockException e) {
+            throw new AppException(ErrorCode.CONCURRENT_UPDATE);
+        }
     }
 
     //Update AuctionHistory
