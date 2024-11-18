@@ -41,7 +41,13 @@ public class AuctionHistoryServiceImpl implements AuctionHistoryService {
     @Transactional
     public AuctionHistoryResponse createAuctionHistory(AuctionHistoryCreateRequest request) {
         try {
+            AuctionSession auctionSession = auctionSessionRepository.findById(request.getAuctionSessionId())
+                    .orElseThrow(() -> new AppException(ErrorCode.AUCTION_SESSION_NOT_EXISTED));
             BigDecimal maxBidPrice = auctionHistoryRepository.findMaxBidPriceByAuctionSessionId(request.getAuctionSessionId());
+
+            if (maxBidPrice == null) {
+                maxBidPrice = auctionSession.getStartingBids();
+            }
 
             if (request.getBidPrice().compareTo(maxBidPrice) <= 0) {
                 throw new AppException(ErrorCode.BID_PRICE_MUST_GREATER_THAN_MAX_BID_PRICE);
