@@ -20,6 +20,7 @@ import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.AuctionSessionService;
 import com.example.auction_web.service.ImageAssetService;
 import com.example.auction_web.service.specification.AuctionSessionSpecification;
+import com.example.auction_web.utils.SessionService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.PageRequest;
@@ -30,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -40,11 +42,22 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
     AssetRepository assetRepository;
     AuctionSessionMapper auctionSessionMapper;
     ImageAssetService imageAssetService;
+    SessionService sessionService;
 
     public AuctionSessionResponse createAuctionSession(AuctionSessionCreateRequest request) {
         var auctionSession = auctionSessionMapper.toAuctionItem(request);
+        auctionSession.setAuctionSessionId(UUID.randomUUID().toString());
         setAuctionSessionReference(request, auctionSession);
-        return auctionSessionMapper.toAuctionItemResponse(auctionSessionRepository.save(auctionSession));
+
+        AuctionSessionResponse response = auctionSessionMapper.toAuctionItemResponse(auctionSessionRepository.save(auctionSession));
+
+        LocalDateTime startTime = auctionSession.getStartTime();
+        LocalDateTime endTime = auctionSession.getEndTime();
+
+
+        sessionService.scheduleAuctionSessionStart(response.getAuctionSessionId(), startTime);
+        sessionService.scheduleAuctionSessionEnd(response.getAuctionSessionId(), endTime);
+        return response;
     }
 
     public AuctionSessionResponse updateAuctionSession(String id, AuctionSessionUpdateRequest request) {

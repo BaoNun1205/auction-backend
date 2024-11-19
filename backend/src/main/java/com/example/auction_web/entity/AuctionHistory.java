@@ -38,6 +38,9 @@ public class AuctionHistory {
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 
+    @Version
+    Long version;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();

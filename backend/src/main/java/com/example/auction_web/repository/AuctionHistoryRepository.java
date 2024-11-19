@@ -12,10 +12,9 @@ import java.math.BigDecimal;
 @Repository
 public interface AuctionHistoryRepository extends JpaRepository<AuctionHistory, String> {
     AuctionHistory findAuctionHistoryByAuctionSession_AuctionSessionId(String auctionSessionId);
-    int countAuctionHistoriesByAuctionSession_AuctionSessionId(String auctionSessionId);
 
-    @Query("SELECT MAX(bidPrice) FROM AuctionHistory WHERE auctionSession.auctionSessionId = :auctionSessionId")
-    BigDecimal findMaxBidPriceByAuctionSession(String auctionSessionId);
+    @Query("SELECT MAX(a.bidPrice) FROM AuctionHistory a WHERE a.auctionSession.auctionSessionId = :auctionSessionId AND a.delFlag = false")
+    BigDecimal findMaxBidPriceByAuctionSessionId(@Param("auctionSessionId") String auctionSessionId);
 
     @Query("SELECT new com.example.auction_web.dto.response.AuctionSessionInfoResponse(" +
             "COUNT(DISTINCT ah.user.userId), " +

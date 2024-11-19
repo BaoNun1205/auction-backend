@@ -67,13 +67,5 @@ public class RealTimeAuctionHandlerServiceImpl implements RealTimeAuctionHandler
                 .build();
     }
 
-//    @Override
-//    public List<AuctionSessionResponse> getAllAuctionSessions() {
-//        return auctionSessionService.getAllAuctionSessions();
-//    }
 
-    @Override
-    public void completeASession(String auctionSessionId) {
-        auctionSessionService.completeAuctionSession(auctionSessionId);
-    }
 }

@@ -1,7 +1,7 @@
 package com.example.auction_web.utils;
 
 import com.example.auction_web.entity.AuctionSession;
-import com.example.auction_web.entity.NotificationLog;
+import com.example.auction_web.entity.ScheduleLog.NotificationLog;
 import com.example.auction_web.repository.AuctionSessionRepository;
 import com.example.auction_web.repository.NotificationRepository;
 import com.example.auction_web.utils.Job.EmailNotification;
