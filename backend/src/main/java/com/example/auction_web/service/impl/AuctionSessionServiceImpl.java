@@ -12,10 +12,7 @@ import com.example.auction_web.enums.AUCTION_STATUS;
 import com.example.auction_web.exception.AppException;
 import com.example.auction_web.exception.ErrorCode;
 import com.example.auction_web.mapper.AuctionSessionMapper;
-import com.example.auction_web.repository.AssetRepository;
-import com.example.auction_web.repository.AuctionSessionRepository;
-import com.example.auction_web.repository.EventRepository;
-import com.example.auction_web.repository.ImageAssetRepository;
+import com.example.auction_web.repository.*;
 import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.AuctionSessionService;
 import com.example.auction_web.service.ImageAssetService;
@@ -40,6 +37,7 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
     AuctionSessionRepository auctionSessionRepository;
     UserRepository userRepository;
     AssetRepository assetRepository;
+    AuctionHistoryRepository auctionHistoryRepository;
     AuctionSessionMapper auctionSessionMapper;
     ImageAssetService imageAssetService;
     SessionService sessionService;
@@ -72,6 +70,7 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
                 .orElseThrow(() -> new AppException(ErrorCode.AUCTION_SESSION_NOT_EXISTED));
         AuctionSessionInfoDetail auctionSessionInfoDetail = auctionSessionRepository.findAuctionSessionInfoDetailById(auctionSession.getAuctionSessionId());
         auctionSessionInfoDetail.setListImage(imageAssetService.findAllImageAssetsByAssetId(auctionSession.getAsset().getAssetId()));
+        auctionSessionInfoDetail.setAuctionSessionInfo(auctionHistoryRepository.findAuctionSessionInfo(auctionSession.getAuctionSessionId()));
         return auctionSessionInfoDetail;
     }
 

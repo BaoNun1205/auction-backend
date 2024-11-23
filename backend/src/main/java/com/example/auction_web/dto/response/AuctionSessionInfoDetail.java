@@ -22,6 +22,7 @@ public class AuctionSessionInfoDetail {
     LocalDateTime startTime;
     LocalDateTime endTime;
     List<ImageAssetResponse> listImage;
+    AuctionSessionInfoResponse auctionSessionInfo;
 
     public AuctionSessionInfoDetail(String id, String assetName, String description, LocalDateTime startTime, LocalDateTime endTime) {
         this.id = id;
