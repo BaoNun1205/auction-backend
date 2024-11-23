@@ -17,16 +17,14 @@ import java.util.List;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class AuctionSessionInfoDetail {
     String id;
-    String assetName;
+    AssetResponse asset;
     String description;
     LocalDateTime startTime;
     LocalDateTime endTime;
-    List<ImageAssetResponse> listImage;
     AuctionSessionInfoResponse auctionSessionInfo;
 
-    public AuctionSessionInfoDetail(String id, String assetName, String description, LocalDateTime startTime, LocalDateTime endTime) {
+    public AuctionSessionInfoDetail(String id, String description, LocalDateTime startTime, LocalDateTime endTime) {
         this.id = id;
-        this.assetName = assetName;
         this.description = description;
         this.startTime = startTime;
         this.endTime = endTime;
