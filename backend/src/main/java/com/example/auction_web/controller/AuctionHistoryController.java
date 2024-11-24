@@ -60,4 +60,12 @@ public class AuctionHistoryController {
                 .result(auctionHistoryService.getAuctionSessionInfo(auctionSessionId))
                 .build();
     }
+
+    @GetMapping("/checkDeposit")
+    ApiResponse<Boolean> checkDeposit(@RequestBody AuctionHistoryCreateRequest request) {
+        return ApiResponse.<Boolean>builder()
+                .code(HttpStatus.OK.value())
+                .result(auctionHistoryService.checkDeposit(request.getUserId(), request.getAuctionSessionId()))
+                .build();
+    }
 }

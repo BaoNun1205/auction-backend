@@ -23,4 +23,6 @@ public interface AuctionHistoryRepository extends JpaRepository<AuctionHistory, 
             "FROM AuctionHistory ah " +
             "WHERE ah.auctionSession.auctionSessionId = :auctionSessionId")
     AuctionSessionInfoResponse findAuctionSessionInfo(@Param("auctionSessionId") String auctionSessionId);
+
+    AuctionHistory findAuctionHistoryByAuctionSession_AuctionSessionIdAndUser_UserId(String auctionSessionId, String userId);
 }
