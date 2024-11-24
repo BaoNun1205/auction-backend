@@ -34,7 +34,6 @@ public class AuctionHistoryServiceImpl implements AuctionHistoryService {
     AuctionSessionRepository auctionSessionRepository;
     UserRepository userRepository;
     AuctionHistoryMapper auctionHistoryMapper;
-    SimpMessagingTemplate simpleMessageTemplate;
 
     //create AuctionHistory
     @Override
@@ -56,9 +55,6 @@ public class AuctionHistoryServiceImpl implements AuctionHistoryService {
             setAuctionHistoryReference(request, auctionHistory);
 
             AuctionHistoryResponse auctionHistoryResponse = auctionHistoryMapper.toAuctionHistoryResponse(auctionHistoryRepository.save(auctionHistory));
-
-            AuctionSessionInfoResponse auctionSessionInfoResponse = auctionHistoryRepository.findAuctionSessionInfo(request.getAuctionSessionId());
-            simpleMessageTemplate.convertAndSend("/rt-product/bidPrice-update", auctionSessionInfoResponse);
             return auctionHistoryResponse;
         } catch (OptimisticLockException e) {
             throw new AppException(ErrorCode.CONCURRENT_UPDATE);

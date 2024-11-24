@@ -7,8 +7,10 @@ import com.example.auction_web.WebSocket.dto.response.SessionJoinResponse;
 import com.example.auction_web.WebSocket.service.RealTimeAuctionHandlerService;
 import com.example.auction_web.dto.request.DepositCreateRequest;
 import com.example.auction_web.dto.response.ApiResponse;
+import com.example.auction_web.dto.response.AuctionSessionInfoDetail;
 import com.example.auction_web.dto.response.AuctionSessionResponse;
 import com.example.auction_web.enums.AUCTION_STATUS;
+import com.example.auction_web.service.AuctionSessionService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -36,6 +39,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class RealTimeAuctionController {
     RealTimeAuctionHandlerService realTimeAuctionHandlerService;
+    AuctionSessionService auctionSessionService;
     SimpMessagingTemplate simpleMessageTemplate;
 
 
@@ -56,6 +60,17 @@ public class RealTimeAuctionController {
                 .result(realTimeAuctionHandlerService.addDeposit(auctionSessionId, request))
                 .build();
     }
+
+    @MessageMapping("/rt-auction/placeBid/{auctionSessionId}")
+    @SendTo("/rt-product/bidPrice-update/{auctionSessionId}")
+    ApiResponse<AuctionSessionInfoDetail> getAuctionSessionInfoDetail(@DestinationVariable String auctionSessionId) {
+        return ApiResponse.<AuctionSessionInfoDetail>builder()
+                .code(HttpStatus.OK.value())
+                .result(auctionSessionService.getDetailAuctionSessionById(auctionSessionId))
+                .build();
+    }
+
+
 
 //    @Scheduled(fixedRate = 1000)
 //    public void sendCurrentTime() {
