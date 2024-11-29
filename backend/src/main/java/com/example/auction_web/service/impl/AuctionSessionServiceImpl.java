@@ -3,6 +3,7 @@ package com.example.auction_web.service.impl;
 import com.example.auction_web.dto.request.AuctionSessionCreateRequest;
 import com.example.auction_web.dto.request.AuctionSessionUpdateRequest;
 import com.example.auction_web.dto.response.AuctionSessionInfoDetail;
+import com.example.auction_web.dto.response.AuctionSessionInfoResponse;
 import com.example.auction_web.dto.response.AuctionSessionResponse;
 import com.example.auction_web.entity.Asset;
 import com.example.auction_web.entity.AuctionSession;
@@ -27,6 +28,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -73,7 +75,12 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
         auctionSession.getUser().getRoles().size();
         AuctionSessionInfoDetail auctionSessionInfoDetail = auctionSessionRepository.findAuctionSessionInfoDetailById(auctionSession.getAuctionSessionId());
         auctionSessionInfoDetail.setAsset(assetService.getAssetById(auctionSession.getAsset().getAssetId()));
-        auctionSessionInfoDetail.setAuctionSessionInfo(auctionHistoryRepository.findAuctionSessionInfo(auctionSession.getAuctionSessionId()));
+
+        AuctionSessionInfoResponse auctionSessionInfoResponse = auctionHistoryRepository.findAuctionSessionInfo(auctionSession.getAuctionSessionId());
+        if (auctionSessionInfoResponse.getHighestBid().compareTo(BigDecimal.ZERO) == 0) {
+            auctionSessionInfoResponse.setHighestBid(auctionSession.getStartingBids());
+        }
+        auctionSessionInfoDetail.setAuctionSessionInfo(auctionSessionInfoResponse);
         return auctionSessionInfoDetail;
     }
 
