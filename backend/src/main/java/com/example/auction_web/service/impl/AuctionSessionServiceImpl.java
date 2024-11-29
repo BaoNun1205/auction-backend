@@ -66,9 +66,11 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
         return auctionSessionMapper.toAuctionItemResponse(auctionSessionRepository.save(auctionSession));
     }
 
+    @Transactional
     public AuctionSessionInfoDetail getDetailAuctionSessionById(String auctionSessionId) {
         AuctionSession auctionSession = auctionSessionRepository.findById(auctionSessionId)
                 .orElseThrow(() -> new AppException(ErrorCode.AUCTION_SESSION_NOT_EXISTED));
+        auctionSession.getUser().getRoles().size();
         AuctionSessionInfoDetail auctionSessionInfoDetail = auctionSessionRepository.findAuctionSessionInfoDetailById(auctionSession.getAuctionSessionId());
         auctionSessionInfoDetail.setAsset(assetService.getAssetById(auctionSession.getAsset().getAssetId()));
         auctionSessionInfoDetail.setAuctionSessionInfo(auctionHistoryRepository.findAuctionSessionInfo(auctionSession.getAuctionSessionId()));
