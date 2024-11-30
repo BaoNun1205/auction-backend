@@ -4,11 +4,14 @@ import com.example.auction_web.constant.PredefinedRole;
 import com.example.auction_web.dto.request.auth.UserCreateRequest;
 import com.example.auction_web.dto.request.auth.UserUpdateRequest;
 import com.example.auction_web.dto.response.ApiResponse;
+import com.example.auction_web.dto.response.AuctionSessionResponse;
 import com.example.auction_web.dto.response.auth.UserResponse;
+import com.example.auction_web.entity.AuctionSession;
 import com.example.auction_web.entity.auth.Role;
 import com.example.auction_web.entity.auth.User;
 import com.example.auction_web.exception.AppException;
 import com.example.auction_web.exception.ErrorCode;
+import com.example.auction_web.mapper.AuctionSessionMapper;
 import com.example.auction_web.mapper.UserMapper;
 import com.example.auction_web.repository.auth.RoleRepository;
 import com.example.auction_web.repository.auth.UserRepository;
@@ -34,6 +37,7 @@ public class UserServiceImpl implements UserService {
     UserRepository userRepository;
     RoleRepository roleRepository;
     UserMapper userMapper;
+    AuctionSessionMapper auctionSessionMapper;
     PasswordEncoder passwordEncoder;
 
     EmailVerificationTokenService emailVerificationTokenService;
@@ -108,5 +112,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(String userId) {
         userRepository.deleteById(userId);
+    }
+
+    @Override
+    public List<AuctionSessionResponse> getRegisteredAuctionSessions(String userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        return user.getRegisteredSessions().stream()
+                .map(auctionSessionMapper::toAuctionItemResponse)
+                .toList();
     }
 }
