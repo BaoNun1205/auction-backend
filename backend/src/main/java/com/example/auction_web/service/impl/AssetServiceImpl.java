@@ -12,6 +12,7 @@ import com.example.auction_web.entity.auth.User;
 import com.example.auction_web.exception.AppException;
 import com.example.auction_web.exception.ErrorCode;
 import com.example.auction_web.mapper.AssetMapper;
+import com.example.auction_web.mapper.TypeMapper;
 import com.example.auction_web.repository.AssetRepository;
 import com.example.auction_web.repository.InspectorRepository;
 import com.example.auction_web.repository.RequirementRepository;
@@ -44,6 +45,7 @@ public class AssetServiceImpl implements AssetService {
     TypeRepository typeRepository;
     ImageAssetService imageAssetService;
     AssetMapper assetMapper;
+    TypeMapper typeMapper;
     RequirementService requirementService;
     InspectorService inspectorService;
     InspectorRepository inspectorRepository;
@@ -85,8 +87,11 @@ public class AssetServiceImpl implements AssetService {
     }
 
     public AssetResponse getAssetById(String id) {
-        return assetMapper.toAssetResponse(assetRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.ASSET_NOT_EXISTED)));
+        Asset asset = assetRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.ASSET_NOT_EXISTED));
+        AssetResponse assetResponse = assetMapper.toAssetResponse(asset);
+        assetResponse.setType(typeMapper.toTypeResponse(typeRepository.findById(asset.getType().getTypeId()).get()));
+        return assetResponse;
     }
 
     @PreAuthorize("hasRole('ADMIN')")
