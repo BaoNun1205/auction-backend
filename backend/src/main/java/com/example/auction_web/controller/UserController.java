@@ -37,19 +37,19 @@ public class UserController {
                 .build();
     }
 
-//    @GetMapping("/{userId}")
-//    ApiResponse<UserResponse> getUser(@PathVariable("userId") String userId) {
-//        return ApiResponse.<UserResponse>builder()
-//                .result(userService.getUser(userId))
-//                .build();
-//    }
-
-    @GetMapping("/{username}")
-    ApiResponse<UserResponse> getUser(@PathVariable("username") String username) {
+    @GetMapping("/{userId}")
+    ApiResponse<UserResponse> getUser(@PathVariable("userId") String userId) {
         return ApiResponse.<UserResponse>builder()
-                .result(userService.getUserByUsername(username))
+                .result(userService.getUserResponse(userId))
                 .build();
     }
+
+//    @GetMapping("/{username}")
+//    ApiResponse<UserResponse> getUser(@PathVariable("username") String username) {
+//        return ApiResponse.<UserResponse>builder()
+//                .result(userService.getUserByUsername(username))
+//                .build();
+//    }
 
     @GetMapping("/my-info")
     ApiResponse<UserResponse> getMyInfo() {
