@@ -9,6 +9,7 @@ import java.util.List;
 public interface TypeService {
     List<TypeResponse> filterTypes(Boolean status, String keyword, Integer page, Integer size);
     int totalTypes(Boolean status, String keyword);
+    TypeResponse getTypeById(String id);
     TypeResponse createType(TypeCreateRequest request);
     TypeResponse updateType(String typeId, TypeUpdateRequest request);
     List<TypeResponse> getTypes();
