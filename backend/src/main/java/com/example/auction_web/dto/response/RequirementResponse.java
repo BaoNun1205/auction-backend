@@ -1,5 +1,6 @@
 package com.example.auction_web.dto.response;
 
+import com.example.auction_web.dto.response.auth.UserResponse;
 import com.example.auction_web.entity.ImageRequirement;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,11 +19,11 @@ import java.util.List;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class RequirementResponse {
     String requirementId;
-    String vendor;
+    UserResponse vendor;
     String assetName;
     String assetDescription;
     BigDecimal assetPrice;
-    String inspector;
+    UserResponse inspector;
     String assetStatusId;
     String status;
     Boolean delFlag;

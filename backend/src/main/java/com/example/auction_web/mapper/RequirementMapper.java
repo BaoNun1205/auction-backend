@@ -3,6 +3,7 @@ package com.example.auction_web.mapper;
 import com.example.auction_web.dto.request.RequirementCreateRequest;
 import com.example.auction_web.dto.request.RequirementUpdateRequest;
 import com.example.auction_web.dto.response.RequirementResponse;
+import com.example.auction_web.dto.response.auth.UserResponse;
 import com.example.auction_web.entity.Inspector;
 import com.example.auction_web.entity.Requirement;
 import com.example.auction_web.entity.auth.User;
@@ -16,29 +17,21 @@ public interface RequirementMapper {
     @Mapping(target = "vendor", ignore = true)
     Requirement toRequirement(RequirementCreateRequest request);
 
-    @Mapping(target = "vendor", source = "vendor", qualifiedByName = "userToString")
-    @Mapping(target = "inspector", source = "inspector", qualifiedByName = "userToString")
+    @Mapping(target = "vendor", source = "vendor", qualifiedByName = "userToResponse")
+    @Mapping(target = "inspector", source = "inspector", qualifiedByName = "userToResponse")
     RequirementResponse toRequirementResponse(Requirement requirement);
 
     void updateRequirement(@MappingTarget Requirement requirement, RequirementUpdateRequest request);
 
-    @Named("userToString")
-    default String userToString(User user) {
-        return user != null ? user.getUserId() : null;
+    @Named("userToResponse")
+    default UserResponse userToResponse(User user) {
+        if (user == null) return null;
+        return UserResponse.builder()
+                .userId(user.getUserId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .username(user.getUsername())
+                .build();
     }
 
-//    @Named("imageToString")
-//    default List imageToString(List<ImageRequirement> imageRequirements) {
-//        if (imageRequirements == null || imageRequirements.isEmpty()) {
-//            return "";
-//        }
-//
-//        return imageRequirements.stream()
-//                .map(ImageRequirement::getImage));
-//    }
-
-    @Named("inspectorToString")
-    default String inspectorToString(Inspector inspector) {
-        return inspector != null ? inspector.getUser().getUserId() : null;
-    }
 }
