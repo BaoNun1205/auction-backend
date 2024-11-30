@@ -31,21 +31,9 @@ public class AuctionSessionSpecification {
     public static Specification<AuctionSession> hasKeyword(String keyword) {
         return (root, query, criteriaBuilder) -> {
             if (keyword == null || keyword.isEmpty()) {
-                return criteriaBuilder.conjunction(); // Không áp dụng điều kiện nào nếu từ khóa trống
+                return null;
             }
-
-            // Thực hiện join với asset để truy cập vào trường assetName
-            Join<Object, Object> asset = root.join("asset");
-            System.out.println("asset: " + asset.get("assetName").toString());
-
-            // Tạo mẫu tìm kiếm với ký tự escape cho các ký tự đặc biệt
-            String searchPattern = "%" + keyword + "%";
-
-            // Sử dụng criteriaBuilder.like để thực hiện tìm kiếm với ký tự escape
-            return criteriaBuilder.like(
-                    criteriaBuilder.lower(asset.get("assetName")),
-                    searchPattern.toLowerCase()
-            );
+            return criteriaBuilder.like(root.get("asset").get("assetName"), "%" + keyword + "%");
         };
     }
 

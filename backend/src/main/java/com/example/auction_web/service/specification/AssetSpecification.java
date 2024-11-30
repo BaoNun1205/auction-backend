@@ -12,7 +12,7 @@ public class AssetSpecification {
             if (vendorId == null || vendorId.isEmpty()) {
                 return null;
             }
-            return criteriaBuilder.equal(root.get("user").get("userId"), vendorId);
+            return criteriaBuilder.equal(root.get("vendor").get("userId"), vendorId);
         };
     }
 
