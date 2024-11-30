@@ -61,8 +61,15 @@ public class RequirementServiceImpl implements RequirementService {
         requirementRepository.save(requirement);
     }
 
+    public void deleteRequirement(String requirementId) {
+        Requirement requirement = requirementRepository.findById(requirementId)
+                .orElseThrow(() -> new AppException(ErrorCode.REQUIREMENT_NOT_EXISTED));
+        requirement.setDelFlag(true);
+        requirementRepository.save(requirement);
+    }
+
     public List<RequirementResponse> getRequirementsByVendorId(String vendorId) {
-        return requirementRepository.findRequirementsByVendor_UserId(vendorId).stream()
+        return requirementRepository.findRequirementsByVendor_UserIdAndDelFlagFalse(vendorId).stream()
                 .map(requirementMapper::toRequirementResponse)
                 .toList();
     }
@@ -80,16 +87,22 @@ public class RequirementServiceImpl implements RequirementService {
 
     public List<RequirementResponse> filterRequirements(String status, String keyword, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
+
         if (isAllParamsNullOrEmpty(status, keyword)) {
-            return requirementRepository.findAll(pageable).stream()
+            // Thêm điều kiện deflag = false khi không có tham số tìm kiếm
+            Specification<Requirement> defaultSpec = Specification.where(RequirementSpecification.hasDelFlagFalse());
+            return requirementRepository.findAll(defaultSpec, pageable).stream()
                     .map(requirementMapper::toRequirementResponse)
                     .toList();
         }
 
+        // Kết hợp các điều kiện
         Specification<Requirement> specification = Specification
-                .where(RequirementSpecification.hasStatus(status))
+                .where(RequirementSpecification.hasDelFlagFalse()) // Điều kiện deflag = false
+                .and(RequirementSpecification.hasStatus(status))
                 .and(RequirementSpecification.hasAssetNameContaining(keyword));
 
+        // Thực hiện query
         return requirementRepository.findAll(specification, pageable).stream()
                 .map(requirementMapper::toRequirementResponse)
                 .toList();

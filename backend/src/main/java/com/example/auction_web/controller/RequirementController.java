@@ -75,6 +75,12 @@ public class RequirementController {
                 .build();
     }
 
+    @DeleteMapping("/{requirementId}")
+    ApiResponse<String> deleteRequirement(@PathVariable String requirementId) {
+        requirementService.deleteRequirement(requirementId);
+        return ApiResponse.<String>builder().result("Requirement has been deleted").build();
+    }
+
     @PutMapping("/approved")
     ApiResponse<String> approvedRequirement(
             @RequestParam String requirementId,
@@ -96,7 +102,7 @@ public class RequirementController {
                 .build();
     }
 
-    @GetMapping("/vendor/id/{vendorId}")
+    @GetMapping("/vendor/{vendorId}")
     ApiResponse<List<RequirementResponse>> getRequirementsByVendorId(@PathVariable String vendorId) {
         return ApiResponse.<List<RequirementResponse>>builder()
                 .code(HttpStatus.OK.value())

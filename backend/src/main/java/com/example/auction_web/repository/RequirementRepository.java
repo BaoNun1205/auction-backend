@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 public interface RequirementRepository extends JpaRepository<Requirement, String> {
-    List<Requirement> findRequirementsByVendor_UserId(String userId);
+    List<Requirement> findRequirementsByVendor_UserIdAndDelFlagFalse(String userId);
     List<Requirement> findRequirementsByInspector_UserId(String userId);
     Page<Requirement> findAll(Specification<Requirement> specification, Pageable pageable);
     List<Requirement> findAll(Specification<Requirement> specification);

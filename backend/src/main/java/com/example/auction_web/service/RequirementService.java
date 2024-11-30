@@ -14,6 +14,7 @@ public interface RequirementService {
     RequirementResponse updateRequirement(String requirementId, RequirementUpdateRequest request);
     void approvedRequirement(String requirementId, User inspector);
     void rejectRequirement(String requirementId);
+    void deleteRequirement(String requirementId);
     List<RequirementResponse> getRequirementsByVendorId(String vendorId);
     List<RequirementResponse> getRequirementsByInspectorId(String inspectorId);
     RequirementResponse getRequirementResponseById(String requirementId);
