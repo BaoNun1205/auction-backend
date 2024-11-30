@@ -71,7 +71,7 @@ public class AssetServiceImpl implements AssetService {
 
             // Set requirement and update its status
             Requirement requirement = requirementService.getRequirementById(request.getRequirementId());
-            requirement.setStatus("3");
+            requirement.setDelFlag(true);
             asset.setRequirement(requirement);
 
             Asset newAsset = assetRepository.save(asset);

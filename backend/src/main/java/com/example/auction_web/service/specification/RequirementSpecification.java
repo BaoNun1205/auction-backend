@@ -4,6 +4,9 @@ import com.example.auction_web.entity.Requirement;
 import org.springframework.data.jpa.domain.Specification;
 
 public class RequirementSpecification {
+    public static Specification<Requirement> hasDelFlagFalse() {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.isFalse(root.get("delFlag"));
+    }
     public static Specification<Requirement> hasAssetNameContaining(String assetName) {
         return (root, query, criteriaBuilder) -> {
             if (assetName == null || assetName.isEmpty()) {
