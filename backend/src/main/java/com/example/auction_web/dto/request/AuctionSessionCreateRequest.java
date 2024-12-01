@@ -18,9 +18,7 @@ public class AuctionSessionCreateRequest {
     String typeSession;
     String assetId;
     String userId;
-    LocalDateTime startTime;
-    LocalDateTime endTime;
     BigDecimal startingBids;
     BigDecimal bidIncrement;
-    String status;
+    BigDecimal depositAmount;
 }
