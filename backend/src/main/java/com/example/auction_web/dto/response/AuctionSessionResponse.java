@@ -27,6 +27,7 @@ public class AuctionSessionResponse {
     BigDecimal depositAmount;
     String status;
     Boolean delFlag;
+    AuctionSessionInfoResponse auctionSessionInfo;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 }

@@ -109,7 +109,24 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
                 .and(AuctionSessionSpecification.hasKeyword(keyword));
 
         return auctionSessionRepository.findAll(specification, pageable).stream()
-                .map(auctionSessionMapper::toAuctionItemResponse)
+                .map(auctionSession -> {
+                    AuctionSessionResponse response = auctionSessionMapper.toAuctionItemResponse(auctionSession);
+
+                    List<AuctionSessionInfoResponse> auctionSessionInfoResponse = auctionHistoryRepository.findAuctionSessionInfo(auctionSession.getAuctionSessionId());
+                    if (!auctionSessionInfoResponse.isEmpty()) {
+                        if (auctionSessionInfoResponse.get(0).getHighestBid().compareTo(BigDecimal.ZERO) == 0) {
+                            auctionSessionInfoResponse.get(0).setHighestBid(auctionSession.getStartingBids());
+                        }
+
+                        if (auctionSessionInfoResponse.get(0).getUserId() != null) {
+                            auctionSessionInfoResponse.get(0).setUser(userMapper.toUserResponse(userRepository.findById(auctionSessionInfoResponse.get(0).getUserId()).get()));
+                        } else {
+                            auctionSessionInfoResponse.get(0).setUser(null);
+                        }
+                        response.setAuctionSessionInfo(auctionSessionInfoResponse.get(0));
+                    }
+                    return response;
+                    })
                 .toList();
     }
 
