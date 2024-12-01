@@ -81,17 +81,17 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
         AuctionSessionInfoDetail auctionSessionInfoDetail = auctionSessionRepository.findAuctionSessionInfoDetailById(auctionSession.getAuctionSessionId());
         auctionSessionInfoDetail.setAsset(assetService.getAssetById(auctionSession.getAsset().getAssetId()));
 
-        AuctionSessionInfoResponse auctionSessionInfoResponse = auctionHistoryRepository.findAuctionSessionInfo(auctionSession.getAuctionSessionId());
-        if (auctionSessionInfoResponse.getHighestBid().compareTo(BigDecimal.ZERO) == 0) {
-            auctionSessionInfoResponse.setHighestBid(auctionSession.getStartingBids());
+        List<AuctionSessionInfoResponse> auctionSessionInfoResponse = auctionHistoryRepository.findAuctionSessionInfo(auctionSession.getAuctionSessionId());
+        if (auctionSessionInfoResponse.get(0).getHighestBid().compareTo(BigDecimal.ZERO) == 0) {
+            auctionSessionInfoResponse.get(0).setHighestBid(auctionSession.getStartingBids());
         }
 
-        if (auctionSessionInfoResponse.getUserId() != null) {
-            auctionSessionInfoResponse.setUser(userMapper.toUserResponse(userRepository.findById(auctionSessionInfoResponse.getUserId()).get()));
+        if (auctionSessionInfoResponse.get(0).getUserId() != null) {
+            auctionSessionInfoResponse.get(0).setUser(userMapper.toUserResponse(userRepository.findById(auctionSessionInfoResponse.get(0).getUserId()).get()));
         } else {
-            auctionSessionInfoResponse.setUser(null);
+            auctionSessionInfoResponse.get(0).setUser(null);
         }
-        auctionSessionInfoDetail.setAuctionSessionInfo(auctionSessionInfoResponse);
+        auctionSessionInfoDetail.setAuctionSessionInfo(auctionSessionInfoResponse.get(0));
         return auctionSessionInfoDetail;
     }
 

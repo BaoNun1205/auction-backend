@@ -2,7 +2,6 @@ package com.example.auction_web.service.impl;
 
 import com.example.auction_web.dto.request.AuctionHistoryCreateRequest;
 import com.example.auction_web.dto.request.AuctionHistoryUpdateRequest;
-import com.example.auction_web.dto.request.AuctionSessionInfoRequest;
 import com.example.auction_web.dto.response.AuctionHistoryResponse;
 import com.example.auction_web.dto.response.AuctionSessionInfoResponse;
 import com.example.auction_web.entity.AuctionHistory;
@@ -18,7 +17,6 @@ import com.example.auction_web.service.AuctionHistoryService;
 import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -74,7 +72,7 @@ public class AuctionHistoryServiceImpl implements AuctionHistoryService {
     }
 
     public AuctionSessionInfoResponse getAuctionSessionInfo(String auctionSessionId) {
-        return auctionHistoryRepository.findAuctionSessionInfo(auctionSessionId);
+        return auctionHistoryRepository.findAuctionSessionInfo(auctionSessionId).get(0);
     }
 
     // get all AuctionHistories

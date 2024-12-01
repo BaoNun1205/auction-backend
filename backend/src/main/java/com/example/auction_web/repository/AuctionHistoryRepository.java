@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Repository
 public interface AuctionHistoryRepository extends JpaRepository<AuctionHistory, String> {
@@ -17,16 +18,15 @@ public interface AuctionHistoryRepository extends JpaRepository<AuctionHistory, 
     BigDecimal findMaxBidPriceByAuctionSessionId(@Param("auctionSessionId") String auctionSessionId);
 
     @Query("SELECT new com.example.auction_web.dto.response.AuctionSessionInfoResponse(" +
-            "ah.user.userId, " +
-            "COUNT(DISTINCT ah.user.userId), " +
-            "COUNT(ah), " +
-            "COALESCE(MAX(ah.bidPrice), CAST(0 AS BigDecimal))) " +
+            " (SELECT COUNT(DISTINCT a.user.userId) FROM AuctionHistory a WHERE a.auctionSession.auctionSessionId = :auctionSessionId), " +
+            " (SELECT COUNT(a) FROM AuctionHistory a WHERE a.auctionSession.auctionSessionId = :auctionSessionId), " +
+            " ah.user.userId, " +
+            " COALESCE(MAX(ah.bidPrice), CAST(0 AS BigDecimal))) " +
             "FROM AuctionHistory ah " +
             "WHERE ah.auctionSession.auctionSessionId = :auctionSessionId " +
-            "GROUP BY ah.user.userId")
-    AuctionSessionInfoResponse findAuctionSessionInfo(@Param("auctionSessionId") String auctionSessionId);
-
-
+            "GROUP BY ah.user.userId " +
+            "ORDER BY MAX(ah.bidPrice) DESC")
+    List<AuctionSessionInfoResponse> findAuctionSessionInfo(@Param("auctionSessionId") String auctionSessionId);
 
     AuctionHistory findAuctionHistoryByAuctionSession_AuctionSessionIdAndUser_UserId(String auctionSessionId, String userId);
 }

@@ -14,23 +14,23 @@ import java.math.BigDecimal;
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class AuctionSessionInfoResponse {
-    String userId;
     Long totalBidder;
     Long totalAuctionHistory;
+    String userId;
     BigDecimal highestBid;
     UserResponse user;
 
-    public AuctionSessionInfoResponse(String userId, Long totalBidder, Long totalAuctionHistory, BigDecimal highestBid) {
-        this.userId = userId;
+    public AuctionSessionInfoResponse(Long totalBidder, Long totalAuctionHistory, String userId, BigDecimal highestBid) {
         this.totalBidder = totalBidder;
         this.totalAuctionHistory = totalAuctionHistory;
+        this.userId = userId;
         this.highestBid = highestBid;
     }
 
-    public AuctionSessionInfoResponse(String userId, Long totalBidder, Long totalAuctionHistory, BigDecimal highestBid, UserResponse user) {
-        this.userId = userId;
+    public AuctionSessionInfoResponse(Long totalBidder, Long totalAuctionHistory, String userId, BigDecimal highestBid, UserResponse user) {
         this.totalBidder = totalBidder;
         this.totalAuctionHistory = totalAuctionHistory;
+        this.userId = userId;
         this.highestBid = highestBid;
         this.user = user;
     }
