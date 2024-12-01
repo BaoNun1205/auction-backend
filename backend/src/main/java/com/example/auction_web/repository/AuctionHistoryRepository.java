@@ -18,8 +18,8 @@ public interface AuctionHistoryRepository extends JpaRepository<AuctionHistory, 
     BigDecimal findMaxBidPriceByAuctionSessionId(@Param("auctionSessionId") String auctionSessionId);
 
     @Query("SELECT new com.example.auction_web.dto.response.AuctionSessionInfoResponse(" +
-            " (SELECT COUNT(DISTINCT a.user.userId) FROM AuctionHistory a WHERE a.auctionSession.auctionSessionId = :auctionSessionId), " +
-            " (SELECT COUNT(a) FROM AuctionHistory a WHERE a.auctionSession.auctionSessionId = :auctionSessionId), " +
+            " COALESCE((SELECT COUNT(DISTINCT a.user.userId) FROM AuctionHistory a WHERE a.auctionSession.auctionSessionId = :auctionSessionId), 0), " +
+            " COALESCE((SELECT COUNT(a) FROM AuctionHistory a WHERE a.auctionSession.auctionSessionId = :auctionSessionId), 0), " +
             " ah.user.userId, " +
             " COALESCE(MAX(ah.bidPrice), CAST(0 AS BigDecimal))) " +
             "FROM AuctionHistory ah " +
