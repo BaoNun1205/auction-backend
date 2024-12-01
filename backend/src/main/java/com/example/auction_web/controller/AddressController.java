@@ -44,7 +44,7 @@ public class AddressController {
     }
 
     @GetMapping("/user/{userId}")
-    ApiResponse<List<AddressResponse>> getAddressByUserId(@RequestParam String userId) {
+    ApiResponse<List<AddressResponse>> getAddressByUserId(@PathVariable String userId) {
         return ApiResponse.<List<AddressResponse>>builder()
                 .code(HttpStatus.OK.value())
                 .result(addressService.getAddressByUserId(userId))

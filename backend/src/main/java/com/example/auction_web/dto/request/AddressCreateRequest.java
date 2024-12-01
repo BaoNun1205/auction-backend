@@ -29,4 +29,5 @@ public class AddressCreateRequest {
             message = "Phone number is invalid"
     )
     String phone;
+    Boolean isDefault;
 }
