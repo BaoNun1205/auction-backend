@@ -82,16 +82,20 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
         auctionSessionInfoDetail.setAsset(assetService.getAssetById(auctionSession.getAsset().getAssetId()));
 
         List<AuctionSessionInfoResponse> auctionSessionInfoResponse = auctionHistoryRepository.findAuctionSessionInfo(auctionSession.getAuctionSessionId());
-        if (auctionSessionInfoResponse.get(0).getHighestBid().compareTo(BigDecimal.ZERO) == 0) {
-            auctionSessionInfoResponse.get(0).setHighestBid(auctionSession.getStartingBids());
-        }
+        if (!auctionSessionInfoResponse.isEmpty()) {
+            if (auctionSessionInfoResponse.get(0).getHighestBid().compareTo(BigDecimal.ZERO) == 0) {
+                auctionSessionInfoResponse.get(0).setHighestBid(auctionSession.getStartingBids());
+            }
 
-        if (auctionSessionInfoResponse.get(0).getUserId() != null) {
-            auctionSessionInfoResponse.get(0).setUser(userMapper.toUserResponse(userRepository.findById(auctionSessionInfoResponse.get(0).getUserId()).get()));
+            if (auctionSessionInfoResponse.get(0).getUserId() != null) {
+                auctionSessionInfoResponse.get(0).setUser(userMapper.toUserResponse(userRepository.findById(auctionSessionInfoResponse.get(0).getUserId()).get()));
+            } else {
+                auctionSessionInfoResponse.get(0).setUser(null);
+            }
+            auctionSessionInfoDetail.setAuctionSessionInfo(auctionSessionInfoResponse.get(0));
         } else {
-            auctionSessionInfoResponse.get(0).setUser(null);
+            auctionSessionInfoDetail.setAuctionSessionInfo(new AuctionSessionInfoResponse(0L, 0L, "", auctionSessionInfoDetail.getStartingBids(), null));
         }
-        auctionSessionInfoDetail.setAuctionSessionInfo(auctionSessionInfoResponse.get(0));
         return auctionSessionInfoDetail;
     }
 
@@ -124,6 +128,8 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
                             auctionSessionInfoResponse.get(0).setUser(null);
                         }
                         response.setAuctionSessionInfo(auctionSessionInfoResponse.get(0));
+                    } else {
+                        response.setAuctionSessionInfo(new AuctionSessionInfoResponse(0L, 0L, "", response.getStartingBids(), null));
                     }
                     return response;
                     })
