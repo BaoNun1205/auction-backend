@@ -3,6 +3,7 @@ package com.example.auction_web.service.impl;
 import com.example.auction_web.dto.request.AuctionSessionCreateRequest;
 import com.example.auction_web.dto.request.AuctionSessionUpdateRequest;
 import com.example.auction_web.dto.response.AuctionSessionInfoDetail;
+import com.example.auction_web.dto.response.AuctionSessionInfoResponse;
 import com.example.auction_web.dto.response.AuctionSessionResponse;
 import com.example.auction_web.entity.Asset;
 import com.example.auction_web.entity.AuctionSession;
@@ -12,11 +13,10 @@ import com.example.auction_web.enums.AUCTION_STATUS;
 import com.example.auction_web.exception.AppException;
 import com.example.auction_web.exception.ErrorCode;
 import com.example.auction_web.mapper.AuctionSessionMapper;
-import com.example.auction_web.repository.AssetRepository;
-import com.example.auction_web.repository.AuctionSessionRepository;
-import com.example.auction_web.repository.EventRepository;
-import com.example.auction_web.repository.ImageAssetRepository;
+import com.example.auction_web.mapper.UserMapper;
+import com.example.auction_web.repository.*;
 import com.example.auction_web.repository.auth.UserRepository;
+import com.example.auction_web.service.AssetService;
 import com.example.auction_web.service.AuctionSessionService;
 import com.example.auction_web.service.ImageAssetService;
 import com.example.auction_web.service.specification.AuctionSessionSpecification;
@@ -29,6 +29,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -40,14 +41,19 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
     AuctionSessionRepository auctionSessionRepository;
     UserRepository userRepository;
     AssetRepository assetRepository;
+    AuctionHistoryRepository auctionHistoryRepository;
     AuctionSessionMapper auctionSessionMapper;
-    ImageAssetService imageAssetService;
+    UserMapper userMapper;
+    AssetService assetService;
     SessionService sessionService;
 
     public AuctionSessionResponse createAuctionSession(AuctionSessionCreateRequest request) {
         var auctionSession = auctionSessionMapper.toAuctionItem(request);
         auctionSession.setAuctionSessionId(UUID.randomUUID().toString());
         setAuctionSessionReference(request, auctionSession);
+
+        auctionSession.setStartTime(request.getStartTime().plusHours(7));
+        auctionSession.setEndTime(request.getEndTime().plusHours(7));
 
         AuctionSessionResponse response = auctionSessionMapper.toAuctionItemResponse(auctionSessionRepository.save(auctionSession));
 
@@ -67,11 +73,25 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
         return auctionSessionMapper.toAuctionItemResponse(auctionSessionRepository.save(auctionSession));
     }
 
+    @Transactional
     public AuctionSessionInfoDetail getDetailAuctionSessionById(String auctionSessionId) {
         AuctionSession auctionSession = auctionSessionRepository.findById(auctionSessionId)
                 .orElseThrow(() -> new AppException(ErrorCode.AUCTION_SESSION_NOT_EXISTED));
+        auctionSession.getUser().getRoles().size();
         AuctionSessionInfoDetail auctionSessionInfoDetail = auctionSessionRepository.findAuctionSessionInfoDetailById(auctionSession.getAuctionSessionId());
-        auctionSessionInfoDetail.setListImage(imageAssetService.findAllImageAssetsByAssetId(auctionSession.getAsset().getAssetId()));
+        auctionSessionInfoDetail.setAsset(assetService.getAssetById(auctionSession.getAsset().getAssetId()));
+
+        List<AuctionSessionInfoResponse> auctionSessionInfoResponse = auctionHistoryRepository.findAuctionSessionInfo(auctionSession.getAuctionSessionId());
+        if (auctionSessionInfoResponse.get(0).getHighestBid().compareTo(BigDecimal.ZERO) == 0) {
+            auctionSessionInfoResponse.get(0).setHighestBid(auctionSession.getStartingBids());
+        }
+
+        if (auctionSessionInfoResponse.get(0).getUserId() != null) {
+            auctionSessionInfoResponse.get(0).setUser(userMapper.toUserResponse(userRepository.findById(auctionSessionInfoResponse.get(0).getUserId()).get()));
+        } else {
+            auctionSessionInfoResponse.get(0).setUser(null);
+        }
+        auctionSessionInfoDetail.setAuctionSessionInfo(auctionSessionInfoResponse.get(0));
         return auctionSessionInfoDetail;
     }
 

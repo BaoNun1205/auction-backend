@@ -54,6 +54,14 @@ public class TypeController {
                 .build();
     }
 
+    @GetMapping("/{id}")
+    ApiResponse<TypeResponse> getTypeById(@PathVariable String id) {
+        return ApiResponse.<TypeResponse>builder()
+                .code(HttpStatus.OK.value())
+                .result(typeService.getTypeById(id))
+                .build();
+    }
+
     @PutMapping("/{id}")
     ApiResponse<TypeResponse> updateType(@PathVariable String id,@RequestBody TypeUpdateRequest request) {
         return ApiResponse.<TypeResponse>builder()

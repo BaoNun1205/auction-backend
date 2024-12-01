@@ -63,6 +63,10 @@ public class TypeServiceImpl implements TypeService {
         return typeRepository.findAll(specification).size();
     }
 
+    public TypeResponse getTypeById(String id) {
+        return typeMapper.toTypeResponse(typeRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.TYPE_NOT_EXISTED)));
+    }
+
     @PreAuthorize("hasRole('ADMIN')")
     public TypeResponse createType(TypeCreateRequest request) {
         try {

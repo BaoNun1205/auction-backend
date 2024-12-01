@@ -3,6 +3,7 @@ package com.example.auction_web.controller;
 import com.example.auction_web.dto.request.auth.UserCreateRequest;
 import com.example.auction_web.dto.request.auth.UserUpdateRequest;
 import com.example.auction_web.dto.response.ApiResponse;
+import com.example.auction_web.dto.response.AuctionSessionResponse;
 import com.example.auction_web.dto.response.auth.UserResponse;
 import com.example.auction_web.service.auth.UserService;
 import jakarta.validation.Valid;
@@ -37,19 +38,19 @@ public class UserController {
                 .build();
     }
 
-//    @GetMapping("/{userId}")
-//    ApiResponse<UserResponse> getUser(@PathVariable("userId") String userId) {
-//        return ApiResponse.<UserResponse>builder()
-//                .result(userService.getUser(userId))
-//                .build();
-//    }
-
-    @GetMapping("/{username}")
-    ApiResponse<UserResponse> getUser(@PathVariable("username") String username) {
+    @GetMapping("/{userId}")
+    ApiResponse<UserResponse> getUser(@PathVariable("userId") String userId) {
         return ApiResponse.<UserResponse>builder()
-                .result(userService.getUserByUsername(username))
+                .result(userService.getUserResponse(userId))
                 .build();
     }
+
+//    @GetMapping("/{username}")
+//    ApiResponse<UserResponse> getUser(@PathVariable("username") String username) {
+//        return ApiResponse.<UserResponse>builder()
+//                .result(userService.getUserByUsername(username))
+//                .build();
+//    }
 
     @GetMapping("/my-info")
     ApiResponse<UserResponse> getMyInfo() {
@@ -69,5 +70,12 @@ public class UserController {
     ApiResponse<String> delete(@PathVariable String userId){
         userService.deleteUser(userId);
         return ApiResponse.<String>builder().result("User has been deleted").build();
+    }
+
+    @GetMapping("/registered-sessions/{userId}")
+    ApiResponse<List<AuctionSessionResponse>> getRegisteredAuctionSessions(@PathVariable String userId){
+        return ApiResponse.<List<AuctionSessionResponse>>builder()
+                .result(userService.getRegisteredAuctionSessions(userId))
+                .build();
     }
 }

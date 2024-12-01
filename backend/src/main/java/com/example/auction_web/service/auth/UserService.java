@@ -2,6 +2,7 @@ package com.example.auction_web.service.auth;
 
 import com.example.auction_web.dto.request.auth.UserCreateRequest;
 import com.example.auction_web.dto.request.auth.UserUpdateRequest;
+import com.example.auction_web.dto.response.AuctionSessionResponse;
 import com.example.auction_web.dto.response.auth.UserResponse;
 import com.example.auction_web.entity.auth.User;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,4 +18,5 @@ public interface UserService {
     UserResponse getMyInfo();
     UserResponse updateUser(String userId, UserUpdateRequest request);
     void deleteUser(String userId);
+    List<AuctionSessionResponse> getRegisteredAuctionSessions(String userId);
 }

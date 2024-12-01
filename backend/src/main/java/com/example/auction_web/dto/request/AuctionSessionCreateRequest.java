@@ -22,5 +22,5 @@ public class AuctionSessionCreateRequest {
     LocalDateTime endTime;
     BigDecimal startingBids;
     BigDecimal bidIncrement;
-    String status;
+    BigDecimal depositAmount;
 }

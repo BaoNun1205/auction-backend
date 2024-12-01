@@ -46,6 +46,9 @@ public class AuctionHistory {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         this.delFlag = false;
+        if (this.version == null) {
+            this.version = 0L;
+        }
     }
 
     @PreUpdate
