@@ -50,6 +50,9 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
         auctionSession.setAuctionSessionId(UUID.randomUUID().toString());
         setAuctionSessionReference(request, auctionSession);
 
+        auctionSession.setStartTime(request.getStartTime().plusHours(7));
+        auctionSession.setEndTime(request.getEndTime().plusHours(7));
+
         AuctionSessionResponse response = auctionSessionMapper.toAuctionItemResponse(auctionSessionRepository.save(auctionSession));
 
         LocalDateTime startTime = auctionSession.getStartTime();
