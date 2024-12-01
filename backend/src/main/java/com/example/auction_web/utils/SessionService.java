@@ -28,20 +28,30 @@ public class SessionService {
     private final SessionLogRepository sessionLogRepository;
 
     public void scheduleAuctionSessionStart(String auctionSessionId, LocalDateTime startTime) {
-        JobDetail jobDetail = JobBuilder.newJob(AuctionSessionStartJob.class)
-                .withIdentity("auctionSessionStartJob", "auctionSessionGroup")
-                .usingJobData("auctionSessionId", auctionSessionId)
-                .build();
-
-        Trigger trigger = TriggerBuilder.newTrigger()
-                .withIdentity("auctionSessionStartTrigger", "auctionSessionGroup")
-                .startAt(Date.from(startTime.atZone(ZoneId.systemDefault()).toInstant()))
-                .withSchedule(SimpleScheduleBuilder.simpleSchedule().withMisfireHandlingInstructionFireNow())
-                .build();
+        JobKey jobKey = new JobKey("auctionSessionStartJob-" + auctionSessionId, "auctionSessionGroup");
+        TriggerKey triggerKey = new TriggerKey("auctionSessionStartTrigger-" + auctionSessionId, "auctionSessionGroup");
 
         try {
+            // Kiểm tra nếu Job đã tồn tại
+            if (scheduler.checkExists(jobKey)) {
+                System.out.println("Job đã tồn tại: " + jobKey);
+                return;
+            }
+
+            JobDetail jobDetail = JobBuilder.newJob(AuctionSessionStartJob.class)
+                    .withIdentity(jobKey)
+                    .usingJobData("auctionSessionId", auctionSessionId)
+                    .build();
+
+            Trigger trigger = TriggerBuilder.newTrigger()
+                    .withIdentity(triggerKey)
+                    .startAt(Date.from(startTime.atZone(ZoneId.systemDefault()).toInstant()))
+                    .withSchedule(SimpleScheduleBuilder.simpleSchedule().withMisfireHandlingInstructionFireNow())
+                    .build();
+
             scheduler.scheduleJob(jobDetail, trigger);
 
+            // Kiểm tra và lưu SessionLog nếu chưa tồn tại
             if (sessionLogRepository.findSessionLogByAuctionSessionIdAndCurrentStatus(auctionSessionId, AUCTION_STATUS.UPCOMING.toString()) == null) {
                 SessionLog sessionLog = new SessionLog();
                 sessionLog.setAuctionSessionId(auctionSessionId);
@@ -56,20 +66,30 @@ public class SessionService {
     }
 
     public void scheduleAuctionSessionEnd(String auctionSessionId, LocalDateTime endTime) {
-        JobDetail jobDetail = JobBuilder.newJob(AuctionSessionEndTimeJob.class)
-                .withIdentity("auctionSessionEndJob", "auctionSessionGroup")
-                .usingJobData("auctionSessionId", auctionSessionId)
-                .build();
-
-        Trigger trigger = TriggerBuilder.newTrigger()
-                .withIdentity("auctionSessionEndTrigger", "auctionSessionGroup")
-                .startAt(Date.from(endTime.atZone(ZoneId.systemDefault()).toInstant()))
-                .withSchedule(SimpleScheduleBuilder.simpleSchedule().withMisfireHandlingInstructionFireNow())
-                .build();
+        JobKey jobKey = new JobKey("auctionSessionEndJob-" + auctionSessionId, "auctionSessionGroup");
+        TriggerKey triggerKey = new TriggerKey("auctionSessionEndTrigger-" + auctionSessionId, "auctionSessionGroup");
 
         try {
+            // Kiểm tra nếu Job đã tồn tại
+            if (scheduler.checkExists(jobKey)) {
+                System.out.println("Job đã tồn tại: " + jobKey);
+                return;
+            }
+
+            JobDetail jobDetail = JobBuilder.newJob(AuctionSessionEndTimeJob.class)
+                    .withIdentity(jobKey)
+                    .usingJobData("auctionSessionId", auctionSessionId)
+                    .build();
+
+            Trigger trigger = TriggerBuilder.newTrigger()
+                    .withIdentity(triggerKey)
+                    .startAt(Date.from(endTime.atZone(ZoneId.systemDefault()).toInstant()))
+                    .withSchedule(SimpleScheduleBuilder.simpleSchedule().withMisfireHandlingInstructionFireNow())
+                    .build();
+
             scheduler.scheduleJob(jobDetail, trigger);
 
+            // Kiểm tra và lưu SessionLog nếu chưa tồn tại
             if (sessionLogRepository.findSessionLogByAuctionSessionIdAndCurrentStatus(auctionSessionId, AUCTION_STATUS.ONGOING.toString()) == null) {
                 SessionLog sessionLog = new SessionLog();
                 sessionLog.setAuctionSessionId(auctionSessionId);
