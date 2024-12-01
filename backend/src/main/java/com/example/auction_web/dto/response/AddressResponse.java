@@ -24,6 +24,7 @@ public class AddressResponse {
     String ward;
     String addressDetail;
     String phone;
+    Boolean isDefault;
     Boolean delFlag;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
