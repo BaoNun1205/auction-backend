@@ -24,15 +24,17 @@ public class AuctionSessionInfoDetail {
     LocalDateTime endTime;
     BigDecimal startingBids;
     BigDecimal bidIncrement;
+    String status;
     AuctionSessionInfoResponse auctionSessionInfo;
 
-    public AuctionSessionInfoDetail(String id, String description, LocalDateTime startTime, LocalDateTime endTime, BigDecimal startingBids, BigDecimal bidIncrement) {
+    public AuctionSessionInfoDetail(String id, String description, LocalDateTime startTime, LocalDateTime endTime, BigDecimal startingBids, BigDecimal bidIncrement, String status) {
         this.id = id;
         this.description = description;
         this.startTime = startTime;
         this.endTime = endTime;
         this.startingBids = startingBids;
         this.bidIncrement = bidIncrement;
+        this.status = status;
     }
 
 }
