@@ -13,6 +13,7 @@ import com.example.auction_web.enums.AUCTION_STATUS;
 import com.example.auction_web.exception.AppException;
 import com.example.auction_web.exception.ErrorCode;
 import com.example.auction_web.mapper.AuctionSessionMapper;
+import com.example.auction_web.mapper.UserMapper;
 import com.example.auction_web.repository.*;
 import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.AssetService;
@@ -42,6 +43,7 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
     AssetRepository assetRepository;
     AuctionHistoryRepository auctionHistoryRepository;
     AuctionSessionMapper auctionSessionMapper;
+    UserMapper userMapper;
     AssetService assetService;
     SessionService sessionService;
 
@@ -82,6 +84,12 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
         AuctionSessionInfoResponse auctionSessionInfoResponse = auctionHistoryRepository.findAuctionSessionInfo(auctionSession.getAuctionSessionId());
         if (auctionSessionInfoResponse.getHighestBid().compareTo(BigDecimal.ZERO) == 0) {
             auctionSessionInfoResponse.setHighestBid(auctionSession.getStartingBids());
+        }
+
+        if (auctionSessionInfoResponse.getUserId() != null) {
+            auctionSessionInfoResponse.setUser(userMapper.toUserResponse(userRepository.findById(auctionSessionInfoResponse.getUserId()).get()));
+        } else {
+            auctionSessionInfoResponse.setUser(null);
         }
         auctionSessionInfoDetail.setAuctionSessionInfo(auctionSessionInfoResponse);
         return auctionSessionInfoDetail;

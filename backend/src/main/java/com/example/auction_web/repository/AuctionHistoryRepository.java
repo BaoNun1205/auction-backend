@@ -17,12 +17,16 @@ public interface AuctionHistoryRepository extends JpaRepository<AuctionHistory, 
     BigDecimal findMaxBidPriceByAuctionSessionId(@Param("auctionSessionId") String auctionSessionId);
 
     @Query("SELECT new com.example.auction_web.dto.response.AuctionSessionInfoResponse(" +
+            "ah.user.userId, " +
             "COUNT(DISTINCT ah.user.userId), " +
             "COUNT(ah), " +
             "COALESCE(MAX(ah.bidPrice), CAST(0 AS BigDecimal))) " +
             "FROM AuctionHistory ah " +
-            "WHERE ah.auctionSession.auctionSessionId = :auctionSessionId")
+            "WHERE ah.auctionSession.auctionSessionId = :auctionSessionId " +
+            "GROUP BY ah.user.userId")
     AuctionSessionInfoResponse findAuctionSessionInfo(@Param("auctionSessionId") String auctionSessionId);
+
+
 
     AuctionHistory findAuctionHistoryByAuctionSession_AuctionSessionIdAndUser_UserId(String auctionSessionId, String userId);
 }

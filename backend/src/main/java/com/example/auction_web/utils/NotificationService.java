@@ -30,13 +30,13 @@ public class NotificationService {
 
     public void setSchedulerNotification(String email, String auctionSessionId,LocalDateTime notificationTime) {
         JobDetail jobDetail = JobBuilder.newJob(EmailNotification.class)
-                .withIdentity("emailJob", "notificationGroup")
+                .withIdentity("emailJob-" + auctionSessionId, "notificationGroup")
                 .usingJobData("email", email)
                 .usingJobData("auctionSessionId", auctionSessionId)
                 .build();
 
         Trigger trigger = TriggerBuilder.newTrigger()
-                .withIdentity("emailTrigger", "notificationGroup")
+                .withIdentity("emailTrigger-" + auctionSessionId, "notificationGroup")
                 .startAt(Date.from(notificationTime.atZone(ZoneId.systemDefault()).toInstant()))
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule().withMisfireHandlingInstructionFireNow())
                 .build();
