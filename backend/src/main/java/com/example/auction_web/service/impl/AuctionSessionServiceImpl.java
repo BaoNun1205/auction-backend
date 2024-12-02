@@ -21,6 +21,7 @@ import com.example.auction_web.service.AssetService;
 import com.example.auction_web.service.AuctionSessionService;
 import com.example.auction_web.service.ImageAssetService;
 import com.example.auction_web.service.specification.AuctionSessionSpecification;
+import com.example.auction_web.service.specification.RelatedSessionSpecification;
 import com.example.auction_web.utils.SessionService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -104,9 +105,9 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
         return auctionSessionInfoDetail;
     }
 
-    public List<AuctionSessionResponse> filterAuctionSession(String status, String userId, LocalDateTime fromDate, LocalDateTime toDate, String keyword, Integer page, Integer size) {
+    public List<AuctionSessionResponse> filterAuctionSession(String status, String userId, LocalDateTime fromDate, LocalDateTime toDate, String keyword, Boolean isInCrease, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
-        if (isAllParamsNullOrEmpty(status, fromDate, toDate, keyword)) {
+        if (isAllParamsNullOrEmpty(status, fromDate, toDate, keyword, isInCrease)) {
             return auctionSessionRepository.findAll().stream()
                     .map(auctionSessionMapper::toAuctionItemResponse)
                     .toList();
@@ -116,7 +117,8 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
                 .where(AuctionSessionSpecification.hasStatus(status))
                 .and(AuctionSessionSpecification.hasFromDateToDate(fromDate, toDate))
                 .and(AuctionSessionSpecification.hasKeyword(keyword))
-                .and(AuctionSessionSpecification.hasUserId(userId));
+                .and(AuctionSessionSpecification.hasUserId(userId))
+                .and(AuctionSessionSpecification.hasIsInCrease(isInCrease));
 
         return auctionSessionRepository.findAll(specification, pageable).stream()
                 .map(auctionSession -> {
@@ -142,17 +144,51 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
                 .toList();
     }
 
-    public int totalAuctionSession(String status, LocalDateTime fromDate, LocalDateTime toDate, String keyword) {
-        if (isAllParamsNullOrEmpty(status, fromDate, toDate, keyword)) {
+    public int totalAuctionSession(String status, LocalDateTime fromDate, LocalDateTime toDate, String keyword, Boolean isInCrease) {
+        if (isAllParamsNullOrEmpty(status, fromDate, toDate, keyword, isInCrease)) {
             return auctionSessionRepository.findAll().size();
         }
 
         Specification<AuctionSession> specification = Specification
                 .where(AuctionSessionSpecification.hasStatus(status))
                 .and(AuctionSessionSpecification.hasFromDateToDate(fromDate, toDate))
-                .and(AuctionSessionSpecification.hasKeyword(keyword));
+                .and(AuctionSessionSpecification.hasKeyword(keyword))
+                .and(AuctionSessionSpecification.hasIsInCrease(isInCrease));
 
         return auctionSessionRepository.findAll(specification).size();
+    }
+
+    public List<AuctionSessionResponse> filterAuctionSessionRelated(String auctionSessionId) {
+        Pageable pageable = PageRequest.of(0, 6);
+        AuctionSession session = auctionSessionRepository.findById(auctionSessionId)
+                .orElseThrow(() -> new AppException(ErrorCode.AUCTION_SESSION_NOT_EXISTED));
+        Specification<AuctionSession> specification = Specification
+                .where(RelatedSessionSpecification.hasType(session.getAsset().getType().getTypeId()))
+                .and(RelatedSessionSpecification.hasStatus(session.getStatus()))
+                .and(RelatedSessionSpecification.hasAuctionSessionNotEqual(auctionSessionId));
+
+        return auctionSessionRepository.findAll(specification, pageable).stream()
+                .map(auctionSession -> {
+                    AuctionSessionResponse response = auctionSessionMapper.toAuctionItemResponse(auctionSession);
+
+                    List<AuctionSessionInfoResponse> auctionSessionInfoResponse = auctionHistoryRepository.findAuctionSessionInfo(auctionSession.getAuctionSessionId());
+                    if (!auctionSessionInfoResponse.isEmpty()) {
+                        if (auctionSessionInfoResponse.get(0).getHighestBid().compareTo(BigDecimal.ZERO) == 0) {
+                            auctionSessionInfoResponse.get(0).setHighestBid(auctionSession.getStartingBids());
+                        }
+
+                        if (auctionSessionInfoResponse.get(0).getUserId() != null) {
+                            auctionSessionInfoResponse.get(0).setUser(userMapper.toUserResponse(userRepository.findById(auctionSessionInfoResponse.get(0).getUserId()).get()));
+                        } else {
+                            auctionSessionInfoResponse.get(0).setUser(null);
+                        }
+                        response.setAuctionSessionInfo(auctionSessionInfoResponse.get(0));
+                    } else {
+                        response.setAuctionSessionInfo(new AuctionSessionInfoResponse(0L, 0L, "", response.getStartingBids(), null));
+                    }
+                    return response;
+                })
+                .toList();
     }
 
     public AuctionSessionResponse getAuctionSessionById(String auctionSessionId) {
@@ -189,7 +225,7 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
                 .orElseThrow(() -> new AppException(ErrorCode.ASSET_NOT_EXISTED));
     }
 
-    public boolean isAllParamsNullOrEmpty(String status, LocalDateTime fromDate, LocalDateTime toDate, String keyword) {
-        return (status == null || status.isEmpty()) && fromDate == null  && toDate == null && (keyword == null || keyword.isEmpty());
+    public boolean isAllParamsNullOrEmpty(String status, LocalDateTime fromDate, LocalDateTime toDate, String keyword, Boolean isInCrease) {
+        return (status == null || status.isEmpty()) && fromDate == null  && toDate == null && (keyword == null || keyword.isEmpty()) && isInCrease;
     }
 }

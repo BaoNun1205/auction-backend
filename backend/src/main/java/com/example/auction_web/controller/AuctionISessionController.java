@@ -52,11 +52,12 @@ public class AuctionISessionController {
             @RequestParam(required = false) LocalDateTime fromDate,
             @RequestParam(required = false) LocalDateTime toDate,
             @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Boolean isInCrease,
             @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "10") Integer size) {
 
-        List<AuctionSessionResponse> auctionSessionResponses = auctionSessionService.filterAuctionSession(status, userId, fromDate, toDate, keyword, page, size);
-        int total = auctionSessionService.totalAuctionSession(status, fromDate, toDate, keyword);
+        List<AuctionSessionResponse> auctionSessionResponses = auctionSessionService.filterAuctionSession(status, userId, fromDate, toDate, keyword, isInCrease, page, size);
+        int total = auctionSessionService.totalAuctionSession(status, fromDate, toDate, keyword, isInCrease);
 
         return ApiResponse.<DataResponse>builder()
                 .code(HttpStatus.OK.value())
@@ -80,6 +81,18 @@ public class AuctionISessionController {
         return ApiResponse.<AuctionSessionInfoDetail>builder()
                 .code(HttpStatus.OK.value())
                 .result(auctionSessionService.getDetailAuctionSessionById(auctionSessionId))
+                .build();
+    }
+
+    @GetMapping("/related/{auctionSessionId}")
+    ApiResponse<DataResponse> filterAuctionSessionRelated(@PathVariable String auctionSessionId) {
+        List<AuctionSessionResponse> auctionSessionResponses = auctionSessionService.filterAuctionSessionRelated(auctionSessionId);
+        return ApiResponse.<DataResponse>builder()
+                .code(HttpStatus.OK.value())
+                .result(DataResponse.<List<AuctionSessionResponse>>builder()
+                        .data(auctionSessionResponses)
+                        .total(auctionSessionResponses.size())
+                        .build())
                 .build();
     }
 }
