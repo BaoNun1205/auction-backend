@@ -59,8 +59,7 @@ public class RealTimeAuctionHandlerServiceImpl implements RealTimeAuctionHandler
         depositService.createDeposit(request);
         return DepositAddResponse.builder()
                 .userId(request.getUserId())
-                .firstName(userResponse.getFirstName())
-                .lastName(userResponse.getLastName())
+                .name(userResponse.getName())
                 .auctionSessionId(auctionSessionId)
                 .typeAuctionSession(auctionSessionResponse.getTypeSession())
                 .depositPrice(String.valueOf(request.getDepositPrice()))

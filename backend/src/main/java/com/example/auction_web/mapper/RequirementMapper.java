@@ -28,8 +28,7 @@ public interface RequirementMapper {
         if (user == null) return null;
         return UserResponse.builder()
                 .userId(user.getUserId())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
+                .name(user.getName())
                 .username(user.getUsername())
                 .build();
     }

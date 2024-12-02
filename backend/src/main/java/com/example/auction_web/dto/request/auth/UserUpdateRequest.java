@@ -1,5 +1,6 @@
 package com.example.auction_web.dto.request.auth;
 
+import com.example.auction_web.enums.GENDER;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -16,8 +18,7 @@ import java.util.List;
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class UserUpdateRequest {
-    String firstName;
-    String lastName;
+    String name;
 
     @NotBlank(message = "Password cannot be blank")
     @Pattern(
@@ -33,5 +34,7 @@ public class UserUpdateRequest {
             message = "Phone number is invalid"
     )
     String phone;
+    String gender;
+    LocalDate dateOfBirth;
     List<String> roles;
 }

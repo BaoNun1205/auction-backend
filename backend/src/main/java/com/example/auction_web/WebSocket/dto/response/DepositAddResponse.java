@@ -14,8 +14,7 @@ import lombok.experimental.FieldDefaults;
 public class DepositAddResponse {
     String depositId;
     String userId;
-    String firstName;
-    String lastName;
+    String name;
     String auctionSessionId;
     String typeAuctionSession;
     String depositPrice;

@@ -1,5 +1,6 @@
 package com.example.auction_web.dto.request.auth;
 
+import com.example.auction_web.enums.GENDER;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -10,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -21,8 +23,7 @@ public class UserCreateRequest {
     @NotBlank(message = "Username cannot be blank")
     @Size(min = 4, max = 20, message = "Username must be between 4 and 20 characters")
     String username;
-    String firstName;
-    String lastName;
+    String name;
 
     @NotBlank(message = "Password cannot be blank")
     @Pattern(
@@ -42,5 +43,7 @@ public class UserCreateRequest {
             message = "Phone number is invalid"
     )
     String phone;
+    String gender;
+    LocalDate dateOfBirth;
     String token;
 }
