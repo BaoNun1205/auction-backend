@@ -28,4 +28,5 @@ public class AddressUpdateRequest {
             message = "Phone number is invalid"
     )
     String phone;
+    Boolean isDefault;
 }
