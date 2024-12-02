@@ -1,5 +1,6 @@
 package com.example.auction_web.service.specification;
 
+import com.example.auction_web.entity.Asset;
 import com.example.auction_web.entity.AuctionSession;
 import jakarta.persistence.criteria.Join;
 import org.springframework.data.jpa.domain.Specification;
@@ -7,6 +8,14 @@ import org.springframework.data.jpa.domain.Specification;
 import java.time.LocalDateTime;
 
 public class AuctionSessionSpecification {
+    public static Specification<AuctionSession> hasUserId(String userId) {
+        return (root, query, criteriaBuilder) -> {
+            if (userId == null || userId.isEmpty()) {
+                return null;
+            }
+            return criteriaBuilder.equal(root.get("user").get("userId"), userId);
+        };
+    }
     public static Specification<AuctionSession> hasStatus(String status) {
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("status"), status);
     }

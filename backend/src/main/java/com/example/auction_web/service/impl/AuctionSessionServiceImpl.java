@@ -52,6 +52,10 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
         auctionSession.setAuctionSessionId(UUID.randomUUID().toString());
         setAuctionSessionReference(request, auctionSession);
 
+        Asset asset = assetRepository.findById(request.getAssetId()).orElseThrow(() -> new AppException(ErrorCode.ASSET_NOT_EXISTED));
+        asset.setStatus("1");
+        assetRepository.save(asset);
+
         auctionSession.setStartTime(request.getStartTime().plusHours(7));
         auctionSession.setEndTime(request.getEndTime().plusHours(7));
 
@@ -99,7 +103,7 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
         return auctionSessionInfoDetail;
     }
 
-    public List<AuctionSessionResponse> filterAuctionSession(String status, LocalDateTime fromDate, LocalDateTime toDate, String keyword, Integer page, Integer size) {
+    public List<AuctionSessionResponse> filterAuctionSession(String status, String userId, LocalDateTime fromDate, LocalDateTime toDate, String keyword, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
         if (isAllParamsNullOrEmpty(status, fromDate, toDate, keyword)) {
             return auctionSessionRepository.findAll().stream()
@@ -110,7 +114,8 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
         Specification<AuctionSession> specification = Specification
                 .where(AuctionSessionSpecification.hasStatus(status))
                 .and(AuctionSessionSpecification.hasFromDateToDate(fromDate, toDate))
-                .and(AuctionSessionSpecification.hasKeyword(keyword));
+                .and(AuctionSessionSpecification.hasKeyword(keyword))
+                .and(AuctionSessionSpecification.hasUserId(userId));
 
         return auctionSessionRepository.findAll(specification, pageable).stream()
                 .map(auctionSession -> {

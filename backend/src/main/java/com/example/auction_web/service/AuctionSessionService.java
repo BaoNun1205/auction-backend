@@ -14,7 +14,7 @@ public interface AuctionSessionService {
     AuctionSessionResponse getAuctionSessionById(String auctionSessionId);
     void completeAuctionSession(String auctionSessionId);
     List<AuctionSessionResponse> getListAuctionSessionByStatus(String status);
-    List<AuctionSessionResponse> filterAuctionSession(String status, LocalDateTime fromDate, LocalDateTime toDate, String keyword, Integer page, Integer size);
+    List<AuctionSessionResponse> filterAuctionSession(String status, String userId, LocalDateTime fromDate, LocalDateTime toDate, String keyword, Integer page, Integer size);
     int totalAuctionSession(String status, LocalDateTime fromDate, LocalDateTime toDate, String keyword);
     AuctionSessionInfoDetail getDetailAuctionSessionById(String auctionSessionId);
 }
