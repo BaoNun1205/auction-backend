@@ -25,16 +25,52 @@ public class AddressServiceImpl implements AddressService {
     UserRepository userRepository;
     AddressMapper addressMapper;
 
+
     public AddressResponse createAddress(AddressCreateRequest request) {
         Address address = addressMapper.toAddress(request);
+
+        if (request.getIsDefault() != null && request.getIsDefault()) {
+            List<Address> existingAddresses = addressRepository.findAddressByUser_UserId(request.getUserId()); // Giả sử bạn có một phương thức để lấy tất cả địa chỉ của người dùng
+            for (Address existingAddress : existingAddresses) {
+                if (existingAddress.getIsDefault()) {
+                    existingAddress.setIsDefault(false);
+                    addressRepository.save(existingAddress);
+                }
+            }
+        }
+
         setAddressReference(request, address);
         return addressMapper.toAddressResponse(addressRepository.save(address));
     }
 
     public AddressResponse updateAddress(String id, AddressUpdateRequest request) {
+        // Tìm địa chỉ cần cập nhật
         Address address = addressRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.ADDRESS_NOT_EXISTED));
+
+        // Nếu yêu cầu cập nhật có isDefault = true, ta thực hiện đặt địa chỉ mặc định
+        if (request.getIsDefault() != null && request.getIsDefault()) {
+            List<Address> existingAddresses = addressRepository.findAddressByUser_UserId(address.getUser().getUserId());
+
+            // Đặt tất cả các địa chỉ khác thành không mặc định
+            for (Address existingAddress : existingAddresses) {
+                if (existingAddress.getIsDefault()) {
+                    existingAddress.setIsDefault(false);
+                    addressRepository.save(existingAddress);
+                }
+            }
+
+            // Cập nhật địa chỉ hiện tại thành mặc định
+            address.setIsDefault(true);
+        } else {
+            // Nếu isDefault là false hoặc không có yêu cầu cập nhật, chỉ cập nhật các trường còn lại
+            address.setIsDefault(false);
+        }
+
+        // Cập nhật các trường còn lại của địa chỉ từ request
         addressMapper.updateAddress(address, request);
+
+        // Lưu lại địa chỉ đã được cập nhật
         return addressMapper.toAddressResponse(addressRepository.save(address));
     }
 
