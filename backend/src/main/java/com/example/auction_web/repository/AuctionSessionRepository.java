@@ -21,7 +21,7 @@ public interface AuctionSessionRepository extends JpaRepository<AuctionSession, 
 
     @Query("SELECT new com.example.auction_web.dto.response.AuctionSessionInfoDetail(" +
             "asession.auctionSessionId, asession.name, asession.description," +
-            "asession.startTime, asession.endTime, asession.startingBids, asession.bidIncrement, asession.status) " +
+            "asession.startTime, asession.endTime, asession.startingBids, asession.bidIncrement, asession.status, asession.depositAmount) " +
             "FROM AuctionSession asession " +
             "JOIN asession.asset asset " +
             "WHERE asession.auctionSessionId = :auctionSessionId")
