@@ -63,7 +63,6 @@ public class UserServiceImpl implements UserService {
         return userMapper.toUserResponse(user);
     }
 
-    @PostAuthorize("returnObject.username == authentication.name")
     public UserResponse getUserResponse(String id) {
         return userMapper.toUserResponse(
                 userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
@@ -73,7 +72,6 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
     }
 
-    @PostAuthorize("returnObject.email == authentication.name")
     public UserResponse getUserByUsername(String username) {
         return userMapper.toUserResponse(
                 userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED))
