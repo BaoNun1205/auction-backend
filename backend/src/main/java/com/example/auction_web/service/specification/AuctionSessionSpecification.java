@@ -51,4 +51,18 @@ public class AuctionSessionSpecification {
         };
     }
 
+    public static Specification<AuctionSession> hasIsInCrease(Boolean isInCrease) {
+        return (root, query, criteriaBuilder) -> {
+            if (isInCrease != null) {
+                if (isInCrease) {
+                    query.orderBy(criteriaBuilder.asc(root.get("startingBids")));
+                } else {
+                    query.orderBy(criteriaBuilder.desc(root.get("startingBids")));
+                }
+            }
+            return null; // Trả về null để không thêm bất kỳ điều kiện lọc nào
+        };
+    }
+
+
 }
