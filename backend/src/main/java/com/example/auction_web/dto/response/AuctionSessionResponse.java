@@ -17,6 +17,8 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class AuctionSessionResponse {
     String auctionSessionId;
+    String name;
+    String description;
     String typeSession;
     AssetResponse asset;
     UserResponse user;
