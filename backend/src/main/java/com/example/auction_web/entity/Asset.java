@@ -1,6 +1,7 @@
 package com.example.auction_web.entity;
 
 import com.example.auction_web.entity.auth.User;
+import com.example.auction_web.enums.ASSET_STATUS;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -58,7 +59,7 @@ public class Asset {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         this.delFlag = false;
-        this.status = "0";
+        this.status = ASSET_STATUS.NOT_AUCTIONED.toString();
     }
 
     @PreUpdate

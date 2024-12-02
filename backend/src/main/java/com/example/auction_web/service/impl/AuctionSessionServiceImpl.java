@@ -9,6 +9,7 @@ import com.example.auction_web.entity.Asset;
 import com.example.auction_web.entity.AuctionSession;
 import com.example.auction_web.entity.Event;
 import com.example.auction_web.entity.auth.User;
+import com.example.auction_web.enums.ASSET_STATUS;
 import com.example.auction_web.enums.AUCTION_STATUS;
 import com.example.auction_web.exception.AppException;
 import com.example.auction_web.exception.ErrorCode;
@@ -53,7 +54,7 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
         setAuctionSessionReference(request, auctionSession);
 
         Asset asset = assetRepository.findById(request.getAssetId()).orElseThrow(() -> new AppException(ErrorCode.ASSET_NOT_EXISTED));
-        asset.setStatus("1");
+        asset.setStatus(ASSET_STATUS.ONGOING.toString());
         assetRepository.save(asset);
 
         auctionSession.setStartTime(request.getStartTime().plusHours(7));
