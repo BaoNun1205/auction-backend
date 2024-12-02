@@ -26,9 +26,10 @@ public class AuctionSessionInfoDetail {
     BigDecimal startingBids;
     BigDecimal bidIncrement;
     String status;
+    BigDecimal depositAmount;
     AuctionSessionInfoResponse auctionSessionInfo;
 
-    public AuctionSessionInfoDetail(String id, String name, String description, LocalDateTime startTime, LocalDateTime endTime, BigDecimal startingBids, BigDecimal bidIncrement, String status) {
+    public AuctionSessionInfoDetail(String id, String name, String description, LocalDateTime startTime, LocalDateTime endTime, BigDecimal startingBids, BigDecimal bidIncrement, String status, BigDecimal depositAmount) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -37,6 +38,7 @@ public class AuctionSessionInfoDetail {
         this.startingBids = startingBids;
         this.bidIncrement = bidIncrement;
         this.status = status;
+        this.depositAmount = depositAmount;
     }
 
 }
