@@ -17,6 +17,8 @@ import java.time.LocalDateTime;
 public class AuctionSessionCreateRequest {
     String typeSession;
     String assetId;
+    String name;
+    String description;
     String userId;
     LocalDateTime startTime;
     LocalDateTime endTime;

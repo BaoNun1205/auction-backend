@@ -18,21 +18,25 @@ import java.util.List;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class AuctionSessionInfoDetail {
     String id;
+    String name;
     AssetResponse asset;
     String description;
     LocalDateTime startTime;
     LocalDateTime endTime;
     BigDecimal startingBids;
     BigDecimal bidIncrement;
+    String status;
     AuctionSessionInfoResponse auctionSessionInfo;
 
-    public AuctionSessionInfoDetail(String id, String description, LocalDateTime startTime, LocalDateTime endTime, BigDecimal startingBids, BigDecimal bidIncrement) {
+    public AuctionSessionInfoDetail(String id, String name, String description, LocalDateTime startTime, LocalDateTime endTime, BigDecimal startingBids, BigDecimal bidIncrement, String status) {
         this.id = id;
+        this.name = name;
         this.description = description;
         this.startTime = startTime;
         this.endTime = endTime;
         this.startingBids = startingBids;
         this.bidIncrement = bidIncrement;
+        this.status = status;
     }
 
 }

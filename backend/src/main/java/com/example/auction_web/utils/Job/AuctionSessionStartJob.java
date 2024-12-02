@@ -3,6 +3,7 @@ package com.example.auction_web.utils.Job;
 import com.example.auction_web.entity.Asset;
 import com.example.auction_web.entity.AuctionSession;
 import com.example.auction_web.entity.ScheduleLog.SessionLog;
+import com.example.auction_web.enums.ASSET_STATUS;
 import com.example.auction_web.enums.AUCTION_STATUS;
 import com.example.auction_web.repository.AssetRepository;
 import com.example.auction_web.repository.AuctionSessionRepository;
@@ -39,7 +40,7 @@ public class AuctionSessionStartJob implements Job {
         try {
             if (auctionSession != null) {
                 auctionSession.setStatus(AUCTION_STATUS.ONGOING.toString());
-                asset.setStatus(AUCTION_STATUS.ONGOING.toString());
+                asset.setStatus(ASSET_STATUS.ONGOING.toString());
                 assetRepository.save(asset);
                 auctionSessionRepository.save(auctionSession);
             }

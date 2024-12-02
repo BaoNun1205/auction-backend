@@ -48,13 +48,14 @@ public class AuctionISessionController {
     @GetMapping
     ApiResponse<DataResponse> filterAuctionSession(
             @RequestParam(required = false) String status,
+            @RequestParam(required = false) String userId,
             @RequestParam(required = false) LocalDateTime fromDate,
             @RequestParam(required = false) LocalDateTime toDate,
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "10") Integer size) {
 
-        List<AuctionSessionResponse> auctionSessionResponses = auctionSessionService.filterAuctionSession(status, fromDate, toDate, keyword, page, size);
+        List<AuctionSessionResponse> auctionSessionResponses = auctionSessionService.filterAuctionSession(status, userId, fromDate, toDate, keyword, page, size);
         int total = auctionSessionService.totalAuctionSession(status, fromDate, toDate, keyword);
 
         return ApiResponse.<DataResponse>builder()

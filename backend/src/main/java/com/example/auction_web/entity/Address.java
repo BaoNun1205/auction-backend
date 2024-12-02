@@ -31,6 +31,7 @@ public class Address {
     String ward;
     String addressDetail;
     String phone;
+    Boolean isDefault;
     Boolean delFlag;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;

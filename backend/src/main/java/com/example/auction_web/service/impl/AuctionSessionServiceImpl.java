@@ -9,6 +9,7 @@ import com.example.auction_web.entity.Asset;
 import com.example.auction_web.entity.AuctionSession;
 import com.example.auction_web.entity.Event;
 import com.example.auction_web.entity.auth.User;
+import com.example.auction_web.enums.ASSET_STATUS;
 import com.example.auction_web.enums.AUCTION_STATUS;
 import com.example.auction_web.exception.AppException;
 import com.example.auction_web.exception.ErrorCode;
@@ -52,6 +53,10 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
         auctionSession.setAuctionSessionId(UUID.randomUUID().toString());
         setAuctionSessionReference(request, auctionSession);
 
+        Asset asset = assetRepository.findById(request.getAssetId()).orElseThrow(() -> new AppException(ErrorCode.ASSET_NOT_EXISTED));
+        asset.setStatus(ASSET_STATUS.ONGOING.toString());
+        assetRepository.save(asset);
+
         auctionSession.setStartTime(request.getStartTime().plusHours(7));
         auctionSession.setEndTime(request.getEndTime().plusHours(7));
 
@@ -82,20 +87,24 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
         auctionSessionInfoDetail.setAsset(assetService.getAssetById(auctionSession.getAsset().getAssetId()));
 
         List<AuctionSessionInfoResponse> auctionSessionInfoResponse = auctionHistoryRepository.findAuctionSessionInfo(auctionSession.getAuctionSessionId());
-        if (auctionSessionInfoResponse.get(0).getHighestBid().compareTo(BigDecimal.ZERO) == 0) {
-            auctionSessionInfoResponse.get(0).setHighestBid(auctionSession.getStartingBids());
-        }
+        if (!auctionSessionInfoResponse.isEmpty()) {
+            if (auctionSessionInfoResponse.get(0).getHighestBid().compareTo(BigDecimal.ZERO) == 0) {
+                auctionSessionInfoResponse.get(0).setHighestBid(auctionSession.getStartingBids());
+            }
 
-        if (auctionSessionInfoResponse.get(0).getUserId() != null) {
-            auctionSessionInfoResponse.get(0).setUser(userMapper.toUserResponse(userRepository.findById(auctionSessionInfoResponse.get(0).getUserId()).get()));
+            if (auctionSessionInfoResponse.get(0).getUserId() != null) {
+                auctionSessionInfoResponse.get(0).setUser(userMapper.toUserResponse(userRepository.findById(auctionSessionInfoResponse.get(0).getUserId()).get()));
+            } else {
+                auctionSessionInfoResponse.get(0).setUser(null);
+            }
+            auctionSessionInfoDetail.setAuctionSessionInfo(auctionSessionInfoResponse.get(0));
         } else {
-            auctionSessionInfoResponse.get(0).setUser(null);
+            auctionSessionInfoDetail.setAuctionSessionInfo(new AuctionSessionInfoResponse(0L, 0L, "", auctionSessionInfoDetail.getStartingBids(), null));
         }
-        auctionSessionInfoDetail.setAuctionSessionInfo(auctionSessionInfoResponse.get(0));
         return auctionSessionInfoDetail;
     }
 
-    public List<AuctionSessionResponse> filterAuctionSession(String status, LocalDateTime fromDate, LocalDateTime toDate, String keyword, Integer page, Integer size) {
+    public List<AuctionSessionResponse> filterAuctionSession(String status, String userId, LocalDateTime fromDate, LocalDateTime toDate, String keyword, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
         if (isAllParamsNullOrEmpty(status, fromDate, toDate, keyword)) {
             return auctionSessionRepository.findAll().stream()
@@ -106,10 +115,30 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
         Specification<AuctionSession> specification = Specification
                 .where(AuctionSessionSpecification.hasStatus(status))
                 .and(AuctionSessionSpecification.hasFromDateToDate(fromDate, toDate))
-                .and(AuctionSessionSpecification.hasKeyword(keyword));
+                .and(AuctionSessionSpecification.hasKeyword(keyword))
+                .and(AuctionSessionSpecification.hasUserId(userId));
 
         return auctionSessionRepository.findAll(specification, pageable).stream()
-                .map(auctionSessionMapper::toAuctionItemResponse)
+                .map(auctionSession -> {
+                    AuctionSessionResponse response = auctionSessionMapper.toAuctionItemResponse(auctionSession);
+
+                    List<AuctionSessionInfoResponse> auctionSessionInfoResponse = auctionHistoryRepository.findAuctionSessionInfo(auctionSession.getAuctionSessionId());
+                    if (!auctionSessionInfoResponse.isEmpty()) {
+                        if (auctionSessionInfoResponse.get(0).getHighestBid().compareTo(BigDecimal.ZERO) == 0) {
+                            auctionSessionInfoResponse.get(0).setHighestBid(auctionSession.getStartingBids());
+                        }
+
+                        if (auctionSessionInfoResponse.get(0).getUserId() != null) {
+                            auctionSessionInfoResponse.get(0).setUser(userMapper.toUserResponse(userRepository.findById(auctionSessionInfoResponse.get(0).getUserId()).get()));
+                        } else {
+                            auctionSessionInfoResponse.get(0).setUser(null);
+                        }
+                        response.setAuctionSessionInfo(auctionSessionInfoResponse.get(0));
+                    } else {
+                        response.setAuctionSessionInfo(new AuctionSessionInfoResponse(0L, 0L, "", response.getStartingBids(), null));
+                    }
+                    return response;
+                    })
                 .toList();
     }
 

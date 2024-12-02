@@ -24,6 +24,9 @@ public class AuctionSession {
     @GeneratedValue(strategy = GenerationType.UUID)
     String auctionSessionId;
 
+    String name;
+    String description;
+
     @ManyToMany
     List<Event> events;
     String typeSession;
