@@ -4,6 +4,7 @@ import com.example.auction_web.entity.Asset;
 import com.example.auction_web.entity.AuctionHistory;
 import com.example.auction_web.entity.AuctionSession;
 import com.example.auction_web.entity.ScheduleLog.SessionLog;
+import com.example.auction_web.enums.ASSET_STATUS;
 import com.example.auction_web.enums.AUCTION_STATUS;
 import com.example.auction_web.repository.AssetRepository;
 import com.example.auction_web.repository.AuctionHistoryRepository;
@@ -48,7 +49,7 @@ public class AuctionSessionEndTimeJob implements Job {
                 if (auctionHistory != null) {
                     asset.setStatus(AUCTION_STATUS.FINISHED.toString());
                 } else {
-                    asset.setStatus("NOTAUCTIONED");
+                    asset.setStatus(ASSET_STATUS.NOT_AUCTIONED.toString());
                 }
                 assetRepository.save(asset);
             }

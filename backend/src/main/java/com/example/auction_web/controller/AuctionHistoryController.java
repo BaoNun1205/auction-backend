@@ -45,7 +45,7 @@ public class AuctionHistoryController {
                 .build();
     }
 
-    @GetMapping("/auctionSession/{auctionSessionId}")
+    @GetMapping("/auction-session/{auctionSessionId}")
     ApiResponse<AuctionHistoryResponse> getAuctionHistoriesByAuctionItemId(@PathVariable String auctionSessionId) {
         return ApiResponse.<AuctionHistoryResponse>builder()
                 .code(HttpStatus.OK.value())
@@ -53,7 +53,7 @@ public class AuctionHistoryController {
                 .build();
     }
 
-    @GetMapping("/infoAuctionSession/{auctionSessionId}")
+    @GetMapping("/info-auctions-session/{auctionSessionId}")
     ApiResponse<AuctionSessionInfoResponse> getAuctionSessionInfo(@PathVariable String auctionSessionId) {
         return ApiResponse.<AuctionSessionInfoResponse>builder()
                 .code(HttpStatus.OK.value())
@@ -61,11 +61,12 @@ public class AuctionHistoryController {
                 .build();
     }
 
-    @GetMapping("/checkDeposit")
-    ApiResponse<Boolean> checkDeposit(@RequestBody AuctionHistoryCreateRequest request) {
+    @GetMapping("/check-deposit")
+    ApiResponse<Boolean> checkDeposit(@RequestParam String userId,
+                                      @RequestParam String auctionSessionId) {
         return ApiResponse.<Boolean>builder()
                 .code(HttpStatus.OK.value())
-                .result(auctionHistoryService.checkDeposit(request.getUserId(), request.getAuctionSessionId()))
+                .result(auctionHistoryService.checkDeposit(auctionSessionId, userId))
                 .build();
     }
 }

@@ -58,9 +58,6 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
         asset.setStatus(ASSET_STATUS.ONGOING.toString());
         assetRepository.save(asset);
 
-        auctionSession.setStartTime(request.getStartTime().plusHours(7));
-        auctionSession.setEndTime(request.getEndTime().plusHours(7));
-
         AuctionSessionResponse response = auctionSessionMapper.toAuctionItemResponse(auctionSessionRepository.save(auctionSession));
 
         LocalDateTime startTime = auctionSession.getStartTime();
@@ -107,11 +104,6 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
 
     public List<AuctionSessionResponse> filterAuctionSession(String status, String userId, LocalDateTime fromDate, LocalDateTime toDate, String keyword, Boolean isInCrease, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
-        if (isAllParamsNullOrEmpty(status, fromDate, toDate, keyword, isInCrease)) {
-            return auctionSessionRepository.findAll().stream()
-                    .map(auctionSessionMapper::toAuctionItemResponse)
-                    .toList();
-        }
 
         Specification<AuctionSession> specification = Specification
                 .where(AuctionSessionSpecification.hasStatus(status))

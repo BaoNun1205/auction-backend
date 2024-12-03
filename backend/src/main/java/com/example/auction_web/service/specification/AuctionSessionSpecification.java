@@ -37,7 +37,7 @@ public class AuctionSessionSpecification {
                 // Chỉ có 'toDate', tìm các phiên kết thúc trước 'toDate'
                 return criteriaBuilder.lessThanOrEqualTo(root.get("startTime"), toDate);
             }
-            return criteriaBuilder.conjunction(); // Không có điều kiện nào được cung cấp, trả về luôn true
+            return criteriaBuilder.conjunction();
         };
     }
 
@@ -60,7 +60,7 @@ public class AuctionSessionSpecification {
                     query.orderBy(criteriaBuilder.desc(root.get("startingBids")));
                 }
             }
-            return null; // Trả về null để không thêm bất kỳ điều kiện lọc nào
+            return criteriaBuilder.conjunction();
         };
     }
 
