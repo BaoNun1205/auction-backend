@@ -12,6 +12,7 @@ import com.example.auction_web.exception.ErrorCode;
 import com.example.auction_web.mapper.AuctionHistoryMapper;
 import com.example.auction_web.repository.AuctionHistoryRepository;
 import com.example.auction_web.repository.AuctionSessionRepository;
+import com.example.auction_web.repository.DepositRepository;
 import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.AuctionHistoryService;
 import jakarta.persistence.OptimisticLockException;
@@ -30,6 +31,7 @@ public class AuctionHistoryServiceImpl implements AuctionHistoryService {
     // init
     AuctionHistoryRepository auctionHistoryRepository;
     AuctionSessionRepository auctionSessionRepository;
+    DepositRepository depositRepository;
     UserRepository userRepository;
     AuctionHistoryMapper auctionHistoryMapper;
 
@@ -59,8 +61,8 @@ public class AuctionHistoryServiceImpl implements AuctionHistoryService {
         }
     }
 
-    public Boolean checkDeposit(String userId, String auctionSessionId) {
-        return auctionHistoryRepository.findAuctionHistoryByAuctionSession_AuctionSessionIdAndUser_UserId(auctionSessionId, userId) != null;
+    public Boolean checkDeposit(String auctionSessionId, String userId) {
+        return depositRepository.findByAuctionSession_AuctionSessionIdAndUser_UserId(auctionSessionId, userId) != null;
     }
 
     //Update AuctionHistory

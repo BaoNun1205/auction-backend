@@ -62,8 +62,8 @@ public class AuctionHistoryController {
     }
 
     @GetMapping("/check-deposit")
-    ApiResponse<Boolean> checkDeposit(@RequestParam String userId,
-                                      @RequestParam String auctionSessionId) {
+    ApiResponse<Boolean> checkDeposit(@RequestParam String auctionSessionId,
+                                      @RequestParam String userId) {
         return ApiResponse.<Boolean>builder()
                 .code(HttpStatus.OK.value())
                 .result(auctionHistoryService.checkDeposit(auctionSessionId, userId))
