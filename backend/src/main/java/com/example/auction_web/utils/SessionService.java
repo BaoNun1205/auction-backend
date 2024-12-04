@@ -128,7 +128,7 @@ public class SessionService {
             if (Objects.equals(sessionLog.getCurrentStatus(), AUCTION_STATUS.UPCOMING.toString())) {
                 auctionSession.setStatus(AUCTION_STATUS.ONGOING.toString());
             } else if (Objects.equals(sessionLog.getCurrentStatus(), AUCTION_STATUS.ONGOING.toString())) {
-                auctionSession.setStatus(AUCTION_STATUS.FINISHED.toString());
+                auctionSession.setStatus(AUCTION_STATUS.AUCTION_SUCCESS.toString());
             }
             auctionSessionRepository.save(auctionSession);
         } else {

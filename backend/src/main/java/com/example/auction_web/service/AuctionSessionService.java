@@ -12,7 +12,6 @@ public interface AuctionSessionService {
     AuctionSessionResponse createAuctionSession(AuctionSessionCreateRequest request);
     AuctionSessionResponse updateAuctionSession(String id, AuctionSessionUpdateRequest request);
     AuctionSessionResponse getAuctionSessionById(String auctionSessionId);
-    void completeAuctionSession(String auctionSessionId);
     List<AuctionSessionResponse> getListAuctionSessionByStatus(String status);
     List<AuctionSessionResponse> filterAuctionSession(String status, String userId, LocalDateTime fromDate, LocalDateTime toDate, String keyword, Boolean isInCrease, Integer page, Integer size);
     List<AuctionSessionResponse> filterAuctionSessionRelated(String auctionSessionId);

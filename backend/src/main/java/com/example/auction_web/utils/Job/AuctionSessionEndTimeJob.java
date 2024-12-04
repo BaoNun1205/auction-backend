@@ -44,13 +44,14 @@ public class AuctionSessionEndTimeJob implements Job {
         AuctionHistory auctionHistory = auctionHistoryRepository.findAuctionHistoryByAuctionSession_AuctionSessionId(auctionSessionId);
         try {
             if (auctionSession != null) {
-                auctionSession.setStatus(AUCTION_STATUS.FINISHED.toString());
-                auctionSessionRepository.save(auctionSession);
                 if (auctionHistory != null) {
-                    asset.setStatus(AUCTION_STATUS.FINISHED.toString());
+                    auctionSession.setStatus(AUCTION_STATUS.AUCTION_SUCCESS.toString());
+                    asset.setStatus(ASSET_STATUS.AUCTION_SUCCESS.toString());
                 } else {
-                    asset.setStatus(ASSET_STATUS.NOT_AUCTIONED.toString());
+                    auctionSession.setStatus(AUCTION_STATUS.AUCTION_FAILED.toString());
+                    asset.setStatus(ASSET_STATUS.AUCTION_FAILED.toString());
                 }
+                auctionSessionRepository.save(auctionSession);
                 assetRepository.save(asset);
             }
 

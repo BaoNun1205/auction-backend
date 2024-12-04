@@ -194,14 +194,6 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
                 .toList();
     }
 
-    @Transactional
-    public void completeAuctionSession(String auctionSessionId) {
-        AuctionSession auctionSession = auctionSessionRepository.findById(auctionSessionId)
-                .orElseThrow(() -> new AppException(ErrorCode.AUCTION_SESSION_NOT_EXISTED));
-        auctionSession.setStatus(String.valueOf(AUCTION_STATUS.FINISHED));
-        auctionSessionRepository.save(auctionSession);
-    }
-
     private void setAuctionSessionReference(AuctionSessionCreateRequest request, AuctionSession auctionSession) {
         auctionSession.setUser(getUserById(request.getUserId()));
         auctionSession.setAsset(getAssetById(request.getAssetId()));

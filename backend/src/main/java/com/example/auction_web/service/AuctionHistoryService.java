@@ -13,5 +13,5 @@ public interface AuctionHistoryService {
     List<AuctionHistoryResponse> getAllAuctionHistories();
     AuctionHistoryResponse getAuctionHistoriesByAuctionSessionId(String auctionSessionId);
     AuctionSessionInfoResponse getAuctionSessionInfo(String auctionSessionId);
-    Boolean checkDeposit(String userId, String auctionSessionId);
+    Boolean checkDeposit(String auctionSessionId, String userId);
 }
