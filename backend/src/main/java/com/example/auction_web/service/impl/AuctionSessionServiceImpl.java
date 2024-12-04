@@ -54,6 +54,9 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
         auctionSession.setAuctionSessionId(UUID.randomUUID().toString());
         setAuctionSessionReference(request, auctionSession);
 
+        auctionSession.setStartTime(request.getStartTime().plusHours(7));
+        auctionSession.setEndTime(request.getEndTime().plusHours(7));
+
         Asset asset = assetRepository.findById(request.getAssetId()).orElseThrow(() -> new AppException(ErrorCode.ASSET_NOT_EXISTED));
         asset.setStatus(ASSET_STATUS.ONGOING.toString());
         assetRepository.save(asset);
