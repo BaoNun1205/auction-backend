@@ -1,8 +1,10 @@
 package com.example.auction_web.utils;
 
+import com.example.auction_web.entity.AuctionHistory;
 import com.example.auction_web.entity.AuctionSession;
 import com.example.auction_web.entity.ScheduleLog.SessionLog;
 import com.example.auction_web.enums.AUCTION_STATUS;
+import com.example.auction_web.repository.AuctionHistoryRepository;
 import com.example.auction_web.repository.AuctionSessionRepository;
 import com.example.auction_web.repository.SessionLogRepository;
 import com.example.auction_web.utils.Job.AuctionSessionEndTimeJob;
@@ -26,6 +28,7 @@ public class SessionService {
     private final Scheduler scheduler;
     private final AuctionSessionRepository auctionSessionRepository;
     private final SessionLogRepository sessionLogRepository;
+    private final AuctionHistoryRepository auctionHistoryRepository;
 
     public void scheduleAuctionSessionStart(String auctionSessionId, LocalDateTime startTime) {
         JobKey jobKey = new JobKey("auctionSessionStartJob-" + auctionSessionId, "auctionSessionGroup");
@@ -112,6 +115,7 @@ public class SessionService {
         LocalDateTime sessionTime = sessionLog.getScheduledTime();
         String auctionSessionId = sessionLog.getAuctionSessionId();
         AuctionSession auctionSession = auctionSessionRepository.findById(auctionSessionId).orElse(null);
+        List<AuctionHistory> auctionHistory = auctionHistoryRepository.findAuctionHistorysByAuctionSession_AuctionSessionId(auctionSessionId);
         LocalDateTime startTime = auctionSession.getStartTime();
         LocalDateTime endTime = auctionSession.getEndTime();
 
@@ -128,7 +132,11 @@ public class SessionService {
             if (Objects.equals(sessionLog.getCurrentStatus(), AUCTION_STATUS.UPCOMING.toString())) {
                 auctionSession.setStatus(AUCTION_STATUS.ONGOING.toString());
             } else if (Objects.equals(sessionLog.getCurrentStatus(), AUCTION_STATUS.ONGOING.toString())) {
-                auctionSession.setStatus(AUCTION_STATUS.AUCTION_SUCCESS.toString());
+                if (auctionHistory.isEmpty()) {
+                    auctionSession.setStatus(AUCTION_STATUS.AUCTION_FAILED.toString());
+                } else {
+                    auctionSession.setStatus(AUCTION_STATUS.AUCTION_SUCCESS.toString());
+                }
             }
             auctionSessionRepository.save(auctionSession);
         } else {

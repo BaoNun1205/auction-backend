@@ -13,6 +13,8 @@ import java.util.List;
 @Repository
 public interface AuctionHistoryRepository extends JpaRepository<AuctionHistory, String> {
     AuctionHistory findAuctionHistoryByAuctionSession_AuctionSessionId(String auctionSessionId);
+    List<AuctionHistory> findAuctionHistorysByAuctionSession_AuctionSessionId(String auctionSessionId);
+
 
     @Query("SELECT MAX(a.bidPrice) FROM AuctionHistory a WHERE a.auctionSession.auctionSessionId = :auctionSessionId AND a.delFlag = false")
     BigDecimal findMaxBidPriceByAuctionSessionId(@Param("auctionSessionId") String auctionSessionId);

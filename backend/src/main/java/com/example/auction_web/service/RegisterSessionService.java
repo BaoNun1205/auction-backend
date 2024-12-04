@@ -10,4 +10,5 @@ public interface RegisterSessionService {
     RegisterSessionResponse updateRegisterSession(String registerAuctionId, RegisterSessionCreateRequest request);
     List<RegisterSessionResponse> getRegisterSessions();
     RegisterSessionResponse getRegisterSessionByUserAndAuctionSession(String userId, String auctionSessionId);
+    List<RegisterSessionResponse> getRegisterSessionByUserId(String userId);
 }

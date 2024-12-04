@@ -1,6 +1,7 @@
 package com.example.auction_web.mapper;
 
 import com.example.auction_web.dto.request.RegisterSessionCreateRequest;
+import com.example.auction_web.dto.response.AuctionSessionResponse;
 import com.example.auction_web.dto.response.RegisterSessionResponse;
 import com.example.auction_web.entity.AuctionSession;
 import com.example.auction_web.entity.RegisterSession;
@@ -17,7 +18,7 @@ public interface RegisterSessionMapper {
     RegisterSession toRegisterSession(RegisterSessionCreateRequest registerSessionCreateRequest);
 
     @Mapping(target = "userId", source = "user", qualifiedByName = "userToString")
-    @Mapping(target = "auctionSessionId", source = "auctionSession", qualifiedByName = "auctionSessionToString")
+    @Mapping(target = "auctionSession", source = "auctionSession", qualifiedByName = "auctionSessionToResponse")
     RegisterSessionResponse toRegisterSessionResponse(RegisterSession registerSession);
 
     void updateRegisterSession(@MappingTarget RegisterSession registerSession, RegisterSessionCreateRequest registerSessionCreateRequest);
@@ -27,8 +28,31 @@ public interface RegisterSessionMapper {
         return user != null ? user.getUserId() : null;
     }
 
-    @Named("auctionSessionToString")
-    default String auctionSessionToString(AuctionSession auctionSession) {
-        return auctionSession != null ? auctionSession.getAuctionSessionId() : null;
+    @Named("auctionSessionToResponse")
+    default AuctionSessionResponse auctionSessionToResponse(AuctionSession auctionSession) {
+        if (auctionSession == null) return null;
+        return AuctionSessionResponse.builder()
+                .auctionSessionId(auctionSession.getAuctionSessionId())
+                .name(auctionSession.getName())
+                .description(auctionSession.getDescription())
+                .startTime(auctionSession.getStartTime())
+                .endTime(auctionSession.getEndTime())
+                .status(auctionSession.getStatus())
+                .startingBids(auctionSession.getStartingBids())
+                .build();
+    }
+
+    @Named("mapAuctionSession")
+    default AuctionSession map(AuctionSession auctionSession) {
+        if (auctionSession == null) return null;
+        return AuctionSession.builder()
+                .auctionSessionId(auctionSession.getAuctionSessionId())
+                .name(auctionSession.getName())
+                .description(auctionSession.getDescription())
+                .startTime(auctionSession.getStartTime())
+                .endTime(auctionSession.getEndTime())
+                .status(auctionSession.getStatus())
+                .startingBids(auctionSession.getStartingBids())
+                .build();
     }
 }
