@@ -70,6 +70,16 @@ public class RegisterSessionServiceImpl implements RegisterSessionService {
         return registerSessionMapper.toRegisterSessionResponse(registerSessionRepository.findRegisterSessionByUser_UserIdAndAuctionSession_AuctionSessionId(userId, auctionSessionId));
     }
 
+    @Override
+    public List<RegisterSessionResponse> getRegisterSessionByUserId(String userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new AppException(ErrorCode.USER_NOT_EXISTED);
+        }
+        return registerSessionRepository.findRegisterSessionByUser_UserId(userId).stream()
+                .map(registerSessionMapper::toRegisterSessionResponse)
+                .toList();
+    }
+
     void setRegisterReference(RegisterSessionCreateRequest request, RegisterSession registerSession) {
         registerSession.setUser(getUserById(request.getUserId()));
         registerSession.setAuctionSession(getAuctionSessionById(request.getAuctionSessionId()));

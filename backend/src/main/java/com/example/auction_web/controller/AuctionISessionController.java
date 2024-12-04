@@ -95,4 +95,12 @@ public class AuctionISessionController {
                         .build())
                 .build();
     }
+
+    @GetMapping("/registered/{userId}")
+    ApiResponse<List<RegisterSessionResponse>> getRegisterSessionByUserId(@PathVariable String userId) {
+        return ApiResponse.<List<RegisterSessionResponse>>builder()
+                .code(HttpStatus.OK.value())
+                .result(registerSessionService.getRegisterSessionByUserId(userId))
+                .build();
+    }
 }
