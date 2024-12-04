@@ -71,11 +71,4 @@ public class UserController {
         userService.deleteUser(userId);
         return ApiResponse.<String>builder().result("User has been deleted").build();
     }
-
-    @GetMapping("/registered-sessions/{userId}")
-    ApiResponse<List<AuctionSessionResponse>> getRegisteredAuctionSessions(@PathVariable String userId){
-        return ApiResponse.<List<AuctionSessionResponse>>builder()
-                .result(userService.getRegisteredAuctionSessions(userId))
-                .build();
-    }
 }
