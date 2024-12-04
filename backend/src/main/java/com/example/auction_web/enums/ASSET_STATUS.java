@@ -3,5 +3,6 @@ package com.example.auction_web.enums;
 public enum ASSET_STATUS {
     ONGOING,
     NOT_AUCTIONED,
-    FINISHED
+    AUCTION_SUCCESS,
+    AUCTION_FAILED
 }

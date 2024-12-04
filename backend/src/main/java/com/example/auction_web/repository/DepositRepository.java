@@ -14,6 +14,8 @@ public interface DepositRepository extends JpaRepository<Deposit, String> {
     List<Deposit> findDepositsByAuctionSession_AuctionSessionId(String auctionSessionId);
     List<Deposit> findDepositsByUser_UserId(String userId);
 
+    Deposit findByAuctionSession_AuctionSessionIdAndUser_UserId(String auctionSessionId, String userId);
+
     @Query("SELECT MAX(d.depositPrice) FROM Deposit d WHERE d.auctionSession.auctionSessionId = :auctionSessionId")
     BigDecimal findMaxDepositPriceByAuctionSessionId(@Param("auctionSessionId") String auctionSessionId);
 }

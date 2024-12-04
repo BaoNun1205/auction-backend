@@ -4,6 +4,7 @@ import com.example.auction_web.entity.Asset;
 import com.example.auction_web.entity.AuctionHistory;
 import com.example.auction_web.entity.AuctionSession;
 import com.example.auction_web.entity.ScheduleLog.SessionLog;
+import com.example.auction_web.enums.ASSET_STATUS;
 import com.example.auction_web.enums.AUCTION_STATUS;
 import com.example.auction_web.repository.AssetRepository;
 import com.example.auction_web.repository.AuctionHistoryRepository;
@@ -43,13 +44,14 @@ public class AuctionSessionEndTimeJob implements Job {
         AuctionHistory auctionHistory = auctionHistoryRepository.findAuctionHistoryByAuctionSession_AuctionSessionId(auctionSessionId);
         try {
             if (auctionSession != null) {
-                auctionSession.setStatus(AUCTION_STATUS.FINISHED.toString());
-                auctionSessionRepository.save(auctionSession);
                 if (auctionHistory != null) {
-                    asset.setStatus(AUCTION_STATUS.FINISHED.toString());
+                    auctionSession.setStatus(AUCTION_STATUS.AUCTION_SUCCESS.toString());
+                    asset.setStatus(ASSET_STATUS.AUCTION_SUCCESS.toString());
                 } else {
-                    asset.setStatus("NOTAUCTIONED");
+                    auctionSession.setStatus(AUCTION_STATUS.AUCTION_FAILED.toString());
+                    asset.setStatus(ASSET_STATUS.AUCTION_FAILED.toString());
                 }
+                auctionSessionRepository.save(auctionSession);
                 assetRepository.save(asset);
             }
 

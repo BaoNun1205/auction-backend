@@ -58,9 +58,6 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
         asset.setStatus(ASSET_STATUS.ONGOING.toString());
         assetRepository.save(asset);
 
-        auctionSession.setStartTime(request.getStartTime().plusHours(7));
-        auctionSession.setEndTime(request.getEndTime().plusHours(7));
-
         AuctionSessionResponse response = auctionSessionMapper.toAuctionItemResponse(auctionSessionRepository.save(auctionSession));
 
         LocalDateTime startTime = auctionSession.getStartTime();
@@ -107,11 +104,6 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
 
     public List<AuctionSessionResponse> filterAuctionSession(String status, String userId, LocalDateTime fromDate, LocalDateTime toDate, String keyword, Boolean isInCrease, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
-        if (isAllParamsNullOrEmpty(status, fromDate, toDate, keyword, isInCrease)) {
-            return auctionSessionRepository.findAll().stream()
-                    .map(auctionSessionMapper::toAuctionItemResponse)
-                    .toList();
-        }
 
         Specification<AuctionSession> specification = Specification
                 .where(AuctionSessionSpecification.hasStatus(status))
@@ -200,14 +192,6 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
         return auctionSessionRepository.findAuctionSessionByStatusOrderByStartTimeAsc(status).stream()
                 .map(auctionSessionMapper::toAuctionItemResponse)
                 .toList();
-    }
-
-    @Transactional
-    public void completeAuctionSession(String auctionSessionId) {
-        AuctionSession auctionSession = auctionSessionRepository.findById(auctionSessionId)
-                .orElseThrow(() -> new AppException(ErrorCode.AUCTION_SESSION_NOT_EXISTED));
-        auctionSession.setStatus(String.valueOf(AUCTION_STATUS.FINISHED));
-        auctionSessionRepository.save(auctionSession);
     }
 
     private void setAuctionSessionReference(AuctionSessionCreateRequest request, AuctionSession auctionSession) {

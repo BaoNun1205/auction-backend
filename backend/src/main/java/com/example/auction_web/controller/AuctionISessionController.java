@@ -52,7 +52,7 @@ public class AuctionISessionController {
             @RequestParam(required = false) LocalDateTime fromDate,
             @RequestParam(required = false) LocalDateTime toDate,
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) Boolean isInCrease,
+            @RequestParam(required = false, defaultValue = "true") Boolean isInCrease,
             @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "10") Integer size) {
 
