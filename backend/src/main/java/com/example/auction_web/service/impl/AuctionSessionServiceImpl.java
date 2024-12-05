@@ -86,6 +86,8 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
         }
         assetRepository.save(asset);
         auctionSessionMapper.updateAuctionItem(auctionSession, request);
+
+        sessionService.updateAuctionSession(auctionSession.getAuctionSessionId(), auctionSession.getStartTime(), auctionSession.getEndTime());
         return auctionSessionMapper.toAuctionItemResponse(auctionSessionRepository.save(auctionSession));
     }
 

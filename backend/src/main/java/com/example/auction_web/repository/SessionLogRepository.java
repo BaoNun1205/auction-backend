@@ -11,4 +11,5 @@ import java.util.List;
 public interface SessionLogRepository extends JpaRepository<SessionLog, String> {
     List<SessionLog> findByStatus(SessionLog.SessionLogStatus status);
     SessionLog findSessionLogByAuctionSessionIdAndCurrentStatus(String auctionSessionId, String currentStatus);
+    void deleteAllByAuctionSessionId(String auctionSessionId);
 }
