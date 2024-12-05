@@ -4,12 +4,14 @@ import com.example.auction_web.dto.request.AuctionHistoryCreateRequest;
 import com.example.auction_web.dto.request.AuctionHistoryUpdateRequest;
 import com.example.auction_web.dto.response.AuctionHistoryResponse;
 import com.example.auction_web.dto.response.AuctionSessionInfoResponse;
+import com.example.auction_web.dto.response.SessionHistoryResponse;
 import com.example.auction_web.entity.AuctionHistory;
 import com.example.auction_web.entity.AuctionSession;
 import com.example.auction_web.entity.auth.User;
 import com.example.auction_web.exception.AppException;
 import com.example.auction_web.exception.ErrorCode;
 import com.example.auction_web.mapper.AuctionHistoryMapper;
+import com.example.auction_web.mapper.UserMapper;
 import com.example.auction_web.repository.AuctionHistoryRepository;
 import com.example.auction_web.repository.AuctionSessionRepository;
 import com.example.auction_web.repository.DepositRepository;
@@ -34,6 +36,7 @@ public class AuctionHistoryServiceImpl implements AuctionHistoryService {
     DepositRepository depositRepository;
     UserRepository userRepository;
     AuctionHistoryMapper auctionHistoryMapper;
+    UserMapper userMapper;
 
     //create AuctionHistory
     @Override
@@ -90,6 +93,20 @@ public class AuctionHistoryServiceImpl implements AuctionHistoryService {
             throw new AppException(ErrorCode.AUCTION_SESSION_NOT_EXISTED);
         }
         return auctionHistoryMapper.toAuctionHistoryResponse(auctionHistoryRepository.findAuctionHistoryByAuctionSession_AuctionSessionId(auctionSessionId));
+    }
+
+    public List<SessionHistoryResponse> getSessionsHistoryByAuctionSessionId(String auctionSessionId) {
+        if (!auctionSessionRepository.existsById(auctionSessionId)) {
+            throw new AppException(ErrorCode.AUCTION_SESSION_NOT_EXISTED);
+        }
+
+        return auctionHistoryRepository.findSessionHistoryByAuctionSessionId(auctionSessionId).stream()
+                .map(sessionHistoryResponse -> {
+                    sessionHistoryResponse.setUser(userMapper.toUserResponse(userRepository.findById(sessionHistoryResponse.getUserId())
+                            .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED))));
+                    return sessionHistoryResponse;
+                })
+                .toList();
     }
 
     //set AuctionItem for AuctionHistory
