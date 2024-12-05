@@ -60,14 +60,8 @@ public class RegisterSessionServiceImpl implements RegisterSessionService {
     }
 
     @Override
-    public RegisterSessionResponse getRegisterSessionByUserAndAuctionSession(String userId, String auctionSessionId) {
-        if (!userRepository.existsById(userId)) {
-            throw new AppException(ErrorCode.USER_NOT_EXISTED);
-        }
-        if (!auctionSessionRepository.existsById(auctionSessionId)) {
-            throw new AppException(ErrorCode.AUCTION_SESSION_NOT_EXISTED);
-        }
-        return registerSessionMapper.toRegisterSessionResponse(registerSessionRepository.findRegisterSessionByUser_UserIdAndAuctionSession_AuctionSessionId(userId, auctionSessionId));
+    public Boolean getRegisterSessionByUserAndAuctionSession(String userId, String auctionSessionId) {
+        return registerSessionRepository.findRegisterSessionByUser_UserIdAndAuctionSession_AuctionSessionId(userId, auctionSessionId) != null;
     }
 
     @Override
