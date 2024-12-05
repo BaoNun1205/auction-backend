@@ -77,4 +77,7 @@ public class AuctionSession {
 
     @OneToMany(mappedBy = "auctionSession", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<RegisterSession> registerSessions;
+
+    @OneToMany(mappedBy = "auctionSession", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<SessionWinner> sessionWinners;
 }

@@ -1,14 +1,16 @@
 package com.example.auction_web.utils.Job;
 
+import com.example.auction_web.dto.request.SessionWinnerCreateRequest;
+import com.example.auction_web.dto.response.AuctionSessionInfoResponse;
 import com.example.auction_web.entity.Asset;
 import com.example.auction_web.entity.AuctionHistory;
 import com.example.auction_web.entity.AuctionSession;
 import com.example.auction_web.entity.ScheduleLog.SessionLog;
+import com.example.auction_web.entity.SessionWinner;
+import com.example.auction_web.enums.ASSET_STATUS;
 import com.example.auction_web.enums.AUCTION_STATUS;
-import com.example.auction_web.repository.AssetRepository;
-import com.example.auction_web.repository.AuctionHistoryRepository;
-import com.example.auction_web.repository.AuctionSessionRepository;
-import com.example.auction_web.repository.SessionLogRepository;
+import com.example.auction_web.repository.*;
+import com.example.auction_web.service.SessionWinnerService;
 import lombok.RequiredArgsConstructor;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -18,6 +20,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -29,6 +32,10 @@ public class AuctionSessionEndTimeJob implements Job {
     private AuctionHistoryRepository auctionHistoryRepository;
     @Autowired
     private AssetRepository assetRepository;
+    @Autowired
+    private SessionWinnerRepository sessionWinnerRepository;
+    @Autowired
+    SessionWinnerService sessionWinnerService;
 
     private final SessionLogRepository sessionLogRepository;
     private final SimpMessagingTemplate simpMessagingTemplate;
@@ -40,16 +47,27 @@ public class AuctionSessionEndTimeJob implements Job {
         Asset asset = auctionSession.getAsset();
 
         SessionLog sessionLog = sessionLogRepository.findSessionLogByAuctionSessionIdAndCurrentStatus(auctionSessionId, AUCTION_STATUS.ONGOING.toString());
-        AuctionHistory auctionHistory = auctionHistoryRepository.findAuctionHistoryByAuctionSession_AuctionSessionId(auctionSessionId);
+        List<AuctionHistory> auctionHistory = auctionHistoryRepository.findAuctionHistorysByAuctionSession_AuctionSessionId(auctionSessionId);
         try {
             if (auctionSession != null) {
-                auctionSession.setStatus(AUCTION_STATUS.FINISHED.toString());
-                auctionSessionRepository.save(auctionSession);
-                if (auctionHistory != null) {
-                    asset.setStatus(AUCTION_STATUS.FINISHED.toString());
+                if (!auctionHistory.isEmpty()) {
+                    auctionSession.setStatus(AUCTION_STATUS.AUCTION_SUCCESS.toString());
+                    asset.setStatus(ASSET_STATUS.AUCTION_SUCCESS.toString());
+
+                    AuctionSessionInfoResponse sessionInfo = auctionHistoryRepository.findAuctionSessionInfo(auctionSessionId).get(0);
+                    SessionWinnerCreateRequest request = SessionWinnerCreateRequest.builder()
+                            .auctionSessionId(auctionSessionId)
+                            .userId(sessionInfo.getUserId())
+                            .price(sessionInfo.getHighestBid())
+                            .victoryTime(auctionSession.getEndTime())
+                            .build();
+
+                    sessionWinnerService.createSessionWinner(request);
                 } else {
-                    asset.setStatus("NOTAUCTIONED");
+                    auctionSession.setStatus(AUCTION_STATUS.AUCTION_FAILED.toString());
+                    asset.setStatus(ASSET_STATUS.AUCTION_FAILED.toString());
                 }
+                auctionSessionRepository.save(auctionSession);
                 assetRepository.save(asset);
             }
 

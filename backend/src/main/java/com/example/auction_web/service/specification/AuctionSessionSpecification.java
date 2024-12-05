@@ -17,7 +17,12 @@ public class AuctionSessionSpecification {
         };
     }
     public static Specification<AuctionSession> hasStatus(String status) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("status"), status);
+        return (root, query, criteriaBuilder) -> {
+            if (status == null || status.isEmpty()) {
+                return null;
+            }
+            return criteriaBuilder.equal(root.get("status"), status);
+        };
     }
 
     public static Specification<AuctionSession> hasFromDateToDate(LocalDateTime fromDate, LocalDateTime toDate) {
@@ -32,7 +37,7 @@ public class AuctionSessionSpecification {
                 // Chỉ có 'toDate', tìm các phiên kết thúc trước 'toDate'
                 return criteriaBuilder.lessThanOrEqualTo(root.get("startTime"), toDate);
             }
-            return criteriaBuilder.conjunction(); // Không có điều kiện nào được cung cấp, trả về luôn true
+            return criteriaBuilder.conjunction();
         };
     }
 
@@ -42,8 +47,22 @@ public class AuctionSessionSpecification {
             if (keyword == null || keyword.isEmpty()) {
                 return null;
             }
-            return criteriaBuilder.like(root.get("asset").get("assetName"), "%" + keyword + "%");
+            return criteriaBuilder.like(root.get("name"), "%" + keyword + "%");
         };
     }
+
+    public static Specification<AuctionSession> hasIsInCrease(Boolean isInCrease) {
+        return (root, query, criteriaBuilder) -> {
+            if (isInCrease != null) {
+                if (isInCrease) {
+                    query.orderBy(criteriaBuilder.asc(root.get("startingBids")));
+                } else {
+                    query.orderBy(criteriaBuilder.desc(root.get("startingBids")));
+                }
+            }
+            return criteriaBuilder.conjunction();
+        };
+    }
+
 
 }

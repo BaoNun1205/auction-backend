@@ -1,8 +1,10 @@
 package com.example.auction_web.utils;
 
+import com.example.auction_web.entity.AuctionHistory;
 import com.example.auction_web.entity.AuctionSession;
 import com.example.auction_web.entity.ScheduleLog.SessionLog;
 import com.example.auction_web.enums.AUCTION_STATUS;
+import com.example.auction_web.repository.AuctionHistoryRepository;
 import com.example.auction_web.repository.AuctionSessionRepository;
 import com.example.auction_web.repository.SessionLogRepository;
 import com.example.auction_web.utils.Job.AuctionSessionEndTimeJob;
@@ -26,6 +28,7 @@ public class SessionService {
     private final Scheduler scheduler;
     private final AuctionSessionRepository auctionSessionRepository;
     private final SessionLogRepository sessionLogRepository;
+    private final AuctionHistoryRepository auctionHistoryRepository;
 
     public void scheduleAuctionSessionStart(String auctionSessionId, LocalDateTime startTime) {
         JobKey jobKey = new JobKey("auctionSessionStartJob-" + auctionSessionId, "auctionSessionGroup");
@@ -112,6 +115,15 @@ public class SessionService {
         LocalDateTime sessionTime = sessionLog.getScheduledTime();
         String auctionSessionId = sessionLog.getAuctionSessionId();
         AuctionSession auctionSession = auctionSessionRepository.findById(auctionSessionId).orElse(null);
+
+        if (auctionSession == null) {
+            // Handle the case when the auction session is not found
+            sessionLog.setStatus(SessionLog.SessionLogStatus.FAILED);
+            sessionLogRepository.save(sessionLog);
+            return;
+        }
+
+        List<AuctionHistory> auctionHistory = auctionHistoryRepository.findAuctionHistorysByAuctionSession_AuctionSessionId(auctionSessionId);
         LocalDateTime startTime = auctionSession.getStartTime();
         LocalDateTime endTime = auctionSession.getEndTime();
 
@@ -128,12 +140,67 @@ public class SessionService {
             if (Objects.equals(sessionLog.getCurrentStatus(), AUCTION_STATUS.UPCOMING.toString())) {
                 auctionSession.setStatus(AUCTION_STATUS.ONGOING.toString());
             } else if (Objects.equals(sessionLog.getCurrentStatus(), AUCTION_STATUS.ONGOING.toString())) {
-                auctionSession.setStatus(AUCTION_STATUS.FINISHED.toString());
+                if (auctionHistory.isEmpty()) {
+                    auctionSession.setStatus(AUCTION_STATUS.AUCTION_FAILED.toString());
+                } else {
+                    auctionSession.setStatus(AUCTION_STATUS.AUCTION_SUCCESS.toString());
+                }
             }
             auctionSessionRepository.save(auctionSession);
         } else {
             sessionLog.setStatus(SessionLog.SessionLogStatus.FAILED);
             sessionLogRepository.save(sessionLog);
+        }
+    }
+
+    public void updateAuctionSession(String auctionSessionId, LocalDateTime newStartTime, LocalDateTime newEndTime) {
+        try {
+            SessionLog timeStart = sessionLogRepository.findSessionLogByAuctionSessionIdAndCurrentStatus(auctionSessionId, AUCTION_STATUS.UPCOMING.toString());
+            SessionLog timeEnd = sessionLogRepository.findSessionLogByAuctionSessionIdAndCurrentStatus(auctionSessionId, AUCTION_STATUS.ONGOING.toString());
+
+            if (!newStartTime.isEqual(timeStart.getScheduledTime())) {
+                JobKey startJobKey = new JobKey("auctionSessionStartJob-" + auctionSessionId, "auctionSessionGroup");
+                if (scheduler.checkExists(startJobKey)) {
+                    scheduler.deleteJob(startJobKey);
+                }
+                scheduleAuctionSessionStart(auctionSessionId, newStartTime);
+                timeStart.setScheduledTime(newStartTime);
+                timeStart.setStatus(SessionLog.SessionLogStatus.SCHEDULED);
+                sessionLogRepository.save(timeStart);
+            }
+
+            if (!newEndTime.isEqual(timeEnd.getScheduledTime())) {
+                JobKey endJobKey = new JobKey("auctionSessionEndJob-" + auctionSessionId, "auctionSessionGroup");
+                if (scheduler.checkExists(endJobKey)) {
+                    scheduler.deleteJob(endJobKey);
+                }
+                scheduleAuctionSessionEnd(auctionSessionId, newEndTime);
+                timeEnd.setScheduledTime(newEndTime);
+                timeEnd.setStatus(SessionLog.SessionLogStatus.SCHEDULED);
+                sessionLogRepository.save(timeEnd);
+            }
+        } catch (SchedulerException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to update auction session schedule", e);
+        }
+    }
+
+    public void deleteScheduleAuctionSession(String auctionSessionId) {
+        try {
+            JobKey startJobKey = new JobKey("auctionSessionStartJob-" + auctionSessionId, "auctionSessionGroup");
+            JobKey endJobKey = new JobKey("auctionSessionEndJob-" + auctionSessionId, "auctionSessionGroup");
+
+            if (scheduler.checkExists(startJobKey)) {
+                scheduler.deleteJob(startJobKey);
+            }
+            if (scheduler.checkExists(endJobKey)) {
+                scheduler.deleteJob(endJobKey);
+            }
+
+            sessionLogRepository.deleteAllByAuctionSessionId(auctionSessionId);
+        } catch (SchedulerException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to delete auction session schedule", e);
         }
     }
 

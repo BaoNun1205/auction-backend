@@ -3,11 +3,13 @@ package com.example.auction_web.service.impl;
 import com.example.auction_web.dto.request.DepositCreateRequest;
 import com.example.auction_web.dto.request.DepositUpdateRequest;
 import com.example.auction_web.dto.response.DepositResponse;
+import com.example.auction_web.dto.response.UsersJoinSessionResponse;
 import com.example.auction_web.entity.AuctionSession;
 import com.example.auction_web.entity.Deposit;
 import com.example.auction_web.entity.auth.User;
 import com.example.auction_web.exception.AppException;
 import com.example.auction_web.exception.ErrorCode;
+import com.example.auction_web.mapper.AuctionSessionMapper;
 import com.example.auction_web.mapper.DepositMapper;
 import com.example.auction_web.repository.AuctionSessionRepository;
 import com.example.auction_web.repository.DepositRepository;
@@ -28,6 +30,7 @@ public class DepositServiceImpl implements DepositService {
     AuctionSessionRepository auctionSessionRepository;
     UserRepository userRepository;
     DepositMapper depositMapper;
+    AuctionSessionMapper auctionSessionMapper;
 
     // create a deposit
     public DepositResponse createDeposit(DepositCreateRequest request) {
@@ -68,6 +71,18 @@ public class DepositServiceImpl implements DepositService {
         }
         return depositRepository.findDepositsByUser_UserId(userId).stream()
                 .map(depositMapper::toDepositResponse)
+                .toList();
+    }
+
+    public List<UsersJoinSessionResponse> getSessionsJoinByUserId(String userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new AppException(ErrorCode.USER_NOT_EXISTED);
+        }
+        return depositRepository.findSessionsJoinByUserId(userId).stream()
+                .map(usersJoinSessionResponse -> {
+                    usersJoinSessionResponse.setAuctionSession(auctionSessionMapper.toAuctionItemResponse(auctionSessionRepository.findById(usersJoinSessionResponse.getSessionId()).orElseThrow()));
+                    return usersJoinSessionResponse;
+                })
                 .toList();
     }
 

@@ -1,6 +1,7 @@
 package com.example.auction_web.entity.auth;
 
 import com.example.auction_web.entity.*;
+import com.example.auction_web.enums.GENDER;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -27,12 +29,16 @@ public class User {
     @Column(unique = true, columnDefinition = "VARCHAR(255) COLLATE utf8mb4_unicode_ci")
     String username;
 
-    String firstName;
-    String lastName;
+    String name;
     String password;
     String avatar;
     String email;
     String phone;
+
+    @Enumerated(EnumType.STRING)
+    GENDER gender;
+
+    LocalDate dateOfBirth;
     String token;
     Boolean enabled;
     LocalDateTime createdAt;
@@ -52,14 +58,6 @@ public class User {
 
     @ManyToMany
     Set<Role> roles;
-
-    @ManyToMany
-    @JoinTable(
-            name = "user_auction_registration",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "auction_session_id")
-    )
-    Set<AuctionSession> registeredSessions;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<AuctionSession> auctionSessions;
@@ -90,4 +88,7 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<RegisterSession> registerSessions;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<SessionWinner> sessionWinners;
 }

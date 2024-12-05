@@ -9,5 +9,7 @@ public interface RegisterSessionService {
     RegisterSessionResponse createRegisterSession(RegisterSessionCreateRequest request);
     RegisterSessionResponse updateRegisterSession(String registerAuctionId, RegisterSessionCreateRequest request);
     List<RegisterSessionResponse> getRegisterSessions();
-    RegisterSessionResponse getRegisterSessionByUserAndAuctionSession(String userId, String auctionSessionId);
+    Boolean getRegisterSessionByUserAndAuctionSession(String userId, String auctionSessionId);
+    List<RegisterSessionResponse> getRegisterSessionByUserId(String userId);
+    List<RegisterSessionResponse> getRegisterSessionByAuctionSessionId(String auctionSessionId);
 }

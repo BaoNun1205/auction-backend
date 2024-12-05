@@ -5,6 +5,7 @@ import com.example.auction_web.dto.response.*;
 import com.example.auction_web.entity.AuctionSession;
 import com.example.auction_web.service.AuctionSessionService;
 import com.example.auction_web.service.RegisterSessionService;
+import com.example.auction_web.service.SessionWinnerService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ import java.util.List;
 public class AuctionISessionController {
     AuctionSessionService auctionSessionService;
     RegisterSessionService registerSessionService;
+    SessionWinnerService sessionWinnerService;
 
     @PostMapping
     ApiResponse<AuctionSessionResponse> createAuctionSession(@RequestBody AuctionSessionCreateRequest request) {
@@ -52,11 +54,12 @@ public class AuctionISessionController {
             @RequestParam(required = false) LocalDateTime fromDate,
             @RequestParam(required = false) LocalDateTime toDate,
             @RequestParam(required = false) String keyword,
+            @RequestParam(required = false, defaultValue = "true") Boolean isInCrease,
             @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "10") Integer size) {
 
-        List<AuctionSessionResponse> auctionSessionResponses = auctionSessionService.filterAuctionSession(status, userId, fromDate, toDate, keyword, page, size);
-        int total = auctionSessionService.totalAuctionSession(status, fromDate, toDate, keyword);
+        List<AuctionSessionResponse> auctionSessionResponses = auctionSessionService.filterAuctionSession(status, userId, fromDate, toDate, keyword, isInCrease, page, size);
+        int total = auctionSessionService.totalAuctionSession(status, fromDate, toDate, keyword, isInCrease);
 
         return ApiResponse.<DataResponse>builder()
                 .code(HttpStatus.OK.value())
@@ -80,6 +83,51 @@ public class AuctionISessionController {
         return ApiResponse.<AuctionSessionInfoDetail>builder()
                 .code(HttpStatus.OK.value())
                 .result(auctionSessionService.getDetailAuctionSessionById(auctionSessionId))
+                .build();
+    }
+
+    @GetMapping("/related/{auctionSessionId}")
+    ApiResponse<DataResponse> filterAuctionSessionRelated(@PathVariable String auctionSessionId) {
+        List<AuctionSessionResponse> auctionSessionResponses = auctionSessionService.filterAuctionSessionRelated(auctionSessionId);
+        return ApiResponse.<DataResponse>builder()
+                .code(HttpStatus.OK.value())
+                .result(DataResponse.<List<AuctionSessionResponse>>builder()
+                        .data(auctionSessionResponses)
+                        .total(auctionSessionResponses.size())
+                        .build())
+                .build();
+    }
+
+    @GetMapping("/registered/{userId}")
+    ApiResponse<List<RegisterSessionResponse>> getRegisterSessionByUserId(@PathVariable String userId) {
+        return ApiResponse.<List<RegisterSessionResponse>>builder()
+                .code(HttpStatus.OK.value())
+                .result(registerSessionService.getRegisterSessionByUserId(userId))
+                .build();
+    }
+
+    @GetMapping("/check-register")
+    ApiResponse<Boolean> checkRegister(@RequestParam String auctionSessionId,
+                                      @RequestParam String userId) {
+        return ApiResponse.<Boolean>builder()
+                .code(HttpStatus.OK.value())
+                .result(registerSessionService.getRegisterSessionByUserAndAuctionSession(userId, auctionSessionId))
+                .build();
+    }
+
+    @GetMapping("/user-registered/{auctionSessionId}")
+    ApiResponse<List<RegisterSessionResponse>> getRegisterSessionByAuctionSessionId(@PathVariable String auctionSessionId) {
+        return ApiResponse.<List<RegisterSessionResponse>>builder()
+                .code(HttpStatus.OK.value())
+                .result(registerSessionService.getRegisterSessionByAuctionSessionId(auctionSessionId))
+                .build();
+    }
+
+    @GetMapping("/win-sessions/{userId}")
+    ApiResponse<List<SessionWinnerResponse>> getWinSessions(@PathVariable String userId) {
+        return ApiResponse.<List<SessionWinnerResponse>>builder()
+                .code(HttpStatus.OK.value())
+                .result(sessionWinnerService.getSessionsWinner(userId))
                 .build();
     }
 }

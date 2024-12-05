@@ -6,6 +6,7 @@ import com.example.auction_web.dto.request.AuctionSessionInfoRequest;
 import com.example.auction_web.dto.response.ApiResponse;
 import com.example.auction_web.dto.response.AuctionHistoryResponse;
 import com.example.auction_web.dto.response.AuctionSessionInfoResponse;
+import com.example.auction_web.dto.response.SessionHistoryResponse;
 import com.example.auction_web.service.AuctionHistoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -45,7 +46,7 @@ public class AuctionHistoryController {
                 .build();
     }
 
-    @GetMapping("/auctionSession/{auctionSessionId}")
+    @GetMapping("/auction-session/{auctionSessionId}")
     ApiResponse<AuctionHistoryResponse> getAuctionHistoriesByAuctionItemId(@PathVariable String auctionSessionId) {
         return ApiResponse.<AuctionHistoryResponse>builder()
                 .code(HttpStatus.OK.value())
@@ -53,7 +54,7 @@ public class AuctionHistoryController {
                 .build();
     }
 
-    @GetMapping("/infoAuctionSession/{auctionSessionId}")
+    @GetMapping("/info-auctions-session/{auctionSessionId}")
     ApiResponse<AuctionSessionInfoResponse> getAuctionSessionInfo(@PathVariable String auctionSessionId) {
         return ApiResponse.<AuctionSessionInfoResponse>builder()
                 .code(HttpStatus.OK.value())
@@ -61,11 +62,20 @@ public class AuctionHistoryController {
                 .build();
     }
 
-    @GetMapping("/checkDeposit")
-    ApiResponse<Boolean> checkDeposit(@RequestBody AuctionHistoryCreateRequest request) {
+    @GetMapping("/check-deposit")
+    ApiResponse<Boolean> checkDeposit(@RequestParam String auctionSessionId,
+                                      @RequestParam String userId) {
         return ApiResponse.<Boolean>builder()
                 .code(HttpStatus.OK.value())
-                .result(auctionHistoryService.checkDeposit(request.getUserId(), request.getAuctionSessionId()))
+                .result(auctionHistoryService.checkDeposit(auctionSessionId, userId))
+                .build();
+    }
+
+    @GetMapping("/sessions-history/{auctionSessionId}")
+    ApiResponse<List<SessionHistoryResponse>> getSessionsHistoryByAuctionSessionId(@PathVariable String auctionSessionId) {
+        return ApiResponse.<List<SessionHistoryResponse>>builder()
+                .code(HttpStatus.OK.value())
+                .result(auctionHistoryService.getSessionsHistoryByAuctionSessionId(auctionSessionId))
                 .build();
     }
 }

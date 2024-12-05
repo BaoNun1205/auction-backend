@@ -7,7 +7,9 @@ import com.example.auction_web.entity.RegisterSession;
 import com.example.auction_web.entity.auth.User;
 import com.example.auction_web.exception.AppException;
 import com.example.auction_web.exception.ErrorCode;
+import com.example.auction_web.mapper.AssetMapper;
 import com.example.auction_web.mapper.RegisterSessionMapper;
+import com.example.auction_web.repository.AssetRepository;
 import com.example.auction_web.repository.AuctionSessionRepository;
 import com.example.auction_web.repository.RegisterSessionRepository;
 import com.example.auction_web.repository.auth.UserRepository;
@@ -27,6 +29,8 @@ public class RegisterSessionServiceImpl implements RegisterSessionService {
     RegisterSessionRepository registerSessionRepository;
     UserRepository userRepository;
     AuctionSessionRepository auctionSessionRepository;
+    AssetRepository assetRepository;
+    AssetMapper assetMapper;
     RegisterSessionMapper registerSessionMapper;
     NotificationService notificationService;
 
@@ -60,14 +64,50 @@ public class RegisterSessionServiceImpl implements RegisterSessionService {
     }
 
     @Override
-    public RegisterSessionResponse getRegisterSessionByUserAndAuctionSession(String userId, String auctionSessionId) {
+    public Boolean getRegisterSessionByUserAndAuctionSession(String userId, String auctionSessionId) {
+        return registerSessionRepository.findRegisterSessionByUser_UserIdAndAuctionSession_AuctionSessionId(userId, auctionSessionId) != null;
+    }
+
+    @Override
+    public List<RegisterSessionResponse> getRegisterSessionByUserId(String userId) {
         if (!userRepository.existsById(userId)) {
             throw new AppException(ErrorCode.USER_NOT_EXISTED);
         }
+        return registerSessionRepository.findRegisterSessionByUser_UserId(userId).stream()
+                .map(registerSession -> {
+                    RegisterSessionResponse response = registerSessionMapper.toRegisterSessionResponse(registerSession);
+
+                    if (registerSession.getAuctionSession().getAsset() != null) {
+                        response.getAuctionSession().setAsset(assetMapper.toAssetResponse(
+                                assetRepository.findById(registerSession.getAuctionSession().getAsset().getAssetId()).orElse(null)
+                        ));
+                    } else {
+                        response.getAuctionSession().setAsset(null);
+                    }
+                    return response;
+                })
+                .toList();
+    }
+
+    @Override
+    public List<RegisterSessionResponse> getRegisterSessionByAuctionSessionId(String auctionSessionId) {
         if (!auctionSessionRepository.existsById(auctionSessionId)) {
             throw new AppException(ErrorCode.AUCTION_SESSION_NOT_EXISTED);
         }
-        return registerSessionMapper.toRegisterSessionResponse(registerSessionRepository.findRegisterSessionByUser_UserIdAndAuctionSession_AuctionSessionId(userId, auctionSessionId));
+        return registerSessionRepository.findRegisterSessionByAuctionSession_AuctionSessionId(auctionSessionId).stream()
+                .map(registerSession -> {
+                    RegisterSessionResponse response = registerSessionMapper.toRegisterSessionResponse(registerSession);
+
+                    if (registerSession.getAuctionSession().getAsset() != null) {
+                        response.getAuctionSession().setAsset(assetMapper.toAssetResponse(
+                                assetRepository.findById(registerSession.getAuctionSession().getAsset().getAssetId()).orElse(null)
+                        ));
+                    } else {
+                        response.getAuctionSession().setAsset(null);
+                    }
+                    return response;
+                })
+                .toList();
     }
 
     void setRegisterReference(RegisterSessionCreateRequest request, RegisterSession registerSession) {
