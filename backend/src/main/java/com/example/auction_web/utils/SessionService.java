@@ -115,6 +115,14 @@ public class SessionService {
         LocalDateTime sessionTime = sessionLog.getScheduledTime();
         String auctionSessionId = sessionLog.getAuctionSessionId();
         AuctionSession auctionSession = auctionSessionRepository.findById(auctionSessionId).orElse(null);
+
+        if (auctionSession == null) {
+            // Handle the case when the auction session is not found
+            sessionLog.setStatus(SessionLog.SessionLogStatus.FAILED);
+            sessionLogRepository.save(sessionLog);
+            return;
+        }
+
         List<AuctionHistory> auctionHistory = auctionHistoryRepository.findAuctionHistorysByAuctionSession_AuctionSessionId(auctionSessionId);
         LocalDateTime startTime = auctionSession.getStartTime();
         LocalDateTime endTime = auctionSession.getEndTime();
