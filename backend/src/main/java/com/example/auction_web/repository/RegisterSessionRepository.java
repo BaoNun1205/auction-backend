@@ -10,4 +10,5 @@ import java.util.List;
 public interface RegisterSessionRepository extends JpaRepository<RegisterSession, String> {
     RegisterSession findRegisterSessionByUser_UserIdAndAuctionSession_AuctionSessionId(String userId, String auctionSessionId);
     List<RegisterSession> findRegisterSessionByUser_UserId(String userId);
+    List<RegisterSession> findRegisterSessionByAuctionSession_AuctionSessionId(String auctionSessionId);
 }

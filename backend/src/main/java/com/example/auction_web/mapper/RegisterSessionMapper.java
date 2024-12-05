@@ -17,7 +17,7 @@ public interface RegisterSessionMapper {
     @Mapping(target = "auctionSession", ignore = true)
     RegisterSession toRegisterSession(RegisterSessionCreateRequest registerSessionCreateRequest);
 
-    @Mapping(target = "userId", source = "user", qualifiedByName = "userToString")
+    @Mapping(target = "user", source = "user", qualifiedByName = "userToResponse")
     @Mapping(target = "auctionSession", source = "auctionSession", qualifiedByName = "auctionSessionToResponse")
     RegisterSessionResponse toRegisterSessionResponse(RegisterSession registerSession);
 
@@ -53,6 +53,18 @@ public interface RegisterSessionMapper {
                 .endTime(auctionSession.getEndTime())
                 .status(auctionSession.getStatus())
                 .startingBids(auctionSession.getStartingBids())
+                .build();
+    }
+
+    @Named("userToResponse")
+    default User userToResponse(User user) {
+        if (user == null) return null;
+        return User.builder()
+                .userId(user.getUserId())
+                .username(user.getUsername())
+                .name(user.getName())
+                .phone(user.getPhone())
+                .email(user.getEmail())
                 .build();
     }
 }

@@ -11,4 +11,5 @@ public interface RegisterSessionService {
     List<RegisterSessionResponse> getRegisterSessions();
     Boolean getRegisterSessionByUserAndAuctionSession(String userId, String auctionSessionId);
     List<RegisterSessionResponse> getRegisterSessionByUserId(String userId);
+    List<RegisterSessionResponse> getRegisterSessionByAuctionSessionId(String auctionSessionId);
 }
