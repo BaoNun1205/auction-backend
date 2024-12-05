@@ -111,12 +111,4 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(String userId) {
         userRepository.deleteById(userId);
     }
-
-    @Override
-    public List<AuctionSessionResponse> getRegisteredAuctionSessions(String userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        return user.getRegisteredSessions().stream()
-                .map(auctionSessionMapper::toAuctionItemResponse)
-                .toList();
-    }
 }

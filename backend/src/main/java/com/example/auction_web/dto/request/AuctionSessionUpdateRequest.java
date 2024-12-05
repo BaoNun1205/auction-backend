@@ -15,7 +15,12 @@ import java.time.LocalDateTime;
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class AuctionSessionUpdateRequest {
+    String typeSession;
+    String name;
+    String description;
     LocalDateTime startTime;
     LocalDateTime endTime;
     String status;
+    BigDecimal bidIncrement;
+    BigDecimal depositAmount;
 }

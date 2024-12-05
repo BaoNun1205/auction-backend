@@ -18,5 +18,4 @@ public interface UserService {
     UserResponse getMyInfo();
     UserResponse updateUser(String userId, UserUpdateRequest request);
     void deleteUser(String userId);
-    List<AuctionSessionResponse> getRegisteredAuctionSessions(String userId);
 }
