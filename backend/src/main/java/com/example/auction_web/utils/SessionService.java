@@ -165,6 +165,7 @@ public class SessionService {
                 }
                 scheduleAuctionSessionStart(auctionSessionId, newStartTime);
                 timeStart.setScheduledTime(newStartTime);
+                timeStart.setStatus(SessionLog.SessionLogStatus.SCHEDULED);
                 sessionLogRepository.save(timeStart);
             }
 
@@ -175,6 +176,7 @@ public class SessionService {
                 }
                 scheduleAuctionSessionEnd(auctionSessionId, newEndTime);
                 timeEnd.setScheduledTime(newEndTime);
+                timeEnd.setStatus(SessionLog.SessionLogStatus.SCHEDULED);
                 sessionLogRepository.save(timeEnd);
             }
         } catch (SchedulerException e) {
