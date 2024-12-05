@@ -153,6 +153,55 @@ public class SessionService {
         }
     }
 
+    public void updateAuctionSession(String auctionSessionId, LocalDateTime newStartTime, LocalDateTime newEndTime) {
+        try {
+            SessionLog timeStart = sessionLogRepository.findSessionLogByAuctionSessionIdAndCurrentStatus(auctionSessionId, AUCTION_STATUS.UPCOMING.toString());
+            SessionLog timeEnd = sessionLogRepository.findSessionLogByAuctionSessionIdAndCurrentStatus(auctionSessionId, AUCTION_STATUS.ONGOING.toString());
+
+            if (!newStartTime.isEqual(timeStart.getScheduledTime())) {
+                JobKey startJobKey = new JobKey("auctionSessionStartJob-" + auctionSessionId, "auctionSessionGroup");
+                if (scheduler.checkExists(startJobKey)) {
+                    scheduler.deleteJob(startJobKey);
+                }
+                scheduleAuctionSessionStart(auctionSessionId, newStartTime);
+                timeStart.setScheduledTime(newStartTime);
+                sessionLogRepository.save(timeStart);
+            }
+
+            if (!newEndTime.isEqual(timeEnd.getScheduledTime())) {
+                JobKey endJobKey = new JobKey("auctionSessionEndJob-" + auctionSessionId, "auctionSessionGroup");
+                if (scheduler.checkExists(endJobKey)) {
+                    scheduler.deleteJob(endJobKey);
+                }
+                scheduleAuctionSessionEnd(auctionSessionId, newEndTime);
+                timeEnd.setScheduledTime(newEndTime);
+                sessionLogRepository.save(timeEnd);
+            }
+        } catch (SchedulerException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to update auction session schedule", e);
+        }
+    }
+
+    public void deleteScheduleAuctionSession(String auctionSessionId) {
+        try {
+            JobKey startJobKey = new JobKey("auctionSessionStartJob-" + auctionSessionId, "auctionSessionGroup");
+            JobKey endJobKey = new JobKey("auctionSessionEndJob-" + auctionSessionId, "auctionSessionGroup");
+
+            if (scheduler.checkExists(startJobKey)) {
+                scheduler.deleteJob(startJobKey);
+            }
+            if (scheduler.checkExists(endJobKey)) {
+                scheduler.deleteJob(endJobKey);
+            }
+
+            sessionLogRepository.deleteAllByAuctionSessionId(auctionSessionId);
+        } catch (SchedulerException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to delete auction session schedule", e);
+        }
+    }
+
     @EventListener(ContextRefreshedEvent.class)
     public void onApplicationEvent(ContextRefreshedEvent event) {
         reschedulePendingSessions();
