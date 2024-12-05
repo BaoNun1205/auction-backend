@@ -103,4 +103,13 @@ public class AuctionISessionController {
                 .result(registerSessionService.getRegisterSessionByUserId(userId))
                 .build();
     }
+
+    @GetMapping("/check-register")
+    ApiResponse<Boolean> checkRegister(@RequestParam String auctionSessionId,
+                                      @RequestParam String userId) {
+        return ApiResponse.<Boolean>builder()
+                .code(HttpStatus.OK.value())
+                .result(registerSessionService.getRegisterSessionByUserAndAuctionSession(userId, auctionSessionId))
+                .build();
+    }
 }
