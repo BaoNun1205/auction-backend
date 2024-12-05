@@ -5,6 +5,7 @@ import com.example.auction_web.dto.response.*;
 import com.example.auction_web.entity.AuctionSession;
 import com.example.auction_web.service.AuctionSessionService;
 import com.example.auction_web.service.RegisterSessionService;
+import com.example.auction_web.service.SessionWinnerService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ import java.util.List;
 public class AuctionISessionController {
     AuctionSessionService auctionSessionService;
     RegisterSessionService registerSessionService;
+    SessionWinnerService sessionWinnerService;
 
     @PostMapping
     ApiResponse<AuctionSessionResponse> createAuctionSession(@RequestBody AuctionSessionCreateRequest request) {
@@ -118,6 +120,14 @@ public class AuctionISessionController {
         return ApiResponse.<List<RegisterSessionResponse>>builder()
                 .code(HttpStatus.OK.value())
                 .result(registerSessionService.getRegisterSessionByAuctionSessionId(auctionSessionId))
+                .build();
+    }
+
+    @GetMapping("/win-sessions/{userId}")
+    ApiResponse<List<SessionWinnerResponse>> getWinSessions(@PathVariable String userId) {
+        return ApiResponse.<List<SessionWinnerResponse>>builder()
+                .code(HttpStatus.OK.value())
+                .result(sessionWinnerService.getSessionsWinner(userId))
                 .build();
     }
 }
