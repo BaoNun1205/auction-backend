@@ -4,6 +4,7 @@ import com.example.auction_web.dto.request.AuctionHistoryCreateRequest;
 import com.example.auction_web.dto.request.AuctionHistoryUpdateRequest;
 import com.example.auction_web.dto.response.AuctionHistoryResponse;
 import com.example.auction_web.dto.response.AuctionSessionInfoResponse;
+import com.example.auction_web.dto.response.SessionHistoryResponse;
 
 import java.util.List;
 
@@ -14,4 +15,5 @@ public interface AuctionHistoryService {
     AuctionHistoryResponse getAuctionHistoriesByAuctionSessionId(String auctionSessionId);
     AuctionSessionInfoResponse getAuctionSessionInfo(String auctionSessionId);
     Boolean checkDeposit(String auctionSessionId, String userId);
+    List<SessionHistoryResponse> getSessionsHistoryByAuctionSessionId(String auctionSessionId);
 }

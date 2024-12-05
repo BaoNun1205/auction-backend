@@ -6,6 +6,7 @@ import com.example.auction_web.dto.request.AuctionSessionInfoRequest;
 import com.example.auction_web.dto.response.ApiResponse;
 import com.example.auction_web.dto.response.AuctionHistoryResponse;
 import com.example.auction_web.dto.response.AuctionSessionInfoResponse;
+import com.example.auction_web.dto.response.SessionHistoryResponse;
 import com.example.auction_web.service.AuctionHistoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -67,6 +68,14 @@ public class AuctionHistoryController {
         return ApiResponse.<Boolean>builder()
                 .code(HttpStatus.OK.value())
                 .result(auctionHistoryService.checkDeposit(auctionSessionId, userId))
+                .build();
+    }
+
+    @GetMapping("/sessions-history/{auctionSessionId}")
+    ApiResponse<List<SessionHistoryResponse>> getSessionsHistoryByAuctionSessionId(@PathVariable String auctionSessionId) {
+        return ApiResponse.<List<SessionHistoryResponse>>builder()
+                .code(HttpStatus.OK.value())
+                .result(auctionHistoryService.getSessionsHistoryByAuctionSessionId(auctionSessionId))
                 .build();
     }
 }

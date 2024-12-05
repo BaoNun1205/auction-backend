@@ -1,6 +1,7 @@
 package com.example.auction_web.repository;
 
 import com.example.auction_web.dto.response.AuctionSessionInfoResponse;
+import com.example.auction_web.dto.response.SessionHistoryResponse;
 import com.example.auction_web.entity.AuctionHistory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -31,4 +32,11 @@ public interface AuctionHistoryRepository extends JpaRepository<AuctionHistory, 
     List<AuctionSessionInfoResponse> findAuctionSessionInfo(@Param("auctionSessionId") String auctionSessionId);
 
     AuctionHistory findAuctionHistoryByAuctionSession_AuctionSessionIdAndUser_UserId(String auctionSessionId, String userId);
+
+    @Query("SELECT new com.example.auction_web.dto.response.SessionHistoryResponse" +
+            "(ah.user.userId, ah.bidPrice, ah.bidTime, ah.delFlag) " +
+            "FROM AuctionHistory ah " +
+            "WHERE ah.auctionSession.auctionSessionId = :auctionSessionId " +
+            "ORDER BY ah.bidTime DESC")
+    List<SessionHistoryResponse> findSessionHistoryByAuctionSessionId(@Param("auctionSessionId") String auctionSessionId);
 }
