@@ -9,7 +9,9 @@ import com.example.auction_web.entity.SessionWinner;
 import com.example.auction_web.entity.auth.User;
 import com.example.auction_web.exception.AppException;
 import com.example.auction_web.exception.ErrorCode;
+import com.example.auction_web.mapper.AssetMapper;
 import com.example.auction_web.mapper.SessionWinnerMapper;
+import com.example.auction_web.repository.AssetRepository;
 import com.example.auction_web.repository.AuctionSessionRepository;
 import com.example.auction_web.repository.SessionWinnerRepository;
 import com.example.auction_web.repository.auth.UserRepository;
@@ -17,6 +19,8 @@ import com.example.auction_web.service.SessionWinnerService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +30,8 @@ public class SessionWinnerServiceImpl implements SessionWinnerService {
     AuctionSessionRepository auctionSessionRepository;
     UserRepository userRepository;
     SessionWinnerMapper sessionWinnerMapper;
+    AssetMapper assetMapper;
+    private final AssetRepository assetRepository;
 
     public SessionWinnerResponse createSessionWinner(SessionWinnerCreateRequest request) {
         var sessionWinner = sessionWinnerMapper.toSessionWinner(request);
@@ -40,6 +46,24 @@ public class SessionWinnerServiceImpl implements SessionWinnerService {
     void setSessionWinnerReference(SessionWinner sessionWinner, SessionWinnerCreateRequest request) {
         sessionWinner.setAuctionSession(getAuctionSession(request.getAuctionSessionId()));
         sessionWinner.setUser(getUser(request.getUserId()));
+    }
+
+    public List<SessionWinnerResponse> getSessionsWinner(String userId) {
+        if (userRepository.findById(userId).isEmpty()) {
+            throw new AppException(ErrorCode.USER_NOT_EXISTED);
+        }
+        return sessionWinnerRepository.getSessionWinnersByUser_UserId(userId).stream()
+                .map(sessionWinner -> {
+                    SessionWinnerResponse response = sessionWinnerMapper.toSessionWinnerResponse(sessionWinner);
+                    if (sessionWinner.getAuctionSession().getAsset() != null) {
+                        response.getAuctionSession().setAsset(assetMapper.toAssetResponse(
+                                assetRepository.findById(sessionWinner.getAuctionSession().getAsset().getAssetId()).orElse(null)));
+                    } else {
+                        response.getAuctionSession().setAsset(null);
+                    }
+                    return response;
+                })
+                .toList();
     }
 
     // get auction session

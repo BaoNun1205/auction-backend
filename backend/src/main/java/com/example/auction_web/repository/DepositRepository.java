@@ -1,5 +1,6 @@
 package com.example.auction_web.repository;
 
+import com.example.auction_web.dto.response.UsersJoinSessionResponse;
 import com.example.auction_web.entity.Deposit;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,4 +19,7 @@ public interface DepositRepository extends JpaRepository<Deposit, String> {
 
     @Query("SELECT MAX(d.depositPrice) FROM Deposit d WHERE d.auctionSession.auctionSessionId = :auctionSessionId")
     BigDecimal findMaxDepositPriceByAuctionSessionId(@Param("auctionSessionId") String auctionSessionId);
+
+    @Query("SELECT new com.example.auction_web.dto.response.UsersJoinSessionResponse(d.auctionSession.auctionSessionId) FROM Deposit d WHERE d.user.userId = :userId")
+    List<UsersJoinSessionResponse> findSessionsJoinByUserId(@Param("userId") String userId);
 }
