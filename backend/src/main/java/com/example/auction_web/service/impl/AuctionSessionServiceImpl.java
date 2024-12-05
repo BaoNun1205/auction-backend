@@ -75,6 +75,16 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
     public AuctionSessionResponse updateAuctionSession(String id, AuctionSessionUpdateRequest request) {
         AuctionSession auctionSession = auctionSessionRepository.findById(id)
                         .orElseThrow(() -> new AppException(ErrorCode.AUCTION_SESSION_NOT_EXISTED));
+        Asset asset = assetRepository.findById(auctionSession.getAsset().getAssetId())
+                .orElseThrow(() -> new AppException(ErrorCode.ASSET_NOT_EXISTED));
+        if (request.getStatus() != null && request.getStatus().equals(AUCTION_STATUS.UPCOMING.toString())) {
+            asset.setStatus(ASSET_STATUS.ONGOING.toString());
+        } else if (request.getStatus() != null && request.getStatus().equals(AUCTION_STATUS.AUCTION_FAILED.toString())) {
+            asset.setStatus(ASSET_STATUS.AUCTION_FAILED.toString());
+        } else if (request.getStatus() != null && request.getStatus().equals(AUCTION_STATUS.AUCTION_SUCCESS.toString())) {
+            asset.setStatus(ASSET_STATUS.AUCTION_SUCCESS.toString());
+        }
+        assetRepository.save(asset);
         auctionSessionMapper.updateAuctionItem(auctionSession, request);
         return auctionSessionMapper.toAuctionItemResponse(auctionSessionRepository.save(auctionSession));
     }
