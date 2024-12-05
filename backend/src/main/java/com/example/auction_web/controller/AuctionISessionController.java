@@ -112,4 +112,12 @@ public class AuctionISessionController {
                 .result(registerSessionService.getRegisterSessionByUserAndAuctionSession(userId, auctionSessionId))
                 .build();
     }
+
+    @GetMapping("/user-registered/{auctionSessionId}")
+    ApiResponse<List<RegisterSessionResponse>> getRegisterSessionByAuctionSessionId(@PathVariable String auctionSessionId) {
+        return ApiResponse.<List<RegisterSessionResponse>>builder()
+                .code(HttpStatus.OK.value())
+                .result(registerSessionService.getRegisterSessionByAuctionSessionId(auctionSessionId))
+                .build();
+    }
 }
