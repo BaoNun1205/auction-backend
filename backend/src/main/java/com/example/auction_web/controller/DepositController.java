@@ -4,6 +4,7 @@ import com.example.auction_web.dto.request.DepositCreateRequest;
 import com.example.auction_web.dto.request.DepositUpdateRequest;
 import com.example.auction_web.dto.response.ApiResponse;
 import com.example.auction_web.dto.response.DepositResponse;
+import com.example.auction_web.dto.response.UsersJoinSessionResponse;
 import com.example.auction_web.service.DepositService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -56,6 +57,14 @@ public class DepositController {
         return ApiResponse.<List<DepositResponse>>builder()
                 .code(HttpStatus.OK.value())
                 .result(depositService.findDepositByUserId(userId))
+                .build();
+    }
+
+    @GetMapping("/sessions-join/{userId}")
+    ApiResponse<List<UsersJoinSessionResponse>> getSessionsJoinByUserId(@PathVariable String userId) {
+        return ApiResponse.<List<UsersJoinSessionResponse>>builder()
+                .code(HttpStatus.OK.value())
+                .result(depositService.getSessionsJoinByUserId(userId))
                 .build();
     }
 }
