@@ -11,6 +11,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -50,15 +51,18 @@ public class AuctionISessionController {
     @GetMapping
     ApiResponse<DataResponse> filterAuctionSession(
             @RequestParam(required = false) String status,
+            @RequestParam(required = false) String typeId,
             @RequestParam(required = false) String userId,
             @RequestParam(required = false) LocalDateTime fromDate,
             @RequestParam(required = false) LocalDateTime toDate,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false, defaultValue = "true") Boolean isInCrease,
             @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "10") Integer size) {
 
-        List<AuctionSessionResponse> auctionSessionResponses = auctionSessionService.filterAuctionSession(status, userId, fromDate, toDate, keyword, isInCrease, page, size);
+        List<AuctionSessionResponse> auctionSessionResponses = auctionSessionService.filterAuctionSession(status, typeId, userId, fromDate, toDate, minPrice, maxPrice, keyword, isInCrease, page, size);
         int total = auctionSessionService.totalAuctionSession(status, fromDate, toDate, keyword, isInCrease);
 
         return ApiResponse.<DataResponse>builder()
@@ -83,6 +87,14 @@ public class AuctionISessionController {
         return ApiResponse.<AuctionSessionInfoDetail>builder()
                 .code(HttpStatus.OK.value())
                 .result(auctionSessionService.getDetailAuctionSessionById(auctionSessionId))
+                .build();
+    }
+
+    @GetMapping("/asset/{assetId}")
+    ApiResponse<AuctionSessionInfoDetail> getAuctionSessionInfoDetailByAssetId(@PathVariable String assetId) {
+        return ApiResponse.<AuctionSessionInfoDetail>builder()
+                .code(HttpStatus.OK.value())
+                .result(auctionSessionService.getDetailAuctionSessionByAssetId(assetId))
                 .build();
     }
 

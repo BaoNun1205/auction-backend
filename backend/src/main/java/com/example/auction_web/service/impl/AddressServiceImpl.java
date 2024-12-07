@@ -89,6 +89,10 @@ public class AddressServiceImpl implements AddressService {
                 .toList();
     }
 
+    public AddressResponse getAddressDefaultByUserId(String userId) {
+        return addressMapper.toAddressResponse(addressRepository.findAddressByUser_UserIdAndIsDefaultTrue(userId));
+    }
+
     void setAddressReference(AddressCreateRequest request, Address address) {
         address.setUser(getUserById(request.getUserId()));
     }

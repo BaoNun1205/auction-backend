@@ -119,12 +119,39 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
         return auctionSessionInfoDetail;
     }
 
-    public List<AuctionSessionResponse> filterAuctionSession(String status, String userId, LocalDateTime fromDate, LocalDateTime toDate, String keyword, Boolean isInCrease, Integer page, Integer size) {
+    @Transactional
+    public AuctionSessionInfoDetail getDetailAuctionSessionByAssetId(String assetId) {
+        AuctionSession auctionSession = auctionSessionRepository.getAuctionSessionByAsset_AssetId(assetId);
+        auctionSession.getUser().getRoles().size();
+        AuctionSessionInfoDetail auctionSessionInfoDetail = auctionSessionRepository.findAuctionSessionInfoDetailById(auctionSession.getAuctionSessionId());
+        auctionSessionInfoDetail.setAsset(assetService.getAssetById(auctionSession.getAsset().getAssetId()));
+
+        List<AuctionSessionInfoResponse> auctionSessionInfoResponse = auctionHistoryRepository.findAuctionSessionInfo(auctionSession.getAuctionSessionId());
+        if (!auctionSessionInfoResponse.isEmpty()) {
+            if (auctionSessionInfoResponse.get(0).getHighestBid().compareTo(BigDecimal.ZERO) == 0) {
+                auctionSessionInfoResponse.get(0).setHighestBid(auctionSession.getStartingBids());
+            }
+
+            if (auctionSessionInfoResponse.get(0).getUserId() != null) {
+                auctionSessionInfoResponse.get(0).setUser(userMapper.toUserResponse(userRepository.findById(auctionSessionInfoResponse.get(0).getUserId()).get()));
+            } else {
+                auctionSessionInfoResponse.get(0).setUser(null);
+            }
+            auctionSessionInfoDetail.setAuctionSessionInfo(auctionSessionInfoResponse.get(0));
+        } else {
+            auctionSessionInfoDetail.setAuctionSessionInfo(new AuctionSessionInfoResponse(0L, 0L, "", auctionSessionInfoDetail.getStartingBids(), null));
+        }
+        return auctionSessionInfoDetail;
+    }
+
+    public List<AuctionSessionResponse> filterAuctionSession(String status, String typeId, String userId, LocalDateTime fromDate, LocalDateTime toDate, BigDecimal minPrice, BigDecimal maxPrice, String keyword, Boolean isInCrease, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
 
         Specification<AuctionSession> specification = Specification
                 .where(AuctionSessionSpecification.hasStatus(status))
+                .and(AuctionSessionSpecification.hasTypeId(typeId))
                 .and(AuctionSessionSpecification.hasFromDateToDate(fromDate, toDate))
+                .and(AuctionSessionSpecification.hasPriceBetween(minPrice, maxPrice))
                 .and(AuctionSessionSpecification.hasKeyword(keyword))
                 .and(AuctionSessionSpecification.hasUserId(userId))
                 .and(AuctionSessionSpecification.hasIsInCrease(isInCrease));

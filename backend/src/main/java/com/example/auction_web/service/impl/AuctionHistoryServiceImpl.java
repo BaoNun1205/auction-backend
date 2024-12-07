@@ -64,10 +64,6 @@ public class AuctionHistoryServiceImpl implements AuctionHistoryService {
         }
     }
 
-    public Boolean checkDeposit(String auctionSessionId, String userId) {
-        return depositRepository.findByAuctionSession_AuctionSessionIdAndUser_UserId(auctionSessionId, userId) != null;
-    }
-
     //Update AuctionHistory
     public AuctionHistoryResponse updateAuctionHistory(String id, AuctionHistoryUpdateRequest request) {
         AuctionHistory auctionHistory = auctionHistoryRepository.findById(id)

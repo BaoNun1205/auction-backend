@@ -11,6 +11,7 @@ import java.util.List;
 public interface DepositService {
     DepositResponse createDeposit(DepositCreateRequest request);
     DepositResponse updateDeposit(String Id, DepositUpdateRequest request);
+    Boolean checkDeposit(String auctionSessionId, String userId);
     List<DepositResponse> findAllDeposits();
     List<DepositResponse> findDepositByAuctionSessionId(String auctionSessionId);
     List<DepositResponse> findDepositByUserId(String userId);

@@ -51,6 +51,11 @@ public class AddressController {
                 .build();
     }
 
-
-
+    @GetMapping("/default/user/{userId}")
+    ApiResponse<AddressResponse> getAddressDefaultByUserId(@PathVariable String userId) {
+        return ApiResponse.<AddressResponse>builder()
+                .code(HttpStatus.OK.value())
+                .result(addressService.getAddressDefaultByUserId(userId))
+                .build();
+    }
 }

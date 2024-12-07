@@ -48,6 +48,7 @@ public interface SessionWinnerMapper {
                 .endTime(auctionSession.getEndTime())
                 .startingBids(auctionSession.getStartingBids())
                 .bidIncrement(auctionSession.getBidIncrement())
+                .depositAmount(auctionSession.getDepositAmount())
                 .status(auctionSession.getStatus())
                 .build();
     }
