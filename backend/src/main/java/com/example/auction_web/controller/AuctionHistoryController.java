@@ -38,19 +38,11 @@ public class AuctionHistoryController {
                 .build();
     }
 
-    @GetMapping
-    ApiResponse<List<AuctionHistoryResponse>> getAllAuctionHistories() {
-        return ApiResponse.<List<AuctionHistoryResponse>>builder()
+    @GetMapping("/{auctionSessionId}")
+    ApiResponse<List<SessionHistoryResponse>> getAuctionHistoriesByAuctionSessionId(@PathVariable String auctionSessionId) {
+        return ApiResponse.<List<SessionHistoryResponse>>builder()
                 .code(HttpStatus.OK.value())
-                .result(auctionHistoryService.getAllAuctionHistories())
-                .build();
-    }
-
-    @GetMapping("/auction-session/{auctionSessionId}")
-    ApiResponse<AuctionHistoryResponse> getAuctionHistoriesByAuctionItemId(@PathVariable String auctionSessionId) {
-        return ApiResponse.<AuctionHistoryResponse>builder()
-                .code(HttpStatus.OK.value())
-                .result(auctionHistoryService.getAuctionHistoriesByAuctionSessionId(auctionSessionId))
+                .result(auctionHistoryService.getSessionsHistoryByAuctionSessionId(auctionSessionId))
                 .build();
     }
 
@@ -59,23 +51,6 @@ public class AuctionHistoryController {
         return ApiResponse.<AuctionSessionInfoResponse>builder()
                 .code(HttpStatus.OK.value())
                 .result(auctionHistoryService.getAuctionSessionInfo(auctionSessionId))
-                .build();
-    }
-
-    @GetMapping("/check-deposit")
-    ApiResponse<Boolean> checkDeposit(@RequestParam String auctionSessionId,
-                                      @RequestParam String userId) {
-        return ApiResponse.<Boolean>builder()
-                .code(HttpStatus.OK.value())
-                .result(auctionHistoryService.checkDeposit(auctionSessionId, userId))
-                .build();
-    }
-
-    @GetMapping("/sessions-history/{auctionSessionId}")
-    ApiResponse<List<SessionHistoryResponse>> getSessionsHistoryByAuctionSessionId(@PathVariable String auctionSessionId) {
-        return ApiResponse.<List<SessionHistoryResponse>>builder()
-                .code(HttpStatus.OK.value())
-                .result(auctionHistoryService.getSessionsHistoryByAuctionSessionId(auctionSessionId))
                 .build();
     }
 }

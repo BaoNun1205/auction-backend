@@ -25,6 +25,9 @@ public class AuctionSession {
     String auctionSessionId;
 
     String name;
+
+    @Lob
+    @Column(columnDefinition = "TEXT")
     String description;
 
     @ManyToMany

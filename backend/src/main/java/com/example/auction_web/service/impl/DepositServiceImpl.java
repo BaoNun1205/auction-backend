@@ -47,6 +47,10 @@ public class DepositServiceImpl implements DepositService {
         return depositMapper.toDepositResponse(depositRepository.save(deposit));
     }
 
+    public Boolean checkDeposit(String auctionSessionId, String userId) {
+        return depositRepository.findByAuctionSession_AuctionSessionIdAndUser_UserId(auctionSessionId, userId) != null;
+    }
+
     // find all deposits
     public List<DepositResponse> findAllDeposits() {
         return depositRepository.findAll().stream()

@@ -60,6 +60,15 @@ public class DepositController {
                 .build();
     }
 
+    @GetMapping("/check-deposit")
+    ApiResponse<Boolean> checkDeposit(@RequestParam String auctionSessionId,
+                                      @RequestParam String userId) {
+        return ApiResponse.<Boolean>builder()
+                .code(HttpStatus.OK.value())
+                .result(depositService.checkDeposit(auctionSessionId, userId))
+                .build();
+    }
+
     @GetMapping("/sessions-join/{userId}")
     ApiResponse<List<UsersJoinSessionResponse>> getSessionsJoinByUserId(@PathVariable String userId) {
         return ApiResponse.<List<UsersJoinSessionResponse>>builder()

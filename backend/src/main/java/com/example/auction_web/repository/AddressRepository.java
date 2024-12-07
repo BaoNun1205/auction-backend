@@ -11,4 +11,5 @@ import java.util.Optional;
 @Repository
 public interface AddressRepository extends JpaRepository<Address, String> {
     List<Address> findAddressByUser_UserId(String userId);
+    Address findAddressByUser_UserIdAndIsDefaultTrue(String userId);
 }

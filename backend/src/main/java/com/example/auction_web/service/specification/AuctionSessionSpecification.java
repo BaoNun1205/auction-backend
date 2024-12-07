@@ -5,6 +5,7 @@ import com.example.auction_web.entity.AuctionSession;
 import jakarta.persistence.criteria.Join;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class AuctionSessionSpecification {
@@ -25,6 +26,17 @@ public class AuctionSessionSpecification {
         };
     }
 
+    public static Specification<AuctionSession> hasTypeId(String typeId) {
+        return (root, query, criteriaBuilder) -> {
+            if (typeId == null || typeId.isEmpty()) {
+                return null;
+            }
+            Join<Object, Object> assetJoin = root.join("asset");
+            Join<Object, Object> typeJoin = assetJoin.join("type");
+            return criteriaBuilder.equal(typeJoin.get("typeId"), typeId);
+        };
+    }
+
     public static Specification<AuctionSession> hasFromDateToDate(LocalDateTime fromDate, LocalDateTime toDate) {
         return (root, query, criteriaBuilder) -> {
             if (fromDate != null && toDate != null) {
@@ -36,6 +48,19 @@ public class AuctionSessionSpecification {
             } else if (toDate != null) {
                 // Chỉ có 'toDate', tìm các phiên kết thúc trước 'toDate'
                 return criteriaBuilder.lessThanOrEqualTo(root.get("startTime"), toDate);
+            }
+            return criteriaBuilder.conjunction();
+        };
+    }
+
+    public static Specification<AuctionSession> hasPriceBetween(BigDecimal minPrice, BigDecimal maxPrice) {
+        return (root, query, criteriaBuilder) -> {
+            if (minPrice != null && maxPrice != null) {
+                return criteriaBuilder.between(root.get("startingBids"), minPrice, maxPrice);
+            } else if (minPrice != null) {
+                return criteriaBuilder.greaterThanOrEqualTo(root.get("startingBids"), minPrice);
+            } else if (maxPrice != null) {
+                return criteriaBuilder.lessThanOrEqualTo(root.get("startingBids"), maxPrice);
             }
             return criteriaBuilder.conjunction();
         };
@@ -63,6 +88,4 @@ public class AuctionSessionSpecification {
             return criteriaBuilder.conjunction();
         };
     }
-
-
 }

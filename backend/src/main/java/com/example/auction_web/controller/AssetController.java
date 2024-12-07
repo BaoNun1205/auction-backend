@@ -58,7 +58,7 @@ public class AssetController {
                                            @RequestParam(required = false) String typeId,
                                            @RequestParam(required = false) String status,
                                            @RequestParam(required = false, defaultValue = "0") Integer page,
-                                           @RequestParam(required = false, defaultValue = "10") Integer size) {
+                                           @RequestParam(required = false, defaultValue = "20") Integer size) {
         List<AssetResponse> filteredAssets = assetService.filterAssets(vendorId, assetName, minPrice, maxPrice, inspectorId, typeId, status, page, size);
         int total = assetService.totalAssets(vendorId, assetName, minPrice, maxPrice, inspectorId, typeId, status);
         return ApiResponse.<DataResponse>builder()

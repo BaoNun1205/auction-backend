@@ -1,6 +1,7 @@
 package com.example.auction_web.entity;
 
 import com.example.auction_web.entity.auth.User;
+import com.example.auction_web.enums.SESSION_WIN_STATUS;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,6 +34,7 @@ public class SessionWinner {
     LocalDateTime victoryTime;
     BigDecimal price;
     String status;
+    Boolean delFlag;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 
@@ -40,5 +42,7 @@ public class SessionWinner {
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        this.delFlag = false;
+        this.status = SESSION_WIN_STATUS.PREPARING.toString();
     }
 }

@@ -19,6 +19,8 @@ public interface AuctionSessionRepository extends JpaRepository<AuctionSession, 
     Page<AuctionSession> findAll(Specification<AuctionSession> specification, Pageable pageable);
     List<AuctionSession> findAll(Specification<AuctionSession> specification);
 
+    AuctionSession getAuctionSessionByAsset_AssetId(String assetId);
+
     @Query("SELECT new com.example.auction_web.dto.response.AuctionSessionInfoDetail(" +
             "asession.auctionSessionId, asession.name, asession.description," +
             "asession.startTime, asession.endTime, asession.startingBids, asession.bidIncrement, asession.status, asession.depositAmount) " +
