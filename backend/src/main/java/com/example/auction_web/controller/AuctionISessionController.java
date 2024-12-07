@@ -60,7 +60,7 @@ public class AuctionISessionController {
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false, defaultValue = "true") Boolean isInCrease,
             @RequestParam(required = false, defaultValue = "0") Integer page,
-            @RequestParam(required = false, defaultValue = "10") Integer size) {
+            @RequestParam(required = false, defaultValue = "20") Integer size) {
 
         List<AuctionSessionResponse> auctionSessionResponses = auctionSessionService.filterAuctionSession(status, typeId, userId, fromDate, toDate, minPrice, maxPrice, keyword, isInCrease, page, size);
         int total = auctionSessionService.totalAuctionSession(status, fromDate, toDate, keyword, isInCrease);

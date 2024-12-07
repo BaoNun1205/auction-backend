@@ -28,7 +28,11 @@ public class Requirement {
     User vendor;
 
     String assetName;
+
+    @Lob
+    @Column(columnDefinition = "TEXT")
     String assetDescription;
+
     BigDecimal assetPrice;
 
     @ManyToOne

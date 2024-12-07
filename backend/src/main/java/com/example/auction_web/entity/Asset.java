@@ -36,6 +36,9 @@ public class Asset {
     String assetName;
     String slug;
     String mainImage;
+
+    @Lob
+    @Column(columnDefinition = "TEXT")
     String assetDescription;
 
     @Column(precision = 15, scale = 0)
