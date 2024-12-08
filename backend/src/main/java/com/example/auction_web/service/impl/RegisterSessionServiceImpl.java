@@ -57,6 +57,14 @@ public class RegisterSessionServiceImpl implements RegisterSessionService {
     }
 
     @Override
+    public void unRegisterSession(String registerAuctionId) {
+        RegisterSession registerSession = registerSessionRepository.findById(registerAuctionId)
+                .orElseThrow(() -> new AppException(ErrorCode.REGISTER_SESSION_NOT_EXISTED));
+        registerSession.setDelFlag(true);
+        registerSessionRepository.save(registerSession);
+    }
+
+    @Override
     public List<RegisterSessionResponse> getRegisterSessions() {
         return registerSessionRepository.findAll().stream()
                 .map(registerSessionMapper::toRegisterSessionResponse)

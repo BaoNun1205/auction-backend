@@ -2,7 +2,6 @@ package com.example.auction_web.controller;
 
 import com.example.auction_web.dto.request.*;
 import com.example.auction_web.dto.response.*;
-import com.example.auction_web.entity.AuctionSession;
 import com.example.auction_web.service.AuctionSessionService;
 import com.example.auction_web.service.RegisterSessionService;
 import com.example.auction_web.service.SessionWinnerService;
@@ -19,7 +18,7 @@ import java.util.List;
 @RequestMapping("/session")
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
-public class AuctionISessionController {
+public class AuctionSessionController {
     AuctionSessionService auctionSessionService;
     RegisterSessionService registerSessionService;
     SessionWinnerService sessionWinnerService;
@@ -37,6 +36,15 @@ public class AuctionISessionController {
         return ApiResponse.<RegisterSessionResponse>builder()
                 .code(HttpStatus.OK.value())
                 .result(registerSessionService.createRegisterSession(request))
+                .build();
+    }
+
+    @DeleteMapping("/register/{registerId}")
+    ApiResponse<String> unRegisterAuctionSession(@PathVariable String registerId) {
+        registerSessionService.unRegisterSession(registerId);
+        return ApiResponse.<String>builder()
+                .code(HttpStatus.OK.value())
+                .result("Register deleted successfully")
                 .build();
     }
 

@@ -8,6 +8,7 @@ import java.util.List;
 public interface RegisterSessionService {
     RegisterSessionResponse createRegisterSession(RegisterSessionCreateRequest request);
     RegisterSessionResponse updateRegisterSession(String registerAuctionId, RegisterSessionCreateRequest request);
+    void unRegisterSession(String registerAuctionId);
     List<RegisterSessionResponse> getRegisterSessions();
     Boolean getRegisterSessionByUserAndAuctionSession(String userId, String auctionSessionId);
     List<RegisterSessionResponse> getRegisterSessionByUserId(String userId);
