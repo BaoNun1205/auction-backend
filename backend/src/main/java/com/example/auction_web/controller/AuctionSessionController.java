@@ -39,9 +39,9 @@ public class AuctionSessionController {
                 .build();
     }
 
-    @DeleteMapping("/register/{registerId}")
-    ApiResponse<String> unRegisterAuctionSession(@PathVariable String registerId) {
-        registerSessionService.unRegisterSession(registerId);
+    @PostMapping("/un-register")
+    ApiResponse<String> unRegisterAuctionSession(@RequestBody RegisterSessionCreateRequest request) {
+        registerSessionService.unRegisterSession(request);
         return ApiResponse.<String>builder()
                 .code(HttpStatus.OK.value())
                 .result("Register deleted successfully")
