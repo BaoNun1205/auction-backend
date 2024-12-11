@@ -6,7 +6,9 @@ import com.example.auction_web.dto.response.AuctionSessionResponse;
 import com.example.auction_web.dto.response.auth.UserResponse;
 import com.example.auction_web.entity.auth.User;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface UserService {
@@ -14,6 +16,7 @@ public interface UserService {
     UserResponse getUserResponse(String id);
     User getUser(String id);
     UserResponse getUserByUsername(String username);
+    void updateAvatar(String erId, MultipartFile image);
     List<UserResponse> getUsers();
     UserResponse getMyInfo();
     UserResponse updateUser(String userId, UserUpdateRequest request);

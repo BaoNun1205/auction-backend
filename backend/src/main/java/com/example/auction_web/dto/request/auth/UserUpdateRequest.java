@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -26,7 +27,7 @@ public class UserUpdateRequest {
             message = "Password must be at least 8 characters, including uppercase, lowercase, number and special character"
     )
     String password;
-    String avatar;
+    MultipartFile avatar;
 
     @NotBlank(message = "Phone cannot be blank")
     @Pattern(
@@ -34,6 +35,7 @@ public class UserUpdateRequest {
             message = "Phone number is invalid"
     )
     String phone;
+    String email;
     String gender;
     LocalDate dateOfBirth;
     List<String> roles;
