@@ -18,6 +18,7 @@ public class UserResponse {
     String userId;
     String username;
     String name;
+    String password;
     String avatar;
     String email;
     String phone;
