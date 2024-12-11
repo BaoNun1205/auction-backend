@@ -16,6 +16,7 @@ import com.example.auction_web.mapper.UserMapper;
 import com.example.auction_web.repository.auth.RoleRepository;
 import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.EmailVerificationTokenService;
+import com.example.auction_web.service.FileUploadService;
 import com.example.auction_web.service.auth.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 
@@ -39,6 +42,7 @@ public class UserServiceImpl implements UserService {
     UserMapper userMapper;
     AuctionSessionMapper auctionSessionMapper;
     PasswordEncoder passwordEncoder;
+    FileUploadService fileUploadService;
 
     EmailVerificationTokenService emailVerificationTokenService;
 
@@ -78,6 +82,17 @@ public class UserServiceImpl implements UserService {
         );
     }
 
+    public void updateAvatar(String userId, MultipartFile image) {
+        User user = getUser(userId);
+        try {
+            String imageUrl = fileUploadService.uploadFile(image);
+            user.setAvatar(imageUrl);
+            userRepository.save(user);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to upload image: " + image.getOriginalFilename(), e);
+        }
+    }
+
     @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponse> getUsers() {
         return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
@@ -94,18 +109,34 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @PostAuthorize("returnObject.username == authentication.name")
+//    @PostAuthorize("returnObject.username == authentication.name")
     public UserResponse updateUser(String userId, UserUpdateRequest request) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        // Tìm user theo ID, nếu không tồn tại thì ném ngoại lệ
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
+        // Map các thông tin cập nhật từ request vào user
         userMapper.updateUser(user, request);
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        var roles = roleRepository.findAllById(request.getRoles());
-        user.setRoles(new HashSet<>(roles));
+        // Kiểm tra password trong request, nếu không null thì mã hóa và cập nhật
+        if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
 
+        if (request.getAvatar() != null && !request.getAvatar().isEmpty()) {
+            try {
+                String imageUrl = fileUploadService.uploadFile(request.getAvatar());
+                user.setAvatar(imageUrl);
+                userRepository.save(user);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to upload image: " + request.getAvatar().getOriginalFilename(), e);
+            }
+        }
+
+        // Lưu user vào repository và trả về phản hồi dưới dạng UserResponse
         return userMapper.toUserResponse(userRepository.save(user));
     }
+
 
     @Override
     public void deleteUser(String userId) {

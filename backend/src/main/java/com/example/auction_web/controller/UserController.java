@@ -2,6 +2,7 @@ package com.example.auction_web.controller;
 
 import com.example.auction_web.dto.request.auth.UserCreateRequest;
 import com.example.auction_web.dto.request.auth.UserUpdateRequest;
+import com.example.auction_web.dto.request.filter.AvatarRequest;
 import com.example.auction_web.dto.response.ApiResponse;
 import com.example.auction_web.dto.response.AuctionSessionResponse;
 import com.example.auction_web.dto.response.auth.UserResponse;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -59,8 +61,18 @@ public class UserController {
                 .build();
     }
 
+    @PostMapping("/update-avatar/{userId}")
+    ApiResponse<String> updateAvatar(
+            @PathVariable String userId,
+            @RequestParam("avatar") MultipartFile avatarFile) {
+        userService.updateAvatar(userId, avatarFile);
+        return ApiResponse.<String>builder()
+                .result("Avatar updated successfully")
+                .build();
+    }
+
     @PutMapping("/{userId}")
-    ApiResponse<UserResponse> update(@PathVariable String userId, @RequestBody UserUpdateRequest request){
+    ApiResponse<UserResponse> update(@PathVariable String userId, @ModelAttribute UserUpdateRequest request){
         return ApiResponse.<UserResponse>builder()
                 .result(userService.updateUser(userId, request))
                 .build();
