@@ -36,8 +36,14 @@ public class RegisterSessionServiceImpl implements RegisterSessionService {
 
     @Override
     public RegisterSessionResponse createRegisterSession(RegisterSessionCreateRequest request) {
-        var registerSession = registerSessionMapper.toRegisterSession(request);
-        setRegisterReference(request, registerSession);
+        var registerSession = registerSessionRepository
+                .findRegisterSessionByUser_UserIdAndAuctionSession_AuctionSessionIdAndDelFlagIsTrue(request.getUserId(), request.getAuctionSessionId());
+        if (registerSession == null) {
+            registerSession = registerSessionMapper.toRegisterSession(request);
+            setRegisterReference(request, registerSession);
+        } else {
+            registerSession.setDelFlag(false);
+        }
         var user = getUserById(request.getUserId());
         var auctionSession = getAuctionSessionById(request.getAuctionSessionId());
 
@@ -57,9 +63,9 @@ public class RegisterSessionServiceImpl implements RegisterSessionService {
     }
 
     @Override
-    public void unRegisterSession(String registerAuctionId) {
-        RegisterSession registerSession = registerSessionRepository.findById(registerAuctionId)
-                .orElseThrow(() -> new AppException(ErrorCode.REGISTER_SESSION_NOT_EXISTED));
+    public void unRegisterSession(RegisterSessionCreateRequest request) {
+        RegisterSession registerSession =
+                registerSessionRepository.findRegisterSessionByUser_UserIdAndAuctionSession_AuctionSessionIdAndDelFlagIsFalse(request.getUserId(), request.getAuctionSessionId());
         registerSession.setDelFlag(true);
         registerSessionRepository.save(registerSession);
     }
@@ -73,7 +79,7 @@ public class RegisterSessionServiceImpl implements RegisterSessionService {
 
     @Override
     public Boolean getRegisterSessionByUserAndAuctionSession(String userId, String auctionSessionId) {
-        return registerSessionRepository.findRegisterSessionByUser_UserIdAndAuctionSession_AuctionSessionId(userId, auctionSessionId) != null;
+        return registerSessionRepository.findRegisterSessionByUser_UserIdAndAuctionSession_AuctionSessionIdAndDelFlagIsFalse(userId, auctionSessionId) != null;
     }
 
     @Override
@@ -81,7 +87,7 @@ public class RegisterSessionServiceImpl implements RegisterSessionService {
         if (!userRepository.existsById(userId)) {
             throw new AppException(ErrorCode.USER_NOT_EXISTED);
         }
-        return registerSessionRepository.findRegisterSessionByUser_UserId(userId).stream()
+        return registerSessionRepository.findRegisterSessionByUser_UserIdAndDelFlagIsFalse(userId).stream()
                 .map(registerSession -> {
                     RegisterSessionResponse response = registerSessionMapper.toRegisterSessionResponse(registerSession);
 
@@ -102,7 +108,7 @@ public class RegisterSessionServiceImpl implements RegisterSessionService {
         if (!auctionSessionRepository.existsById(auctionSessionId)) {
             throw new AppException(ErrorCode.AUCTION_SESSION_NOT_EXISTED);
         }
-        return registerSessionRepository.findRegisterSessionByAuctionSession_AuctionSessionId(auctionSessionId).stream()
+        return registerSessionRepository.findRegisterSessionByAuctionSession_AuctionSessionIdAndDelFlagIsFalse(auctionSessionId).stream()
                 .map(registerSession -> {
                     RegisterSessionResponse response = registerSessionMapper.toRegisterSessionResponse(registerSession);
 
