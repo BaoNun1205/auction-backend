@@ -111,14 +111,11 @@ public class UserServiceImpl implements UserService {
     @Override
 //    @PostAuthorize("returnObject.username == authentication.name")
     public UserResponse updateUser(String userId, UserUpdateRequest request) {
-        // Tìm user theo ID, nếu không tồn tại thì ném ngoại lệ
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        // Map các thông tin cập nhật từ request vào user
         userMapper.updateUser(user, request);
 
-        // Kiểm tra password trong request, nếu không null thì mã hóa và cập nhật
         if (request.getPassword() != null && !request.getPassword().isEmpty()) {
             user.setPassword(passwordEncoder.encode(request.getPassword()));
         }
@@ -133,7 +130,6 @@ public class UserServiceImpl implements UserService {
             }
         }
 
-        // Lưu user vào repository và trả về phản hồi dưới dạng UserResponse
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
