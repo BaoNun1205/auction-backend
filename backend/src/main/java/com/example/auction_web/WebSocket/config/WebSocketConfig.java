@@ -42,7 +42,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/rt-product");
+        registry.enableSimpleBroker("/rt-product", "/rt-chat");
         registry.setApplicationDestinationPrefixes("/app");
         registry.setUserDestinationPrefix("/user");
     }
@@ -50,6 +50,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/rt-auction")
+                .setAllowedOrigins("http://127.0.0.1:5500", "http://localhost:5173", "http://127.0.0.1:5173");
+        registry.addEndpoint("/rt-chat")
                 .setAllowedOrigins("http://127.0.0.1:5500", "http://localhost:5173", "http://127.0.0.1:5173");
     }
 

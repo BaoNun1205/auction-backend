@@ -109,7 +109,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-//    @PostAuthorize("returnObject.username == authentication.name")
+   @PostAuthorize("returnObject.username == authentication.name")
     public UserResponse updateUser(String userId, UserUpdateRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));

@@ -8,8 +8,15 @@ spring:
   datasource:
     url: ${DBMS_CONNECTION:jdbc:mysql://localhost:3306/auction_web}
     driverClassName: "com.mysql.cj.jdbc.Driver"
-    password: ${DBMS_PASSWORD:root}
+    password: ${DBMS_PASSWORD:120503}
     username: ${DBMS_USERNAME:root}
+
+# spring:
+#   datasource:
+#     url: ${DBMS_CONNECTION:jdbc:mysql://root:AcvMDoekXnSFbjMntWyhGNXDbBusxyjb@autorack.proxy.rlwy.net:55890/railway}
+#     driverClassName: "com.mysql.cj.jdbc.Driver"
+#     password: ${DBMS_PASSWORD:root}
+#     username: ${DBMS_USERNAME:AcvMDoekXnSFbjMntWyhGNXDbBusxyjb}
 
   security:
     oauth2:
@@ -29,8 +36,8 @@ spring:
 
 jwt:
   signerKey: "1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij"
-  valid-duration: 3600 # in second
-  refreshable-duration: 36000 # in seconds
+  valid-duration: 7200 # in second
+  refreshable-duration: 1728000 # in seconds
 
 email:
   username: webonlineauction@gmail.com
