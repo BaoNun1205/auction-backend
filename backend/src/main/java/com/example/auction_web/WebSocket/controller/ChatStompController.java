@@ -25,7 +25,7 @@ public class ChatStompController {
     @Autowired
     private ChatService chatService;
 
-    @MessageMapping("/chat/{conversationId}")
+    @MessageMapping("/rt-auction/conversations/{conversationId}")
     @SendTo("/rt-chat/conversations/{conversationId}")
     public ApiResponse<Message> sendMessage(
             @DestinationVariable String conversationId,
