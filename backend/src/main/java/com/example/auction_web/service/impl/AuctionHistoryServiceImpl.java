@@ -7,6 +7,7 @@ import com.example.auction_web.dto.response.AuctionSessionInfoResponse;
 import com.example.auction_web.dto.response.SessionHistoryResponse;
 import com.example.auction_web.entity.AuctionHistory;
 import com.example.auction_web.entity.AuctionSession;
+import com.example.auction_web.entity.Deposit;
 import com.example.auction_web.entity.auth.User;
 import com.example.auction_web.exception.AppException;
 import com.example.auction_web.exception.ErrorCode;
@@ -17,6 +18,8 @@ import com.example.auction_web.repository.AuctionSessionRepository;
 import com.example.auction_web.repository.DepositRepository;
 import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.AuctionHistoryService;
+import com.example.auction_web.utils.RabbitMQ.BidEventProducer;
+import com.example.auction_web.utils.RabbitMQ.Dto.BidMessage;
 import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -38,11 +41,21 @@ public class AuctionHistoryServiceImpl implements AuctionHistoryService {
     AuctionHistoryMapper auctionHistoryMapper;
     UserMapper userMapper;
 
+    BidEventProducer bidEventProducer;
+
     //create AuctionHistory
     @Override
     @Transactional
     public AuctionHistoryResponse createAuctionHistory(AuctionHistoryCreateRequest request) {
         try {
+            String userId = auctionHistoryRepository.findMaxUserBidPrice(request.getAuctionSessionId());
+            Deposit deposit = depositRepository.findByAuctionSession_AuctionSessionIdAndUser_UserId(request.getAuctionSessionId(), request.getUserId());
+            if (deposit == null) {
+                throw new AppException(ErrorCode.DEPOSIT_NOT_EXISTED);
+            }
+            if (userId != null && userId.equals(request.getUserId())) {
+                throw new AppException(ErrorCode.USER_CANNOT_BID_HIGHER_THAN_HIS_BID);
+            }
             AuctionSession auctionSession = auctionSessionRepository.findById(request.getAuctionSessionId())
                     .orElseThrow(() -> new AppException(ErrorCode.AUCTION_SESSION_NOT_EXISTED));
             BigDecimal maxBidPrice = auctionHistoryRepository.findMaxBidPriceByAuctionSessionId(request.getAuctionSessionId());
@@ -58,6 +71,8 @@ public class AuctionHistoryServiceImpl implements AuctionHistoryService {
             setAuctionHistoryReference(request, auctionHistory);
 
             AuctionHistoryResponse auctionHistoryResponse = auctionHistoryMapper.toAuctionHistoryResponse(auctionHistoryRepository.save(auctionHistory));
+
+            sendMessageToRabbitMQ(request.getAuctionSessionId(), request.getBidPrice());
             return auctionHistoryResponse;
         } catch (OptimisticLockException e) {
             throw new AppException(ErrorCode.CONCURRENT_UPDATE);
@@ -120,5 +135,14 @@ public class AuctionHistoryServiceImpl implements AuctionHistoryService {
     User getUserById(String userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+    }
+
+    //Send Message to RabbitMQ
+    void sendMessageToRabbitMQ(String auctionSessionId, BigDecimal currentPrice) {
+        BidMessage bidMessage = BidMessage.builder()
+                .auctionSessionId(auctionSessionId)
+                .currentPrice(currentPrice)
+                .build();
+        bidEventProducer.sendBidEvent(bidMessage);
     }
 }
