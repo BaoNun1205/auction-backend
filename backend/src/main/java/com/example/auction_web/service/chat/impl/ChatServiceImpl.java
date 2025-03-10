@@ -39,7 +39,7 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public List<ConversationResponse> getConversations(String userId) {
-        List<Conversation> conversations = conversationRepository.findByBuyer_UserIdOrSeller_UserId(userId, userId);
+        List<Conversation> conversations = conversationRepository.findConversationsByBuyer_UserIdOrSeller_UserId(userId, userId);
         return conversations.stream()
                 .map(conversationMapper::toConversationResponse)
                 .collect(Collectors.toList());
@@ -47,7 +47,7 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public List<MessageResponse> getMessages(String conversationId) {
-        List<Message> messages = messageRepository.findByConversationId(conversationId);
+        List<Message> messages = messageRepository.findMessageByConversationId(conversationId);
         return messages.stream()
                 .map(messageMapper::toMessageResponse)
                 .collect(Collectors.toList());
@@ -63,8 +63,8 @@ public class ChatServiceImpl implements ChatService {
         Message message = new Message();
         message.setContent(payload.get("content"));
         message.setTimestamp(LocalDateTime.now().toString());
-        message.setConversation(conversation);
-        message.setSender(sender);
+        message.setConversationId(conversation.getConversationId());
+        message.setSenderId(sender.getUserId());
 
         // Cập nhật thông tin conversation
         conversation.setLastMessage(payload.get("content"));

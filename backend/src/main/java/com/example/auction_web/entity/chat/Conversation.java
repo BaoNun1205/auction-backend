@@ -1,16 +1,12 @@
 package com.example.auction_web.entity.chat;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.example.auction_web.entity.auth.User;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,15 +22,18 @@ import lombok.experimental.FieldDefaults;
 public class Conversation {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    private String conversationId;
     private String name;
     private String lastMessage;
     private String time;
     private int unread;
     
     @ManyToOne
+    @JoinColumn(name = "buyerId", referencedColumnName = "userId")
     private User buyer;
+
     @ManyToOne
+    @JoinColumn(name = "sellerId", referencedColumnName = "userId")
     private User seller;
 
     Boolean delFlag;
@@ -52,4 +51,5 @@ public class Conversation {
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
+
 }

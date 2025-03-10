@@ -10,7 +10,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class MessageResponse {
-    private String id;
+    private String messageId;
     private String content;
     private String timestamp;
     private String conversationId;

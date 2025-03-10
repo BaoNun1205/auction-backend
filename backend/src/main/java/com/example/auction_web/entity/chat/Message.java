@@ -2,16 +2,14 @@ package com.example.auction_web.entity.chat;
 
 import com.example.auction_web.entity.auth.User;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -22,12 +20,24 @@ import lombok.experimental.FieldDefaults;
 public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    private String messageId;
     private String content;
     private String timestamp;
+    private String conversationId;
+    private String senderId;
+    Boolean delFlag;
+    LocalDateTime createdAt;
+    LocalDateTime updatedAt;
 
-    @ManyToOne
-    private Conversation conversation;
-    @ManyToOne
-    private User sender;
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        this.delFlag = false;
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }
