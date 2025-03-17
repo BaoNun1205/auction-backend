@@ -1,7 +1,10 @@
 package com.example.auction_web.entity.auth;
 
 import com.example.auction_web.entity.*;
+import com.example.auction_web.entity.chat.Conversation;
+import com.example.auction_web.entity.chat.Message;
 import com.example.auction_web.enums.GENDER;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -56,10 +59,11 @@ public class User {
         this.updatedAt = LocalDateTime.now();
     }
 
-    @ManyToMany
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.LAZY)
     Set<Role> roles;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     List<AuctionSession> auctionSessions;
 
     @OneToMany(mappedBy = "vendor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -91,4 +95,10 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<SessionWinner> sessionWinners;
+
+    @OneToMany(mappedBy = "buyer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<Conversation> buyerConversations;
+
+    @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<Conversation> sellerConversations;
 }
