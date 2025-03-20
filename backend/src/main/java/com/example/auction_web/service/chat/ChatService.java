@@ -10,5 +10,5 @@ import com.example.auction_web.entity.chat.Message;
 public interface ChatService {
     List<ConversationResponse> getConversations(String userId);
     List<MessageResponse> getMessages(String conversationId);
-    Message sendMessage(String conversationId, Map<String, String> payload);
+    MessageResponse sendMessage(String conversationId, Map<String, String> payload);
 }

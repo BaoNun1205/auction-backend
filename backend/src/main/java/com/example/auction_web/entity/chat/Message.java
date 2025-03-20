@@ -24,7 +24,9 @@ public class Message {
     private String content;
     private String timestamp;
     private String conversationId;
-    private String senderId;
+    @ManyToOne
+    @JoinColumn(name = "userId", referencedColumnName = "userId")
+    private User sender;
     Boolean delFlag;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;

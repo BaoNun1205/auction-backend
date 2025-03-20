@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -53,8 +54,9 @@ public class ChatServiceImpl implements ChatService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     @Override
-    public Message sendMessage(String conversationId, Map<String, String> payload) {
+    public MessageResponse sendMessage(String conversationId, Map<String, String> payload) {
         // Tìm conversation và sender
         Conversation conversation = conversationRepository.findById(conversationId)
                 .orElseThrow(() -> new RuntimeException("Conversation not found"));
@@ -64,7 +66,7 @@ public class ChatServiceImpl implements ChatService {
         message.setContent(payload.get("content"));
         message.setTimestamp(LocalDateTime.now().toString());
         message.setConversationId(conversation.getConversationId());
-        message.setSenderId(sender.getUserId());
+        message.setSender(sender);
 
         // Cập nhật thông tin conversation
         conversation.setLastMessage(payload.get("content"));
@@ -72,6 +74,6 @@ public class ChatServiceImpl implements ChatService {
         conversationRepository.save(conversation);
 
         // Lưu message và trả về
-        return messageRepository.save(message);
+        return messageMapper.toMessageResponse(messageRepository.save(message));
     }
 }

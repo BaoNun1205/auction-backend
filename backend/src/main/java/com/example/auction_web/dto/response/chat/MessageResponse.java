@@ -1,5 +1,9 @@
 package com.example.auction_web.dto.response.chat;
 
+import com.example.auction_web.dto.response.auth.UserResponse;
+import com.example.auction_web.entity.auth.User;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -14,5 +18,5 @@ public class MessageResponse {
     private String content;
     private String timestamp;
     private String conversationId;
-    private String senderId;
+    private UserResponse sender;
 }
