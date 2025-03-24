@@ -1,5 +1,6 @@
 package com.example.auction_web.dto.response.chat;
 
+import com.example.auction_web.dto.response.auth.UserResponse;
 import com.example.auction_web.entity.auth.User;
 
 import lombok.*;
@@ -16,6 +17,6 @@ public class ConversationResponse {
     private String lastMessage;
     private String time;
     private int unread;
-    private String buyerId;
-    private String sellerId;
+    private UserResponse buyer;
+    private UserResponse seller;
 }

@@ -11,4 +11,5 @@ public interface ChatService {
     List<ConversationResponse> getConversations(String userId);
     List<MessageResponse> getMessages(String conversationId);
     MessageResponse sendMessage(String conversationId, Map<String, String> payload);
+    void updateUnread(String conversationId, int unreadCount);
 }

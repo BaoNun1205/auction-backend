@@ -59,4 +59,22 @@ public class ChatController {
                     .build();
         }
     }
+
+    @PutMapping("/unread/{conversationId}")
+    public ApiResponse<Void> updateUnread(
+            @PathVariable String conversationId,
+            @RequestParam int unreadCount) {
+        try {
+            chatService.updateUnread(conversationId, unreadCount);
+            return ApiResponse.<Void>builder()
+                    .code(HttpStatus.OK.value())
+                    .message("Unread count updated successfully")
+                    .build();
+        } catch (RuntimeException e) {
+            return ApiResponse.<Void>builder()
+                    .code(HttpStatus.NOT_FOUND.value())
+                    .message("Conversation not found")
+                    .build();
+        }
+    }
 }
