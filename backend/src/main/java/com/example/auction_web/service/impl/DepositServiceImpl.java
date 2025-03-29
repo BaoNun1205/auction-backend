@@ -5,18 +5,23 @@ import com.example.auction_web.dto.request.DepositUpdateRequest;
 import com.example.auction_web.dto.response.DepositResponse;
 import com.example.auction_web.dto.response.UsersJoinSessionResponse;
 import com.example.auction_web.entity.AuctionSession;
+import com.example.auction_web.entity.BalanceUser;
 import com.example.auction_web.entity.Deposit;
 import com.example.auction_web.entity.auth.User;
 import com.example.auction_web.exception.AppException;
 import com.example.auction_web.exception.ErrorCode;
 import com.example.auction_web.mapper.AuctionSessionMapper;
+import com.example.auction_web.mapper.BalanceUserMapper;
 import com.example.auction_web.mapper.DepositMapper;
 import com.example.auction_web.repository.AuctionSessionRepository;
+import com.example.auction_web.repository.BalanceUserRepository;
 import com.example.auction_web.repository.DepositRepository;
 import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.DepositService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -29,12 +34,30 @@ public class DepositServiceImpl implements DepositService {
     DepositRepository depositRepository;
     AuctionSessionRepository auctionSessionRepository;
     UserRepository userRepository;
+    BalanceUserRepository balanceUserRepository;
+    BalanceUserMapper balanceUserMapper;
     DepositMapper depositMapper;
     AuctionSessionMapper auctionSessionMapper;
+
+    @NonFinal
+    @Value("${email.username}")
+    String EMAIL_ADMIN;
 
     // create a deposit
     public DepositResponse createDeposit(DepositCreateRequest request) {
         var deposit = depositMapper.toDeposit(request);
+
+        BalanceUser balanceUser = balanceUserRepository.findBalanceUserByUser_UserId(request.getUserId());
+        if (balanceUser == null) {
+            throw new AppException(ErrorCode.BALANCE_USER_NOT_EXISTED);
+        }
+        if (balanceUser.getAccountBalance().compareTo(request.getDepositPrice()) < 0) {
+            throw new AppException(ErrorCode.BALANCE_NOT_ENOUGH);
+        }
+
+        balanceUserRepository.minusBalance(request.getUserId(), request.getDepositPrice());
+        balanceUserRepository.increaseBalance(EMAIL_ADMIN, request.getDepositPrice());
+
         setDepositReference(deposit, request);
         return depositMapper.toDepositResponse(depositRepository.save(deposit));
     }

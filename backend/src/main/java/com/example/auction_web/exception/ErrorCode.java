@@ -46,6 +46,7 @@ public enum ErrorCode {
     USER_CANNOT_BID_HIGHER_THAN_HIS_BID(1040, "You cannot bid higher than your bid", HttpStatus.BAD_REQUEST),
     AUTOBID_NOT_EXISTED(1041, "Auto bid not existed", HttpStatus.NOT_FOUND),
     UPDATE_AUTO_BID_FAILED(1042, "Update auto bid failed", HttpStatus.BAD_REQUEST),
+    BALANCE_NOT_ENOUGH(1043, "Balance not enough", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

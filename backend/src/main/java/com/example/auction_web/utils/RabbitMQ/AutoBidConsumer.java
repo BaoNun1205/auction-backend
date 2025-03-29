@@ -14,6 +14,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor
@@ -40,6 +41,7 @@ public class AutoBidConsumer {
                         .auctionSessionId(auctionSessionId)
                         .userId(autoBidItem.getUser().getUserId())
                         .bidPrice(currentPrice.add(autoBidItem.getBidIncrement()))
+                        .bidTime(LocalDateTime.now())
                         .build();
                 try {
                     auctionHistoryService.createAuctionHistory(auctionHistoryCreateRequest);
