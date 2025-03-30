@@ -1,8 +1,7 @@
-package com.example.auction_web.utils.RabbitMQ;
+package com.example.auction_web.utils.RabbitMQ.Consumer;
 
 import com.example.auction_web.dto.request.AuctionHistoryCreateRequest;
 import com.example.auction_web.dto.response.AuctionSessionInfoDetail;
-import com.example.auction_web.enums.AUCTION_STATUS;
 import com.example.auction_web.enums.AUTOBID;
 import com.example.auction_web.repository.AutoBidRepository;
 import com.example.auction_web.service.AuctionHistoryService;
