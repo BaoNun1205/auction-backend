@@ -8,7 +8,7 @@ spring:
   datasource:
     url: ${DBMS_CONNECTION:jdbc:mysql://localhost:3306/auction_web}
     driverClassName: "com.mysql.cj.jdbc.Driver"
-    password: ${DBMS_PASSWORD:120503}
+    password: ${DBMS_PASSWORD:root}
     username: ${DBMS_USERNAME:root}
 
 # spring:
@@ -40,8 +40,8 @@ jwt:
   refreshable-duration: 1728000 # in seconds
 
 email:
-  username: webonlineauction@gmail.com
-  password: hrqqaszjtpqqjchc
+  username: "webonlineauction@gmail.com"
+  password: "hrqqaszjtpqqjchc"
 
 redis:
   host: "redis-19216.c266.us-east-1-3.ec2.redns.redis-cloud.com"
@@ -84,3 +84,14 @@ quartz:
                 password: root
                 maxConnections: 5
                 validationQuery: select 1
+
+payment:
+  vnPay:
+    url: "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"
+    tmnCode: "9VBX0FN5"
+    secretKey: "6GT81OP3U8SGEJA3R5G8NOJM6RHHTDPP"
+    returnUrl: "http://localhost:8080/payment/vn-pay-callback"
+    version: "2.1.0"
+    command: "pay"
+    orderType: "other"
+

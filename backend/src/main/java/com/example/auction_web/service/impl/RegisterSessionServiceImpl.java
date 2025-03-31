@@ -14,7 +14,7 @@ import com.example.auction_web.repository.AuctionSessionRepository;
 import com.example.auction_web.repository.RegisterSessionRepository;
 import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.RegisterSessionService;
-import com.example.auction_web.utils.NotificationService;
+import com.example.auction_web.utils.Quataz.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;

@@ -16,8 +16,17 @@ public class RabbitMQConfig {
     }
 
     @Bean
+    public Queue sessionEndQueue() {
+        return new Queue("sessionEndQueue");
+    }
+
+    @Bean
     public TopicExchange bidExchange() {
         return new TopicExchange("bidExchange");
+    }
+
+    @Bean TopicExchange sessionEndExchange() {
+        return new TopicExchange("sessionEndExchange");
     }
 
     @Bean
