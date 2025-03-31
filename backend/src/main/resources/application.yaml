@@ -84,3 +84,14 @@ quartz:
                 password: root
                 maxConnections: 5
                 validationQuery: select 1
+
+payment:
+  vnPay:
+    url: "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"
+    tmnCode: "9VBX0FN5"
+    secretKey: "6GT81OP3U8SGEJA3R5G8NOJM6RHHTDPP"
+    returnUrl: "http://localhost:8080/payment/vn-pay-callback"
+    version: "2.1.0"
+    command: "pay"
+    orderType: "other"
+

@@ -11,6 +11,6 @@ public class SessionEndProducer {
     private final RabbitTemplate rabbitTemplate;
 
     public void sendSessionEndEvent(SessionEndMessage sessionEndMessage) {
-        rabbitTemplate.convertAndSend("sessionEndExchange", "sessionEnd", sessionEndMessage);
+        rabbitTemplate.convertAndSend("sessionEndExchange", "session", sessionEndMessage);
     }
 }
