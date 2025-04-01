@@ -18,7 +18,7 @@ import com.example.auction_web.repository.AuctionSessionRepository;
 import com.example.auction_web.repository.DepositRepository;
 import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.AuctionHistoryService;
-import com.example.auction_web.utils.RabbitMQ.BidEventProducer;
+import com.example.auction_web.utils.RabbitMQ.Producer.BidEventProducer;
 import com.example.auction_web.utils.RabbitMQ.Dto.BidMessage;
 import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;

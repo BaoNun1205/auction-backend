@@ -1,4 +1,4 @@
-package com.example.auction_web.utils.RabbitMQ;
+package com.example.auction_web.utils.RabbitMQ.Producer;
 
 import com.example.auction_web.utils.RabbitMQ.Dto.BidMessage;
 import lombok.RequiredArgsConstructor;

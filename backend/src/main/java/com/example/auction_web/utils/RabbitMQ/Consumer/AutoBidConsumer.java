@@ -1,22 +1,27 @@
-package com.example.auction_web.utils.RabbitMQ;
+package com.example.auction_web.utils.RabbitMQ.Consumer;
 
 import com.example.auction_web.dto.request.AuctionHistoryCreateRequest;
-import com.example.auction_web.enums.AUCTION_STATUS;
+import com.example.auction_web.dto.response.AuctionSessionInfoDetail;
 import com.example.auction_web.enums.AUTOBID;
 import com.example.auction_web.repository.AutoBidRepository;
 import com.example.auction_web.service.AuctionHistoryService;
+import com.example.auction_web.service.AuctionSessionService;
 import com.example.auction_web.utils.RabbitMQ.Dto.BidMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor
 public class AutoBidConsumer {
     private final AutoBidRepository autoBidRepository;
     private final AuctionHistoryService auctionHistoryService;
+    private final AuctionSessionService auctionSessionService;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @RabbitListener(queues = "bidQueue")
     public void processAutoBid(BidMessage bidMessage) {
@@ -35,9 +40,15 @@ public class AutoBidConsumer {
                         .auctionSessionId(auctionSessionId)
                         .userId(autoBidItem.getUser().getUserId())
                         .bidPrice(currentPrice.add(autoBidItem.getBidIncrement()))
+                        .bidTime(LocalDateTime.now())
                         .build();
                 try {
                     auctionHistoryService.createAuctionHistory(auctionHistoryCreateRequest);
+                    AuctionSessionInfoDetail auctionSessionInfoDetail = auctionSessionService.getDetailAuctionSessionById(auctionSessionId);
+                    messagingTemplate.convertAndSend(
+                            "/rt-product/bidPrice-update/" + auctionSessionId,
+                            auctionSessionInfoDetail
+                    );
                     break;
                 } catch (Exception e) {
                     e.printStackTrace();

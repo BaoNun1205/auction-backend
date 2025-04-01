@@ -1,9 +1,12 @@
 package com.example.auction_web.service.impl;
 
+import com.example.auction_web.dto.request.BalanceUserCreateRequest;
 import com.example.auction_web.entity.EmailVerificationToken;
 import com.example.auction_web.entity.auth.User;
 import com.example.auction_web.exception.AppException;
 import com.example.auction_web.exception.ErrorCode;
+import com.example.auction_web.mapper.BalanceUserMapper;
+import com.example.auction_web.repository.BalanceUserRepository;
 import com.example.auction_web.repository.EmailVerificationTokenRepository;
 import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.EmailVerificationTokenService;
@@ -20,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Console;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -29,6 +33,8 @@ import java.util.concurrent.CompletableFuture;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class EmailVerificationTokenServiceImpl implements EmailVerificationTokenService {
     EmailVerificationTokenRepository emailVerificationTokenRepository;
+    BalanceUserRepository balanceUserRepository;
+    BalanceUserMapper balanceUserMapper;
     JavaMailSender javaMailSender;
     UserRepository userRepository;
     PasswordEncoder passwordEncoder;
@@ -82,6 +88,13 @@ public class EmailVerificationTokenServiceImpl implements EmailVerificationToken
                 user.setEnabled(true);
                 userRepository.save(user);
 
+                BalanceUserCreateRequest balanceUserCreateRequest = new BalanceUserCreateRequest().builder()
+                        .userId(user.getUserId())
+                        .accountBalance(BigDecimal.valueOf(0))
+                        .build();
+                var balanUser = balanceUserMapper.toBalanceUser(balanceUserCreateRequest);
+                balanUser.setUser(user);
+                balanceUserRepository.save(balanUser);
                 //delete token from database
                 emailVerificationTokenRepository.deleteEmailVerificationTokenByUserEmail(user.getEmail());
                 return true;
