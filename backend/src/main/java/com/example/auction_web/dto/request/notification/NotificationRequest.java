@@ -1,6 +1,5 @@
-package com.example.auction_web.dto.response.notification;
+package com.example.auction_web.dto.request.notification;
 
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
