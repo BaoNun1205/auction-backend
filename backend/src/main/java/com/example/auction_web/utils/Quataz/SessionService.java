@@ -1,4 +1,4 @@
-package com.example.auction_web.utils;
+package com.example.auction_web.utils.Quataz;
 
 import com.example.auction_web.entity.AuctionHistory;
 import com.example.auction_web.entity.AuctionSession;

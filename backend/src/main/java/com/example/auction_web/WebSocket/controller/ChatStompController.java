@@ -2,6 +2,7 @@ package com.example.auction_web.WebSocket.controller;
 
 import java.util.Map;
 
+import com.example.auction_web.dto.response.chat.MessageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -27,11 +28,11 @@ public class ChatStompController {
 
     @MessageMapping("/rt-auction/conversations/{conversationId}")
     @SendTo("/rt-chat/conversations/{conversationId}")
-    public ApiResponse<Message> sendMessage(
+    public ApiResponse<MessageResponse> sendMessage(
             @DestinationVariable String conversationId,
             @Payload Map<String, String> payload) {
-        Message savedMessage = chatService.sendMessage(conversationId, payload);
-        return ApiResponse.<Message>builder()
+        MessageResponse savedMessage = chatService.sendMessage(conversationId, payload);
+        return ApiResponse.<MessageResponse>builder()
                 .code(200)
                 .result(savedMessage)
                 .build();

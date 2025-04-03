@@ -10,12 +10,5 @@ import org.mapstruct.Named;
 
 @Mapper(componentModel = "spring")
 public interface ConversationMapper {
-    @Mapping(source = "buyer", target = "buyerId", qualifiedByName = "userToString")
-    @Mapping(source = "seller", target = "sellerId", qualifiedByName = "userToString")
     ConversationResponse toConversationResponse(Conversation conversation);
-
-    @Named("userToString")
-    default String userToString(User user) {
-        return user != null ? user.getUserId() : null;
-    }
 }

@@ -43,19 +43,37 @@ public class ChatController {
     }
 
     @PostMapping("/messages/{conversationId}")
-    public ApiResponse<Message> sendMessage(
+    public ApiResponse<MessageResponse> sendMessage(
             @PathVariable String conversationId,
             @RequestBody Map<String, String> payload) {
         try {
-            Message result = chatService.sendMessage(conversationId, payload);
-            return ApiResponse.<Message>builder()
+            MessageResponse result = chatService.sendMessage(conversationId, payload);
+            return ApiResponse.<MessageResponse>builder()
                     .code(HttpStatus.OK.value())
                     .result(result)
                     .build();
         } catch (RuntimeException e) {
-            return ApiResponse.<Message>builder()
+            return ApiResponse.<MessageResponse>builder()
                     .code(HttpStatus.NOT_FOUND.value())
                     .result(null)
+                    .build();
+        }
+    }
+
+    @PutMapping("/unread/{conversationId}")
+    public ApiResponse<Void> updateUnread(
+            @PathVariable String conversationId,
+            @RequestParam int unreadCount) {
+        try {
+            chatService.updateUnread(conversationId, unreadCount);
+            return ApiResponse.<Void>builder()
+                    .code(HttpStatus.OK.value())
+                    .message("Unread count updated successfully")
+                    .build();
+        } catch (RuntimeException e) {
+            return ApiResponse.<Void>builder()
+                    .code(HttpStatus.NOT_FOUND.value())
+                    .message("Conversation not found")
                     .build();
         }
     }

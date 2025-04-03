@@ -11,6 +11,6 @@ import org.mapstruct.Named;
 
 @Mapper(componentModel = "spring")
 public interface MessageMapper {
-
+    @Mapping(source = "sender", target = "sender")
     MessageResponse toMessageResponse(Message message);
 }

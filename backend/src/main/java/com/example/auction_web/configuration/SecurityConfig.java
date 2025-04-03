@@ -39,7 +39,7 @@ public class SecurityConfig {
 
     private final String[] PUBLIC_ENDPOINTS = {
             "/users", "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh",
-            "/verification/account-registration",
+            "/verification/account-registration", "/payment/vn-pay-callback",
     };
 
     private final String[] PUBLIC_ENDPOINTS_GET = {
@@ -58,6 +58,7 @@ public class SecurityConfig {
                         .requestMatchers("/rt-product/**").permitAll()
                         .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
                         .requestMatchers("rt-auction/**").permitAll()
+                        .requestMatchers("/payment/vn-pay-callback").permitAll()
                         .requestMatchers(HttpMethod.GET, PUBLIC_ENDPOINTS_GET).permitAll()
 
                 .anyRequest()

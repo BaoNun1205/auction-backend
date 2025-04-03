@@ -7,10 +7,12 @@ import com.example.auction_web.dto.response.ApiResponse;
 import com.example.auction_web.dto.response.AuctionHistoryResponse;
 import com.example.auction_web.dto.response.AuctionSessionInfoResponse;
 import com.example.auction_web.dto.response.SessionHistoryResponse;
+import com.example.auction_web.exception.AppException;
 import com.example.auction_web.service.AuctionHistoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,11 +25,22 @@ public class AuctionHistoryController {
     AuctionHistoryService auctionHistoryService;
 
     @PostMapping
-    ApiResponse<AuctionHistoryResponse> createAuctionHistory(@RequestBody AuctionHistoryCreateRequest request) {
-        return ApiResponse.<AuctionHistoryResponse>builder()
-                .code(HttpStatus.OK.value())
-                .result(auctionHistoryService.createAuctionHistory(request))
-                .build();
+    ResponseEntity<ApiResponse<AuctionHistoryResponse>> createAuctionHistory(@RequestBody AuctionHistoryCreateRequest request) {
+        try {
+            return ResponseEntity.ok(
+                    ApiResponse.<AuctionHistoryResponse>builder()
+                            .code(HttpStatus.OK.value())
+                            .result(auctionHistoryService.createAuctionHistory(request))
+                            .build()
+            );
+        } catch (AppException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    ApiResponse.<AuctionHistoryResponse>builder()
+                            .code(HttpStatus.BAD_REQUEST.value())
+                            .message(e.getMessage())
+                            .build()
+            );
+        }
     }
 
     @PutMapping("/{id}")

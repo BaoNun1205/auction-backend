@@ -39,4 +39,8 @@ public interface AuctionHistoryRepository extends JpaRepository<AuctionHistory, 
             "WHERE ah.auctionSession.auctionSessionId = :auctionSessionId " +
             "ORDER BY ah.bidTime DESC")
     List<SessionHistoryResponse> findSessionHistoryByAuctionSessionId(@Param("auctionSessionId") String auctionSessionId);
+
+    @Query("SELECT a.user.userId FROM AuctionHistory a WHERE a.bidPrice = (SELECT MAX(b.bidPrice) FROM AuctionHistory b WHERE b.auctionSession.auctionSessionId = :auctionSessionId)")
+    String findMaxUserBidPrice(@Param("auctionSessionId") String auctionSessionId);
+
 }
