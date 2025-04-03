@@ -1,6 +1,8 @@
 package com.example.auction_web.dto.response.notification;
 
 import java.time.LocalDateTime;
+
+import com.example.auction_web.dto.response.auth.UserResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,8 +18,8 @@ import com.example.auction_web.enums.NotificationType;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class NotificationResponse {
     String id;
-    String sender;
-    String receiver;
+    UserResponse sender;
+    UserResponse receiver;
     NotificationType type;
     String title;
     String content;

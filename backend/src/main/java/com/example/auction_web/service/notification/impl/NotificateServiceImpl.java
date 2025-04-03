@@ -2,6 +2,7 @@ package com.example.auction_web.service.notification.impl;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.auction_web.dto.response.notification.NotificationResponse;

@@ -1,5 +1,6 @@
 package com.example.auction_web.WebSocket.controller;
 
+import com.example.auction_web.dto.request.notification.NotificationRequest;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -29,15 +30,15 @@ public class NotificationStompController {
     @MessageMapping("/rt-notification/send/{receiverId}")
     public void sendNotification(
             @DestinationVariable String receiverId,
-            NotificationResponse notificationResponse) {
+            NotificationRequest notificationResquest) {
         try {
             Notification notification = Notification.builder()
-                    .sender(userService.getUser(notificationResponse.getSender()))
-                    .receiver(userService.getUser(receiverId))
-                    .type((notificationResponse.getType()))
-                    .title(notificationResponse.getTitle())
-                    .content(notificationResponse.getContent())
-                    .referenceId(notificationResponse.getReferenceId())
+                    .sender(userService.getUser(notificationResquest.getSenderId()))
+                    .receiver(userService.getUser(notificationResquest.getReceiverId()))
+                    .type((notificationResquest.getType()))
+                    .title(notificationResquest.getTitle())
+                    .content(notificationResquest.getContent())
+                    .referenceId(notificationResquest.getReferenceId())
                     .isRead(false)
                     .build();
 
