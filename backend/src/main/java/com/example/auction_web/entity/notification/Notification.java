@@ -1,6 +1,6 @@
-package com.example.auction_web.entity.chat;
-
+package com.example.auction_web.entity.notification;
 import com.example.auction_web.entity.auth.User;
+import com.example.auction_web.enums.NotificationType;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -17,16 +17,34 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class Message {
+public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String messageId;
-    private String content;
-    private String timestamp;
-    private String conversationId;
+    String id;
+
     @ManyToOne
-    @JoinColumn(name = "userId", referencedColumnName = "userId")
-    private User sender;
+    @JoinColumn(name = "sender_id", referencedColumnName = "userId")
+    User sender;
+
+    @ManyToOne
+    @JoinColumn(name = "receiver_id", referencedColumnName = "userId")
+    User receiver;
+
+    @Enumerated(EnumType.STRING)
+    NotificationType type;
+
+    String title;
+
+    @Column(name = "content", nullable = false, columnDefinition = "TEXT")
+    String content;
+
+    @Column(name = "reference_id")
+    String referenceId;
+
+    @Column(name = "is_read", nullable = false)
+    @Builder.Default
+    boolean isRead = false;
+
     Boolean delFlag;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;

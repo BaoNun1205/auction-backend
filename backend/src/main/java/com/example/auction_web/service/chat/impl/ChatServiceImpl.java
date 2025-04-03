@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -53,8 +54,9 @@ public class ChatServiceImpl implements ChatService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     @Override
-    public Message sendMessage(String conversationId, Map<String, String> payload) {
+    public MessageResponse sendMessage(String conversationId, Map<String, String> payload) {
         // Tìm conversation và sender
         Conversation conversation = conversationRepository.findById(conversationId)
                 .orElseThrow(() -> new RuntimeException("Conversation not found"));
@@ -64,14 +66,27 @@ public class ChatServiceImpl implements ChatService {
         message.setContent(payload.get("content"));
         message.setTimestamp(LocalDateTime.now().toString());
         message.setConversationId(conversation.getConversationId());
-        message.setSenderId(sender.getUserId());
-
-        // Cập nhật thông tin conversation
+        message.setSender(sender);
+        // Cập nhật conversation
         conversation.setLastMessage(payload.get("content"));
         conversation.setTime(LocalDateTime.now().toString());
+        if (conversation.getBuyer().getUserId().equals(sender.getUserId())) {
+            conversation.setUnread(conversation.getUnread() + 1); // Tăng unread cho seller
+        } else if (conversation.getSeller().getUserId().equals(sender.getUserId())) {
+            conversation.setUnread(conversation.getUnread() + 1); // Tăng unread cho buyer
+        }
         conversationRepository.save(conversation);
 
-        // Lưu message và trả về
-        return messageRepository.save(message);
+        return messageMapper.toMessageResponse(messageRepository.save(message));
+    }
+
+    @Transactional
+    @Override
+    public void updateUnread(String conversationId, int unreadCount) {
+        Conversation conversation = conversationRepository.findById(conversationId)
+                .orElseThrow(() -> new RuntimeException("Conversation not found"));
+        
+        conversation.setUnread(unreadCount);
+        conversationRepository.save(conversation);
     }
 }
