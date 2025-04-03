@@ -11,6 +11,8 @@ import com.example.auction_web.enums.ASSET_STATUS;
 import com.example.auction_web.enums.AUCTION_STATUS;
 import com.example.auction_web.repository.*;
 import com.example.auction_web.service.SessionWinnerService;
+import com.example.auction_web.utils.RabbitMQ.Dto.SessionEndMessage;
+import com.example.auction_web.utils.RabbitMQ.Producer.SessionEndProducer;
 import lombok.RequiredArgsConstructor;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -36,6 +38,8 @@ public class AuctionSessionEndTimeJob implements Job {
     private SessionWinnerRepository sessionWinnerRepository;
     @Autowired
     SessionWinnerService sessionWinnerService;
+    @Autowired
+    private SessionEndProducer sessionEndProducer;
 
     private final SessionLogRepository sessionLogRepository;
     private final SimpMessagingTemplate simpMessagingTemplate;
@@ -63,6 +67,7 @@ public class AuctionSessionEndTimeJob implements Job {
                             .build();
 
                     sessionWinnerService.createSessionWinner(request);
+                    sendMessageToRabbitMQ(auctionSessionId, sessionInfo.getUserId());
                 } else {
                     auctionSession.setStatus(AUCTION_STATUS.AUCTION_FAILED.toString());
                     asset.setStatus(ASSET_STATUS.AUCTION_FAILED.toString());
@@ -83,5 +88,13 @@ public class AuctionSessionEndTimeJob implements Job {
                 sessionLogRepository.save(sessionLog);
             }
         }
+    }
+
+    public void sendMessageToRabbitMQ(String auctionSessionId, String AuctionSesstionWinnerId) {
+        var sessionEndMessage = SessionEndMessage.builder()
+                .AuctionSessionId(auctionSessionId)
+                .AuctionSessionWinnerId(AuctionSesstionWinnerId)
+                .build();
+        sessionEndProducer.sendSessionEndEvent(sessionEndMessage);
     }
 }

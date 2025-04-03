@@ -1,4 +1,4 @@
-package com.example.auction_web.utils;
+package com.example.auction_web.utils.Quataz;
 
 import com.example.auction_web.entity.AuctionSession;
 import com.example.auction_web.entity.ScheduleLog.NotificationLog;

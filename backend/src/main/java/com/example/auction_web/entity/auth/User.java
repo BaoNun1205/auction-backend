@@ -101,4 +101,7 @@ public class User {
 
     @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<Conversation> sellerConversations;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<AutoBid> autoBids;
 }

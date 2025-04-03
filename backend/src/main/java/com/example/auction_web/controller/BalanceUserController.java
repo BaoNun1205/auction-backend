@@ -42,4 +42,5 @@ public class BalanceUserController {
                 .result(balanceUserService.getCoinUsers())
                 .build();
     }
+
 }
