@@ -87,7 +87,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         // Thêm các origin mà bạn muốn cho phép
-        config.setAllowedOriginPatterns(List.of("http://localhost:5500", "http://127.0.0.1:5500", "http://localhost:5173"));
+        config.setAllowedOriginPatterns(List.of("http://localhost:5500", "http://127.0.0.1:5500", "http://localhost:5173", "https://auction-frontend-ebon.vercel.app"));
 
         // Cho phép tất cả các phương thức HTTP
         config.setAllowedMethods(List.of("*"));
