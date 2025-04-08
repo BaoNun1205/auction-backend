@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "notification_id")
     String id;
 
     @ManyToOne
@@ -42,8 +43,7 @@ public class Notification {
     String referenceId;
 
     @Column(name = "is_read", nullable = false)
-    @Builder.Default
-    boolean isRead = false;
+    boolean isRead;
 
     Boolean delFlag;
     LocalDateTime createdAt;
@@ -54,6 +54,7 @@ public class Notification {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         this.delFlag = false;
+        this.isRead = false;
     }
 
     @PreUpdate

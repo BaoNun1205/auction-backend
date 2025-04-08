@@ -5,7 +5,6 @@ import java.util.List;
 import com.example.auction_web.dto.response.notification.NotificationResponse;
 import com.example.auction_web.entity.notification.Notification;
 
-
 public interface NotificationService {
     public NotificationResponse createNotification(Notification notification);
     public List<NotificationResponse> getNotificationByReceiver(String receiverId);

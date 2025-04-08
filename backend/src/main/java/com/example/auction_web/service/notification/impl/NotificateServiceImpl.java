@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import com.example.auction_web.dto.response.notification.NotificationResponse;
 import com.example.auction_web.entity.auth.User;
 import com.example.auction_web.entity.notification.Notification;
+import com.example.auction_web.exception.AppException;
+import com.example.auction_web.exception.ErrorCode;
 import com.example.auction_web.mapper.NotificationMapper;
 import com.example.auction_web.repository.notification.NotificateRepository;
 import com.example.auction_web.service.auth.UserService;
@@ -28,7 +30,7 @@ public class NotificateServiceImpl implements NotificationService{
         try {
             return notificationMapper.toNotificationResponse(notificateRepository.save(notification));
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create notification", e);
+            throw new AppException(ErrorCode.CREATE_NOTIFICATION_FAILED);
         }
     }
 
@@ -42,7 +44,7 @@ public class NotificateServiceImpl implements NotificationService{
 
     public void markAsRead(String notificationId) {
         Notification notification = notificateRepository.findById(notificationId)
-                .orElseThrow(() -> new RuntimeException("Notification not found"));
+                .orElseThrow(() -> new AppException(ErrorCode.NOTIFICATION_NOT_EXISTED));
         notification.setRead(true);
         notificateRepository.save(notification);
     }

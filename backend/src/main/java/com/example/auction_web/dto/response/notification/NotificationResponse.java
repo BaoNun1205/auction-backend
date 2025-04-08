@@ -24,6 +24,6 @@ public class NotificationResponse {
     String title;
     String content;
     String referenceId;
-    boolean isRead;
+    boolean read;
     LocalDateTime createdAt;
 }

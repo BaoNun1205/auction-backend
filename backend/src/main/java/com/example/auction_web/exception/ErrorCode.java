@@ -47,6 +47,8 @@ public enum ErrorCode {
     AUTOBID_NOT_EXISTED(1041, "Auto bid not existed", HttpStatus.NOT_FOUND),
     UPDATE_AUTO_BID_FAILED(1042, "Update auto bid failed", HttpStatus.BAD_REQUEST),
     BALANCE_NOT_ENOUGH(1043, "Balance not enough", HttpStatus.BAD_REQUEST),
+    CREATE_NOTIFICATION_FAILED(1044, "Create notification failed", HttpStatus.BAD_REQUEST),
+    NOTIFICATION_NOT_EXISTED(1045, "Notification not existed", HttpStatus.NOT_FOUND),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

@@ -1,10 +1,13 @@
 package com.example.auction_web.service.impl;
 
+import com.example.auction_web.WebSocket.service.NotificationStompService;
 import com.example.auction_web.dto.request.RegisterSessionCreateRequest;
+import com.example.auction_web.dto.request.notification.NotificationRequest;
 import com.example.auction_web.dto.response.RegisterSessionResponse;
 import com.example.auction_web.entity.AuctionSession;
 import com.example.auction_web.entity.RegisterSession;
 import com.example.auction_web.entity.auth.User;
+import com.example.auction_web.enums.NotificationType;
 import com.example.auction_web.exception.AppException;
 import com.example.auction_web.exception.ErrorCode;
 import com.example.auction_web.mapper.AssetMapper;
@@ -33,19 +36,41 @@ public class RegisterSessionServiceImpl implements RegisterSessionService {
     AssetMapper assetMapper;
     RegisterSessionMapper registerSessionMapper;
     NotificationService notificationService;
+    NotificationStompService notificationStompService;
 
     @Override
     public RegisterSessionResponse createRegisterSession(RegisterSessionCreateRequest request) {
         var registerSession = registerSessionRepository
                 .findRegisterSessionByUser_UserIdAndAuctionSession_AuctionSessionIdAndDelFlagIsTrue(request.getUserId(), request.getAuctionSessionId());
+
+        boolean isNewRegister = false;
+
         if (registerSession == null) {
             registerSession = registerSessionMapper.toRegisterSession(request);
             setRegisterReference(request, registerSession);
         } else {
             registerSession.setDelFlag(false);
+            isNewRegister = true;
         }
         var user = getUserById(request.getUserId());
         var auctionSession = getAuctionSessionById(request.getAuctionSessionId());
+
+        // Gửi thông báo đến chủ phiên đấu giá
+        if (isNewRegister) {
+            NotificationRequest notificationRequest = NotificationRequest.builder()
+                    .senderId(user.getUserId()) // người đăng ký
+                    .receiverId(auctionSession.getUser().getUserId()) // chủ phiên
+                    .title("Có người mới đăng ký phiên đấu giá")
+                    .content(user.getUsername() + " vừa đăng ký phiên: " + auctionSession.getName())
+                    .type(NotificationType.NEW_REGISTRATION)
+                    .referenceId(auctionSession.getAuctionSessionId())
+                    .build();
+
+            notificationStompService.sendNewRegisterNotification(
+                    auctionSession.getUser().getUserId(),
+                    notificationRequest
+            );
+        }
 
         LocalDateTime notificationTime = auctionSession.getStartTime().minusMinutes(30);
         notificationService.setSchedulerNotification(user.getEmail(), auctionSession.getAuctionSessionId(), notificationTime);
