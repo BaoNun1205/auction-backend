@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.auction_web.dto.response.notification.NotificationResponse;
 import com.example.auction_web.entity.auth.User;
@@ -17,22 +19,28 @@ import com.example.auction_web.service.notification.NotificationService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
+@Slf4j
 public class NotificateServiceImpl implements NotificationService{
     NotificateRepository notificateRepository;
     NotificationMapper notificationMapper;
     UserService userService;
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public NotificationResponse createNotification(Notification notification) {
         try {
-            return notificationMapper.toNotificationResponse(notificateRepository.save(notification));
+            log.info("Saving notification to DB: {}", notification.getContent());
+            Notification saved = notificateRepository.save(notification);
+            log.info("Saved notification ID: {}", saved.getId());
+            return notificationMapper.toNotificationResponse(saved);
         } catch (Exception e) {
             throw new AppException(ErrorCode.CREATE_NOTIFICATION_FAILED);
         }
-    }
+    }    
 
     public List<NotificationResponse> getNotificationByReceiver(String receiverId) {
         User receiver = userService.getUser(receiverId);

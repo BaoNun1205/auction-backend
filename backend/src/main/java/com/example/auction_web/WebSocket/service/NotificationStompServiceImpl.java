@@ -53,7 +53,6 @@ public class NotificationStompServiceImpl implements NotificationStompService {
                     .title(notificationRequest.getTitle())
                     .content(notificationRequest.getContent())
                     .referenceId(notificationRequest.getReferenceId())
-                    .isRead(false)
                     .build();
 
             log.info("Creating notification in database...");
