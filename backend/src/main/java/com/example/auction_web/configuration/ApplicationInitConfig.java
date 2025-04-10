@@ -1,9 +1,11 @@
 package com.example.auction_web.configuration;
 
 import com.example.auction_web.constant.PredefinedRole;
+import com.example.auction_web.entity.BalanceUser;
 import com.example.auction_web.entity.Inspector;
 import com.example.auction_web.entity.auth.Role;
 import com.example.auction_web.entity.auth.User;
+import com.example.auction_web.repository.BalanceUserRepository;
 import com.example.auction_web.repository.InspectorRepository;
 import com.example.auction_web.repository.auth.RoleRepository;
 import com.example.auction_web.repository.auth.UserRepository;
@@ -18,6 +20,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 
 @Configuration
@@ -42,7 +45,7 @@ public class ApplicationInitConfig {
             prefix = "spring",
             value = "datasource.driverClassName",
             havingValue = "com.mysql.cj.jdbc.Driver")
-    ApplicationRunner applicationRunner(UserRepository userRepository, RoleRepository roleRepository, InspectorRepository inspectorRepository) {
+    ApplicationRunner applicationRunner(UserRepository userRepository, RoleRepository roleRepository, InspectorRepository inspectorRepository, BalanceUserRepository balanceUserRepository) {
         log.info("Initializing application.....");
         return args -> {
             if (userRepository.findByUsername(ADMIN_USER_NAME).isEmpty()) {
@@ -77,6 +80,13 @@ public class ApplicationInitConfig {
                             .license("LICENSE123")
                             .build();
                     inspectorRepository.save(inspector);
+
+                    BalanceUser balanceUser = BalanceUser.builder()
+                            .user(adminUser)
+                            .accountBalance(BigDecimal.valueOf(100_000_000_000L))
+                            .delFlag(false)
+                            .build();
+                    balanceUserRepository.save(balanceUser);
 
                     log.info("Inspector has been created for the admin user.");
                 } catch (Exception e){
