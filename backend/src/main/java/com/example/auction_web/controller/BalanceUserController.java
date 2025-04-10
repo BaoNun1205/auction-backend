@@ -43,4 +43,11 @@ public class BalanceUserController {
                 .build();
     }
 
+    @GetMapping("/{userId}")
+    ApiResponse<BalanceUserResponse> getBalanceUserByUserId(@PathVariable String userId) {
+        return ApiResponse.<BalanceUserResponse>builder()
+                .code(HttpStatus.OK.value())
+                .result(balanceUserService.getCoinUserByUserId(userId))
+                .build();
+    }
 }

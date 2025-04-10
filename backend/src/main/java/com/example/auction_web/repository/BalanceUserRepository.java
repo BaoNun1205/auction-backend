@@ -16,11 +16,11 @@ public interface BalanceUserRepository extends JpaRepository<BalanceUser, String
 
     @Modifying
     @Transactional
-    @Query("update BalanceUser b set b.accountBalance = b.accountBalance + :amount where b.balanceUserId = :userId")
+    @Query("update BalanceUser b set b.accountBalance = b.accountBalance + :amount where b.user.userId = :userId")
     int increaseBalance(String userId, BigDecimal amount);
 
     @Modifying
     @Transactional
-    @Query("update BalanceUser b set b.accountBalance = b.accountBalance - :amount where b.balanceUserId = :userId")
+    @Query("update BalanceUser b set b.accountBalance = b.accountBalance - :amount where b.user.userId = :userId")
     int minusBalance(String userId, BigDecimal amount);
 }
