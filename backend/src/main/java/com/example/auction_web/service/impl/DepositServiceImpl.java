@@ -1,5 +1,6 @@
 package com.example.auction_web.service.impl;
 
+import com.example.auction_web.dto.request.BalanceHistoryCreateRequest;
 import com.example.auction_web.dto.request.DepositCreateRequest;
 import com.example.auction_web.dto.request.DepositUpdateRequest;
 import com.example.auction_web.dto.response.DepositResponse;
@@ -8,12 +9,15 @@ import com.example.auction_web.entity.AuctionSession;
 import com.example.auction_web.entity.BalanceUser;
 import com.example.auction_web.entity.Deposit;
 import com.example.auction_web.entity.auth.User;
+import com.example.auction_web.enums.ACTIONBALANCE;
 import com.example.auction_web.exception.AppException;
 import com.example.auction_web.exception.ErrorCode;
 import com.example.auction_web.mapper.AuctionSessionMapper;
+import com.example.auction_web.mapper.BalanceHistoryMapper;
 import com.example.auction_web.mapper.BalanceUserMapper;
 import com.example.auction_web.mapper.DepositMapper;
 import com.example.auction_web.repository.AuctionSessionRepository;
+import com.example.auction_web.repository.BalanceHistoryRepository;
 import com.example.auction_web.repository.BalanceUserRepository;
 import com.example.auction_web.repository.DepositRepository;
 import com.example.auction_web.repository.auth.UserRepository;
@@ -23,6 +27,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -35,17 +40,21 @@ public class DepositServiceImpl implements DepositService {
     AuctionSessionRepository auctionSessionRepository;
     UserRepository userRepository;
     BalanceUserRepository balanceUserRepository;
-    BalanceUserMapper balanceUserMapper;
+    BalanceHistoryMapper balanceHistoryMapper;
     DepositMapper depositMapper;
     AuctionSessionMapper auctionSessionMapper;
+    private final BalanceHistoryRepository balanceHistoryRepository;
 
     @NonFinal
     @Value("${email.username}")
     String EMAIL_ADMIN;
 
     // create a deposit
+    @Transactional
     public DepositResponse createDeposit(DepositCreateRequest request) {
         var deposit = depositMapper.toDeposit(request);
+        var admin = userRepository.findByEmail(EMAIL_ADMIN)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         BalanceUser balanceUser = balanceUserRepository.findBalanceUserByUser_UserId(request.getUserId());
         if (balanceUser == null) {
@@ -56,7 +65,9 @@ public class DepositServiceImpl implements DepositService {
         }
 
         balanceUserRepository.minusBalance(request.getUserId(), request.getDepositPrice());
-        balanceUserRepository.increaseBalance(EMAIL_ADMIN, request.getDepositPrice());
+        addBalanceHistory(balanceUser.getBalanceUserId(), request.getDepositPrice(), "Deposit for auctionSessionId: " + request.getAuctionSessionId(), ACTIONBALANCE.SUBTRACT);
+        balanceUserRepository.increaseBalance(admin.getUserId(), request.getDepositPrice());
+        addBalanceHistory(balanceUserRepository.findBalanceUserByUser_Email(EMAIL_ADMIN).getBalanceUserId(), request.getDepositPrice(), "Deposit for auctionSessionId: " + request.getAuctionSessionId(), ACTIONBALANCE.ADD);
 
         setDepositReference(deposit, request);
         return depositMapper.toDepositResponse(depositRepository.save(deposit));
@@ -133,5 +144,19 @@ public class DepositServiceImpl implements DepositService {
     User getUser(String userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+    }
+
+    void addBalanceHistory(String BalanceUserId, BigDecimal amount, String Description, ACTIONBALANCE action) {
+        var balanceUser = balanceUserRepository.findById(BalanceUserId)
+                .orElseThrow(() -> new AppException(ErrorCode.BALANCE_USER_NOT_EXISTED));
+        BalanceHistoryCreateRequest request = BalanceHistoryCreateRequest.builder()
+                .balanceUserId(BalanceUserId)
+                .amount(amount)
+                .description(Description)
+                .actionbalance(action)
+                .build();
+        var balanceHistory = balanceHistoryMapper.toBalanceHistory(request);
+        balanceHistory.setBalanceUser(balanceUser);
+        balanceHistoryRepository.save(balanceHistory);
     }
 }
