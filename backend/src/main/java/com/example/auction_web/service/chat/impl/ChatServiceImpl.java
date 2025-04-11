@@ -78,11 +78,7 @@ public class ChatServiceImpl implements ChatService {
         // Cập nhật conversation
         conversation.setLastMessage(payload.get("content"));
         conversation.setTime(LocalDateTime.now().toString());
-        if (conversation.getBuyer().getUserId().equals(sender.getUserId())) {
-            conversation.setUnread(conversation.getUnread() + 1); // Tăng unread cho seller
-        } else if (conversation.getSeller().getUserId().equals(sender.getUserId())) {
-            conversation.setUnread(conversation.getUnread() + 1); // Tăng unread cho buyer
-        }
+
         conversationRepository.save(conversation);
 
         MessageResponse savedMessage = messageMapper.toMessageResponse(messageRepository.save(message));

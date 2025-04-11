@@ -56,14 +56,8 @@ public class NotificationStompServiceImpl implements NotificationStompService {
                     .build();
 
             log.info("Creating notification in database...");
-            NotificationResponse createdNotification = notificationService.createNotification(notification);
-            log.info("Notification created: {}", createdNotification);
-
-            ApiResponse<NotificationResponse> response = ApiResponse.<NotificationResponse>builder()
-                    .code(200)
-                    .result(createdNotification)
-                    .message("Notification sent successfully")
-                    .build();
+            NotificationResponse response = notificationService.createNotification(notification);
+            log.info("Notification created: {}", response);
 
             log.info("Sending notification to WebSocket topic: {}, response: {}", topicPrefix + targetId, response);
             messagingTemplate.convertAndSend(
@@ -73,17 +67,6 @@ public class NotificationStompServiceImpl implements NotificationStompService {
             log.info("Notification sent successfully to: {}", topicPrefix + targetId);
 
         } catch (RuntimeException e) {
-            log.error("Error while sending notification: {}", e.getMessage(), e);
-            ApiResponse<NotificationResponse> errorResponse = ApiResponse.<NotificationResponse>builder()
-                    .code(400)
-                    .message("Failed to send notification: " + e.getMessage())
-                    .build();
-
-            log.info("Sending error response to WebSocket topic: {}, errorResponse: {}", topicPrefix + targetId, errorResponse);
-            messagingTemplate.convertAndSend(
-                    topicPrefix + targetId,
-                    errorResponse
-            );
             log.info("Error response sent to: {}", topicPrefix + targetId);
         }
     }
