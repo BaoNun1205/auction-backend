@@ -17,9 +17,14 @@ public class VNPayService {
     public VNPayDTO.VNPayResponse createVnPayPayment(HttpServletRequest request) {
         long amount = Integer.parseInt(request.getParameter("amount")) * 100L;
         String bankCode = request.getParameter("bankCode");
+        String userId = request.getParameter("userId");
+
+        String txnRef = userId + "/" + System.currentTimeMillis();
 
         Map<String, String> vnpParamsMap = new TreeMap<>(vnPayConfig.getVNPayConfig());
         vnpParamsMap.put("vnp_Amount", String.valueOf(amount));
+        vnpParamsMap.put("vnp_TxnRef", txnRef);
+        vnpParamsMap.put("vnp_OrderInfo", "Thanh toán nạp tiền - " + System.currentTimeMillis());
 
         if (bankCode != null && !bankCode.isEmpty()) {
             vnpParamsMap.put("vnp_BankCode", bankCode);
