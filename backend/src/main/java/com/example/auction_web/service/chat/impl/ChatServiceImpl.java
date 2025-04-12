@@ -8,12 +8,17 @@ import java.util.stream.Collectors;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import com.example.auction_web.WebSocket.service.NotificationStompService;
+import com.example.auction_web.dto.request.notification.NotificationRequest;
 import com.example.auction_web.dto.response.chat.ConversationResponse;
 import com.example.auction_web.dto.response.chat.MessageResponse;
 import com.example.auction_web.entity.auth.User;
 import com.example.auction_web.entity.chat.Conversation;
 import com.example.auction_web.entity.chat.Message;
+import com.example.auction_web.enums.NotificationType;
 import com.example.auction_web.mapper.ConversationMapper;
 import com.example.auction_web.mapper.MessageMapper;
 import com.example.auction_web.repository.chat.ConversationRepository;
@@ -37,6 +42,9 @@ public class ChatServiceImpl implements ChatService {
 
     @Autowired
     private MessageMapper messageMapper;
+
+    @Autowired
+    private NotificationStompService notificationStompService;
 
     @Override
     public List<ConversationResponse> getConversations(String userId) {
@@ -70,14 +78,35 @@ public class ChatServiceImpl implements ChatService {
         // Cập nhật conversation
         conversation.setLastMessage(payload.get("content"));
         conversation.setTime(LocalDateTime.now().toString());
-        if (conversation.getBuyer().getUserId().equals(sender.getUserId())) {
-            conversation.setUnread(conversation.getUnread() + 1); // Tăng unread cho seller
-        } else if (conversation.getSeller().getUserId().equals(sender.getUserId())) {
-            conversation.setUnread(conversation.getUnread() + 1); // Tăng unread cho buyer
-        }
+
         conversationRepository.save(conversation);
 
-        return messageMapper.toMessageResponse(messageRepository.save(message));
+        MessageResponse savedMessage = messageMapper.toMessageResponse(messageRepository.save(message));
+
+        // Tạo và gửi thông báo đến receiver (người còn lại trong conversation)
+        String receiverId = conversation.getBuyer().getUserId().equals(sender.getUserId())
+            ? conversation.getSeller().getUserId()
+            : conversation.getBuyer().getUserId();
+
+        NotificationRequest notificationRequest = NotificationRequest.builder()
+                .senderId(sender.getUserId())
+                .receiverId(receiverId)
+                .type(NotificationType.MESSAGE)
+                .title("Tin nhắn mới")
+                .content(sender.getUsername() + " đã gửi một tin nhắn.")
+                .referenceId(conversationId)
+                .build();
+
+        // Đăng ký gửi notification sau khi commit thành công
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                // Gửi notification sau khi transaction commit thành công
+                notificationStompService.sendMessageNotification(receiverId, notificationRequest);
+            }
+        });
+
+        return savedMessage;
     }
 
     @Transactional
