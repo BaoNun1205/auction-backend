@@ -49,6 +49,7 @@ public enum ErrorCode {
     BALANCE_NOT_ENOUGH(1043, "Balance not enough", HttpStatus.BAD_REQUEST),
     CREATE_NOTIFICATION_FAILED(1044, "Create notification failed", HttpStatus.BAD_REQUEST),
     NOTIFICATION_NOT_EXISTED(1045, "Notification not existed", HttpStatus.NOT_FOUND),
+    CREATE_CONVERSATION_FAILED(1046, "Create conversation failed", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

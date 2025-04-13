@@ -3,6 +3,7 @@ package com.example.auction_web.service.chat.impl;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import jakarta.transaction.Transactional;
@@ -12,6 +13,7 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import com.example.auction_web.WebSocket.service.NotificationStompService;
+import com.example.auction_web.dto.request.chat.ConversationRequest;
 import com.example.auction_web.dto.request.notification.NotificationRequest;
 import com.example.auction_web.dto.response.chat.ConversationResponse;
 import com.example.auction_web.dto.response.chat.MessageResponse;
@@ -19,6 +21,8 @@ import com.example.auction_web.entity.auth.User;
 import com.example.auction_web.entity.chat.Conversation;
 import com.example.auction_web.entity.chat.Message;
 import com.example.auction_web.enums.NotificationType;
+import com.example.auction_web.exception.AppException;
+import com.example.auction_web.exception.ErrorCode;
 import com.example.auction_web.mapper.ConversationMapper;
 import com.example.auction_web.mapper.MessageMapper;
 import com.example.auction_web.repository.chat.ConversationRepository;
@@ -118,4 +122,37 @@ public class ChatServiceImpl implements ChatService {
         conversation.setUnread(unreadCount);
         conversationRepository.save(conversation);
     }
+
+    @Override
+    public ConversationResponse createConversation(ConversationRequest request) {
+        try {
+            String userId1 = request.getBuyerId();
+            String userId2 = request.getSellerId();
+
+            Optional<Conversation> existingConversation = conversationRepository
+                    .findConversationBetweenUsers(userId1, userId2);
+
+            if (existingConversation.isPresent()) {
+                return conversationMapper.toConversationResponse(existingConversation.get());
+            }
+
+            // Nếu không có conversation nào giữa hai người, tạo một conversation mới
+            User buyer = userService.getUser(request.getBuyerId());
+            User seller = userService.getUser(request.getSellerId());
+    
+            Conversation conversation = new Conversation();
+            conversation.setBuyer(buyer);
+            conversation.setSeller(seller);
+            conversation.setName(buyer.getUsername() + " - " + seller.getUsername());
+            conversation.setLastMessage("");
+            conversation.setTime(LocalDateTime.now().toString());
+            conversation.setUnread(0);
+    
+            Conversation savedConversation = conversationRepository.save(conversation);
+    
+            return conversationMapper.toConversationResponse(savedConversation);
+        } catch (Exception e) {
+            throw new AppException(ErrorCode.CREATE_CONVERSATION_FAILED);
+        }
+    }    
 }

@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.auction_web.dto.request.chat.ConversationRequest;
 import com.example.auction_web.dto.response.ApiResponse;
 import com.example.auction_web.dto.response.chat.ConversationResponse;
 import com.example.auction_web.dto.response.chat.MessageResponse;
@@ -25,6 +26,22 @@ import org.springframework.http.HttpStatus;
 public class ChatController {
     @Autowired
     private ChatService chatService;
+
+    @PostMapping
+    public ApiResponse<ConversationResponse> createConversation(@RequestBody ConversationRequest request) {
+        try {
+            ConversationResponse result = chatService.createConversation(request);
+            return ApiResponse.<ConversationResponse>builder()
+                    .code(HttpStatus.OK.value())
+                    .result(result)
+                    .build();
+        } catch (RuntimeException e) {
+            return ApiResponse.<ConversationResponse>builder()
+                    .code(HttpStatus.NOT_FOUND.value())
+                    .result(null)
+                    .build();
+        }
+    }
 
     @GetMapping
     public ApiResponse<List<ConversationResponse>> getConversations(@RequestParam String userId) {
