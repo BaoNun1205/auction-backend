@@ -40,43 +40,56 @@ public class RegisterSessionServiceImpl implements RegisterSessionService {
 
     @Override
     public RegisterSessionResponse createRegisterSession(RegisterSessionCreateRequest request) {
-        var registerSession = registerSessionRepository
-                .findRegisterSessionByUser_UserIdAndAuctionSession_AuctionSessionIdAndDelFlagIsTrue(request.getUserId(), request.getAuctionSessionId());
-
-        boolean isNewRegister = false;
-
-        if (registerSession == null) {
-            registerSession = registerSessionMapper.toRegisterSession(request);
-            setRegisterReference(request, registerSession);
-        } else {
-            registerSession.setDelFlag(false);
-            isNewRegister = true;
-        }
-        var user = getUserById(request.getUserId());
-        var auctionSession = getAuctionSessionById(request.getAuctionSessionId());
-
-        // Gửi thông báo đến chủ phiên đấu giá
-        if (isNewRegister) {
-            NotificationRequest notificationRequest = NotificationRequest.builder()
-                    .senderId(user.getUserId()) // người đăng ký
-                    .receiverId(auctionSession.getUser().getUserId()) // chủ phiên
-                    .title("Có người mới đăng ký phiên đấu giá")
-                    .content(user.getUsername() + " vừa đăng ký phiên: " + auctionSession.getName())
-                    .type(NotificationType.NEW_REGISTRATION)
-                    .referenceId(auctionSession.getAuctionSessionId())
-                    .build();
-
-            notificationStompService.sendNewRegisterNotification(
-                    auctionSession.getUser().getUserId(),
-                    notificationRequest
+        try {
+            var registerSession = registerSessionRepository
+                    .findRegisterSessionByUser_UserIdAndAuctionSession_AuctionSessionIdAndDelFlagIsTrue(
+                            request.getUserId(), request.getAuctionSessionId());
+    
+            boolean isNewRegister = false;
+    
+            if (registerSession == null) {
+                registerSession = registerSessionMapper.toRegisterSession(request);
+                setRegisterReference(request, registerSession);
+            } else {
+                registerSession.setDelFlag(false);
+                isNewRegister = true;
+            }
+    
+            var user = getUserById(request.getUserId());
+            var auctionSession = getAuctionSessionById(request.getAuctionSessionId());
+    
+            // Lưu trước rồi mới gửi thông báo
+            registerSession = registerSessionRepository.save(registerSession);
+    
+            // Gửi thông báo nếu là đăng ký mới
+            if (isNewRegister) {
+                NotificationRequest notificationRequest = NotificationRequest.builder()
+                        .senderId(user.getUserId())
+                        .receiverId(auctionSession.getUser().getUserId())
+                        .title("Có người mới đăng ký phiên đấu giá")
+                        .content(user.getUsername() + " vừa đăng ký phiên: " + auctionSession.getName())
+                        .type(NotificationType.NEW_REGISTRATION)
+                        .referenceId(auctionSession.getAuctionSessionId())
+                        .build();
+    
+                notificationStompService.sendNewRegisterNotification(
+                        auctionSession.getUser().getUserId(),
+                        notificationRequest
+                );
+            }
+    
+            // Thiết lập thông báo trước giờ phiên đấu giá
+            LocalDateTime notificationTime = auctionSession.getStartTime().minusMinutes(30);
+            notificationService.setSchedulerNotification(
+                    user.getEmail(), auctionSession.getAuctionSessionId(), notificationTime
             );
+    
+            return registerSessionMapper.toRegisterSessionResponse(registerSession);
+    
+        } catch (Exception e) {
+            throw new AppException(ErrorCode.CREATE_REGISTER_SESSION_FAILED);
         }
-
-        LocalDateTime notificationTime = auctionSession.getStartTime().minusMinutes(30);
-        notificationService.setSchedulerNotification(user.getEmail(), auctionSession.getAuctionSessionId(), notificationTime);
-
-        return registerSessionMapper.toRegisterSessionResponse(registerSessionRepository.save(registerSession));
-    }
+    }    
 
     @Override
     public RegisterSessionResponse updateRegisterSession(String registerAuctionId, RegisterSessionCreateRequest request) {

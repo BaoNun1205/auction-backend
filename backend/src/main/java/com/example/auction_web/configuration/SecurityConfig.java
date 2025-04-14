@@ -38,7 +38,7 @@ public class SecurityConfig {
     private String signerKey;
 
     private final String[] PUBLIC_ENDPOINTS = {
-            "/users", "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh",
+            "/users", "/auth/**",
             "/verification/account-registration", "/payment/vn-pay-callback",
     };
 

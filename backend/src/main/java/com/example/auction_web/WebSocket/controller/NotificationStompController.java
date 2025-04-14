@@ -1,5 +1,6 @@
 package com.example.auction_web.WebSocket.controller;
 
+import com.example.auction_web.WebSocket.service.NotificationStompService;
 import com.example.auction_web.dto.request.notification.NotificationRequest;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -18,21 +19,26 @@ import com.example.auction_web.service.notification.NotificationService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @EnableScheduling
 @FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
 @RequiredArgsConstructor
+@Slf4j
 public class NotificationStompController {
     NotificationService notificationService;
     SimpMessagingTemplate messagingTemplate;
     AuctionSessionService auctionService;
     UserService userService;
+    NotificationStompService notificationStompService;
 
     // Gửi thông báo tin nhắn đến một người nhận cụ thể
-    @MessageMapping("/rt-notification/message/{receiverId}")
-    public void sendMessageNotification(@DestinationVariable String receiverId, NotificationRequest notificationRequest) {
-        sendNotification(receiverId, notificationRequest, "/rt-notification/user/");
+    @MessageMapping("/rt-auction/notification/new-message/user/{receiverId}")
+    public void sendMessageNotification(@DestinationVariable String receiverId,
+                                        NotificationRequest notificationRequest) {
+        notificationRequest.setType(NotificationType.MESSAGE);
+        notificationStompService.sendMessageNotification(receiverId, notificationRequest);
     }
 
     // Gửi thông báo có người đăng ký mới đến chủ phiên

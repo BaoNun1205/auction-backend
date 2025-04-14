@@ -7,7 +7,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -31,24 +33,15 @@ import com.example.auction_web.service.auth.UserService;
 import com.example.auction_web.service.chat.ChatService;
 
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
 public class ChatServiceImpl implements ChatService {
-    @Autowired
-    private ConversationRepository conversationRepository;
-
-    @Autowired
-    private MessageRepository messageRepository;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private ConversationMapper conversationMapper;
-
-    @Autowired
-    private MessageMapper messageMapper;
-
-    @Autowired
-    private NotificationStompService notificationStompService;
+    ConversationRepository conversationRepository;
+    MessageRepository messageRepository;
+    UserService userService;
+    ConversationMapper conversationMapper;
+    MessageMapper messageMapper;
+    NotificationStompService notificationStompService;
 
     @Override
     public List<ConversationResponse> getConversations(String userId) {
@@ -87,28 +80,32 @@ public class ChatServiceImpl implements ChatService {
 
         MessageResponse savedMessage = messageMapper.toMessageResponse(messageRepository.save(message));
 
-        // Tạo và gửi thông báo đến receiver (người còn lại trong conversation)
-        String receiverId = conversation.getBuyer().getUserId().equals(sender.getUserId())
-            ? conversation.getSeller().getUserId()
-            : conversation.getBuyer().getUserId();
+        // if (notificationFlag.shouldNotify()) {
+        //     // Tạo và gửi thông báo đến receiver (người còn lại trong conversation)
+        //         String receiverId = conversation.getBuyer().getUserId().equals(sender.getUserId())
+        //         ? conversation.getSeller().getUserId()
+        //         : conversation.getBuyer().getUserId();
 
-        NotificationRequest notificationRequest = NotificationRequest.builder()
-                .senderId(sender.getUserId())
-                .receiverId(receiverId)
-                .type(NotificationType.MESSAGE)
-                .title("Tin nhắn mới")
-                .content(sender.getUsername() + " đã gửi một tin nhắn.")
-                .referenceId(conversationId)
-                .build();
+        //     NotificationRequest notificationRequest = NotificationRequest.builder()
+        //             .senderId(sender.getUserId())
+        //             .receiverId(receiverId)
+        //             .type(NotificationType.MESSAGE)
+        //             .title("Tin nhắn mới")
+        //             .content(sender.getUsername() + " đã gửi một tin nhắn.")
+        //             .referenceId(conversationId)
+        //             .build();
 
-        // Đăng ký gửi notification sau khi commit thành công
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                // Gửi notification sau khi transaction commit thành công
-                notificationStompService.sendMessageNotification(receiverId, notificationRequest);
-            }
-        });
+        //     // Đăng ký gửi notification sau khi commit thành công
+        //     TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+        //         @Override
+        //         public void afterCommit() {
+        //             // Gửi notification sau khi transaction commit thành công
+        //             notificationStompService.sendMessageNotification(receiverId, notificationRequest);
+        //         }
+        //     });
+        // }
+
+        // notificationFlag.clear();
 
         return savedMessage;
     }
