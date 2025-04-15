@@ -254,4 +254,9 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
     public boolean isAllParamsNullOrEmpty(String status, LocalDateTime fromDate, LocalDateTime toDate, String keyword, Boolean isInCrease) {
         return (status == null || status.isEmpty()) && fromDate == null  && toDate == null && (keyword == null || keyword.isEmpty()) && isInCrease;
     }
+
+    // Lấy danh sách người tham gia phiên đấu giá
+    public List<User> getUsersBiddingInSession(String sessionId) {
+        return auctionSessionRepository.findDistinctUsersByAuctionSessionId(sessionId);
+    }
 }
