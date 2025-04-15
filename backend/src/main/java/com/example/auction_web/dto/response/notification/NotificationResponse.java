@@ -26,4 +26,5 @@ public class NotificationResponse {
     String referenceId;
     boolean read;
     LocalDateTime createdAt;
+    LocalDateTime updatedAt;
 }

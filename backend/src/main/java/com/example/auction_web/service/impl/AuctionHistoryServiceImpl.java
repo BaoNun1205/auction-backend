@@ -1,7 +1,9 @@
 package com.example.auction_web.service.impl;
 
+import com.example.auction_web.WebSocket.service.NotificationStompService;
 import com.example.auction_web.dto.request.AuctionHistoryCreateRequest;
 import com.example.auction_web.dto.request.AuctionHistoryUpdateRequest;
+import com.example.auction_web.dto.request.notification.NotificationRequest;
 import com.example.auction_web.dto.response.AuctionHistoryResponse;
 import com.example.auction_web.dto.response.AuctionSessionInfoResponse;
 import com.example.auction_web.dto.response.SessionHistoryResponse;
@@ -9,15 +11,15 @@ import com.example.auction_web.entity.AuctionHistory;
 import com.example.auction_web.entity.AuctionSession;
 import com.example.auction_web.entity.Deposit;
 import com.example.auction_web.entity.auth.User;
+import com.example.auction_web.enums.NotificationType;
 import com.example.auction_web.exception.AppException;
 import com.example.auction_web.exception.ErrorCode;
 import com.example.auction_web.mapper.AuctionHistoryMapper;
-import com.example.auction_web.mapper.UserMapper;
 import com.example.auction_web.repository.AuctionHistoryRepository;
 import com.example.auction_web.repository.AuctionSessionRepository;
 import com.example.auction_web.repository.DepositRepository;
-import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.AuctionHistoryService;
+import com.example.auction_web.service.auth.UserService;
 import com.example.auction_web.utils.RabbitMQ.Producer.BidEventProducer;
 import com.example.auction_web.utils.RabbitMQ.Dto.BidMessage;
 import jakarta.persistence.OptimisticLockException;
@@ -37,10 +39,9 @@ public class AuctionHistoryServiceImpl implements AuctionHistoryService {
     AuctionHistoryRepository auctionHistoryRepository;
     AuctionSessionRepository auctionSessionRepository;
     DepositRepository depositRepository;
-    UserRepository userRepository;
+    UserService userService;
     AuctionHistoryMapper auctionHistoryMapper;
-    UserMapper userMapper;
-
+    NotificationStompService notificationStompService;
     BidEventProducer bidEventProducer;
 
     //create AuctionHistory
@@ -71,6 +72,21 @@ public class AuctionHistoryServiceImpl implements AuctionHistoryService {
             setAuctionHistoryReference(request, auctionHistory);
 
             AuctionHistoryResponse auctionHistoryResponse = auctionHistoryMapper.toAuctionHistoryResponse(auctionHistoryRepository.save(auctionHistory));
+
+            // Thông báo đến những người tham gia đấu giá
+            User sender = userService.getUser(request.getUserId());
+            String senderDisplayName = sender.getName() != null ? sender.getName() : sender.getUsername();
+
+            NotificationRequest notificationRequest = NotificationRequest.builder()
+                    .senderId(sender.getUserId())
+                    .receiverId(null)
+                    .type(NotificationType.NEW_BID)
+                    .title("Có người vừa đặt giá mới!")
+                    .content(senderDisplayName + " vừa đặt " + request.getBidPrice() + " cho phiên đấu giá.")
+                    .referenceId(request.getAuctionSessionId())
+                    .build();
+
+            notificationStompService.sendNewBidNotification(request.getAuctionSessionId(), notificationRequest);
 
             sendMessageToRabbitMQ(request.getAuctionSessionId(), request.getBidPrice());
             return auctionHistoryResponse;
@@ -113,8 +129,7 @@ public class AuctionHistoryServiceImpl implements AuctionHistoryService {
 
         return auctionHistoryRepository.findSessionHistoryByAuctionSessionId(auctionSessionId).stream()
                 .map(sessionHistoryResponse -> {
-                    sessionHistoryResponse.setUser(userMapper.toUserResponse(userRepository.findById(sessionHistoryResponse.getUserId())
-                            .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED))));
+                    sessionHistoryResponse.setUser(userService.getUserResponse(sessionHistoryResponse.getUserId()));
                     return sessionHistoryResponse;
                 })
                 .toList();
@@ -123,18 +138,13 @@ public class AuctionHistoryServiceImpl implements AuctionHistoryService {
     //set AuctionItem for AuctionHistory
     void setAuctionHistoryReference(AuctionHistoryCreateRequest request, AuctionHistory auctionHistory) {
         auctionHistory.setAuctionSession(getAuctionSessionById(request.getAuctionSessionId()));
-        auctionHistory.setUser(getUserById(request.getUserId()));
+        auctionHistory.setUser(userService.getUser(request.getUserId()));
     }
 
     //get AuctionItem by AuctionItemId
     AuctionSession getAuctionSessionById(String auctionSessionId) {
         return auctionSessionRepository.findById(auctionSessionId)
                 .orElseThrow(() -> new AppException(ErrorCode.AUCTION_SESSION_NOT_EXISTED));
-    }
-
-    User getUserById(String userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
     }
 
     //Send Message to RabbitMQ

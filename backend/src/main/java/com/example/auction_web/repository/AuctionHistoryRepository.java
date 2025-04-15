@@ -3,6 +3,8 @@ package com.example.auction_web.repository;
 import com.example.auction_web.dto.response.AuctionSessionInfoResponse;
 import com.example.auction_web.dto.response.SessionHistoryResponse;
 import com.example.auction_web.entity.AuctionHistory;
+import com.example.auction_web.entity.auth.User;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -42,5 +44,4 @@ public interface AuctionHistoryRepository extends JpaRepository<AuctionHistory, 
 
     @Query("SELECT a.user.userId FROM AuctionHistory a WHERE a.bidPrice = (SELECT MAX(b.bidPrice) FROM AuctionHistory b WHERE b.auctionSession.auctionSessionId = :auctionSessionId)")
     String findMaxUserBidPrice(@Param("auctionSessionId") String auctionSessionId);
-
 }
