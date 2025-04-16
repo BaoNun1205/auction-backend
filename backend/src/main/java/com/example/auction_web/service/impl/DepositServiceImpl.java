@@ -1,8 +1,10 @@
 package com.example.auction_web.service.impl;
 
+import com.example.auction_web.WebSocket.service.NotificationStompService;
 import com.example.auction_web.dto.request.BalanceHistoryCreateRequest;
 import com.example.auction_web.dto.request.DepositCreateRequest;
 import com.example.auction_web.dto.request.DepositUpdateRequest;
+import com.example.auction_web.dto.request.notification.NotificationRequest;
 import com.example.auction_web.dto.response.DepositResponse;
 import com.example.auction_web.dto.response.UsersJoinSessionResponse;
 import com.example.auction_web.entity.AuctionSession;
@@ -10,17 +12,18 @@ import com.example.auction_web.entity.BalanceUser;
 import com.example.auction_web.entity.Deposit;
 import com.example.auction_web.entity.auth.User;
 import com.example.auction_web.enums.ACTIONBALANCE;
+import com.example.auction_web.enums.NotificationType;
 import com.example.auction_web.exception.AppException;
 import com.example.auction_web.exception.ErrorCode;
 import com.example.auction_web.mapper.AuctionSessionMapper;
 import com.example.auction_web.mapper.BalanceHistoryMapper;
-import com.example.auction_web.mapper.BalanceUserMapper;
 import com.example.auction_web.mapper.DepositMapper;
 import com.example.auction_web.repository.AuctionSessionRepository;
 import com.example.auction_web.repository.BalanceHistoryRepository;
 import com.example.auction_web.repository.BalanceUserRepository;
 import com.example.auction_web.repository.DepositRepository;
 import com.example.auction_web.repository.auth.UserRepository;
+import com.example.auction_web.service.AuctionSessionService;
 import com.example.auction_web.service.DepositService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -43,7 +46,8 @@ public class DepositServiceImpl implements DepositService {
     BalanceHistoryMapper balanceHistoryMapper;
     DepositMapper depositMapper;
     AuctionSessionMapper auctionSessionMapper;
-    private final BalanceHistoryRepository balanceHistoryRepository;
+    BalanceHistoryRepository balanceHistoryRepository;
+    NotificationStompService notificationStompService;
 
     @NonFinal
     @Value("${email.username}")
@@ -70,8 +74,24 @@ public class DepositServiceImpl implements DepositService {
         addBalanceHistory(balanceUserRepository.findBalanceUserByUser_Email(EMAIL_ADMIN).getBalanceUserId(), request.getDepositPrice(), "Deposit for auctionSessionId: " + request.getAuctionSessionId(), ACTIONBALANCE.ADD);
 
         setDepositReference(deposit, request);
-        return depositMapper.toDepositResponse(depositRepository.save(deposit));
-    }
+        
+        setDepositReference(deposit, request);
+        Deposit savedDeposit = depositRepository.save(deposit);
+
+        // Gửi thông báo đến người dùng
+        NotificationRequest notification = NotificationRequest.builder()
+            .senderId(request.getUserId())
+            .receiverId(request.getUserId())
+            .type(NotificationType.DEPOSIT)
+            .title("Đặt cọc thành công")
+            .content("Bạn đã đặt cọc thành công " + request.getDepositPrice() + " VNĐ cho phiên: " + savedDeposit.getAuctionSession().getName())
+            .referenceId(savedDeposit.getDepositId())
+            .build();
+
+        notificationStompService.sendUserNotification(request.getUserId(), notification);
+
+        return depositMapper.toDepositResponse(savedDeposit);
+    }   
 
     // update a deposit
     public DepositResponse updateDeposit(String id, DepositUpdateRequest request) {

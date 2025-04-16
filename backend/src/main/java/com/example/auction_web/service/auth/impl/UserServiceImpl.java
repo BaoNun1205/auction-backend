@@ -82,6 +82,12 @@ public class UserServiceImpl implements UserService {
         );
     }
 
+    public UserResponse getUserByEmail(String email) {
+        return userMapper.toUserResponse(
+                userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED))
+        );
+    }
+
     public void updateAvatar(String userId, MultipartFile image) {
         User user = getUser(userId);
         try {

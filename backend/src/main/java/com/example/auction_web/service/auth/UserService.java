@@ -16,6 +16,7 @@ public interface UserService {
     UserResponse getUserResponse(String id);
     User getUser(String id);
     UserResponse getUserByUsername(String username);
+    UserResponse getUserByEmail(String email);
     void updateAvatar(String erId, MultipartFile image);
     List<UserResponse> getUsers();
     UserResponse getMyInfo();
