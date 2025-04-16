@@ -1,11 +1,14 @@
 package com.example.auction_web.service.impl;
 
+import com.example.auction_web.WebSocket.service.NotificationStompService;
 import com.example.auction_web.dto.request.BalanceHistoryCreateRequest;
 import com.example.auction_web.dto.request.BalanceUserCreateRequest;
 import com.example.auction_web.dto.request.BalanceUserUpdateRequest;
+import com.example.auction_web.dto.request.notification.NotificationRequest;
 import com.example.auction_web.dto.response.BalanceUserResponse;
 import com.example.auction_web.entity.BalanceUser;
 import com.example.auction_web.enums.ACTIONBALANCE;
+import com.example.auction_web.enums.NotificationType;
 import com.example.auction_web.exception.AppException;
 import com.example.auction_web.exception.ErrorCode;
 import com.example.auction_web.mapper.BalanceHistoryMapper;
@@ -16,6 +19,7 @@ import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.BalanceUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -30,6 +34,7 @@ public class BalanceUserServiceImpl implements BalanceUserService {
     BalanceHistoryRepository balanceHistoryRepository;
     BalanceHistoryMapper balanceHistoryMapper;
     BalanceUserMapper balanceUserMapper;
+    NotificationStompService notificationStompService;
 
     public BalanceUserResponse createCoinUser(BalanceUserCreateRequest request) {
         var coinUser = balanceUserMapper.toBalanceUser(request);
@@ -66,7 +71,24 @@ public class BalanceUserServiceImpl implements BalanceUserService {
         }
         balanceUser.setAccountBalance(balanceUser.getAccountBalance().add(amount));
         addBalanceHistory(balanceUser.getBalanceUserId(), amount, orderInfo);
-        return balanceUserMapper.toBalanceUserResponse(balanceUserRepository.save(balanceUser));
+        
+        BalanceUserResponse response = balanceUserMapper.toBalanceUserResponse(
+            balanceUserRepository.save(balanceUser)
+        );
+
+        // Gửi notification
+        NotificationRequest notification = NotificationRequest.builder()
+            .senderId(userId)
+            .receiverId(userId)
+            .type(NotificationType.RECHARGE)
+            .title("Nạp tiền thành công")
+            .content("Bạn đã nạp thành công " + amount + " VNĐ vào tài khoản.")
+            .referenceId(null)
+            .build();
+
+        notificationStompService.sendUserNotification(userId, notification);
+
+        return response;
     }
 
     void addBalanceHistory(String BalanceUserId, BigDecimal amount, String Description) {
