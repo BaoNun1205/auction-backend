@@ -2,9 +2,7 @@ package com.example.auction_web.controller;
 
 import com.example.auction_web.dto.request.auth.UserCreateRequest;
 import com.example.auction_web.dto.request.auth.UserUpdateRequest;
-import com.example.auction_web.dto.request.filter.AvatarRequest;
 import com.example.auction_web.dto.response.ApiResponse;
-import com.example.auction_web.dto.response.AuctionSessionResponse;
 import com.example.auction_web.dto.response.auth.UserResponse;
 import com.example.auction_web.service.auth.UserService;
 import jakarta.validation.Valid;
@@ -82,5 +80,15 @@ public class UserController {
     ApiResponse<String> delete(@PathVariable String userId){
         userService.deleteUser(userId);
         return ApiResponse.<String>builder().result("User has been deleted").build();
+    }
+
+    @PutMapping("/notifications/unread/{userId}")
+    ApiResponse<String> updateUnreadNotificationCount(
+            @PathVariable String userId,
+            @RequestParam("count") Long count) {
+        userService.updateUnreadNotificationCount(userId, count);
+        return ApiResponse.<String>builder()
+                .result("Unread notification count updated successfully")
+                .build();
     }
 }

@@ -22,4 +22,5 @@ public interface UserService {
     UserResponse getMyInfo();
     UserResponse updateUser(String userId, UserUpdateRequest request);
     void deleteUser(String userId);
+    void updateUnreadNotificationCount(String userId, Long count);
 }
