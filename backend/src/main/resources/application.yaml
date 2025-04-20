@@ -95,3 +95,8 @@ payment:
     command: "pay"
     orderType: "other"
 
+openai:
+  azure:
+    api-key: ${AZURE_API_KEY}
+    endpoint: ${AZURE_ENDPOINT}
+    deployment-name: ${DEPLOYMENT_NAME}
