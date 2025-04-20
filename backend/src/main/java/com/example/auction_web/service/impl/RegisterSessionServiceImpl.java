@@ -72,7 +72,7 @@ public class RegisterSessionServiceImpl implements RegisterSessionService {
                         .referenceId(auctionSession.getAuctionSessionId())
                         .build();
     
-                notificationStompService.sendNewRegisterNotification(
+                notificationStompService.sendUserNotification(
                         auctionSession.getUser().getUserId(),
                         notificationRequest
                 );

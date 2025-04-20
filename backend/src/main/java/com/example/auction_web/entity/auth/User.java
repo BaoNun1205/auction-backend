@@ -41,6 +41,8 @@ public class User {
     @Enumerated(EnumType.STRING)
     GENDER gender;
 
+    Long unreadNotificationCount;
+
     LocalDate dateOfBirth;
     String token;
     Boolean enabled;
@@ -51,6 +53,7 @@ public class User {
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        this.unreadNotificationCount = 0L;
         this.enabled = false;
     }
 

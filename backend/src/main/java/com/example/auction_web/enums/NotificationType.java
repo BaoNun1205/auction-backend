@@ -4,5 +4,8 @@ public enum NotificationType {
     MESSAGE,
     START_AUCTION,
     NEW_BID,
-    NEW_REGISTRATION
+    NEW_REGISTRATION,
+    RECHARGE,
+    DEPOSIT,
+    REFUND
 }

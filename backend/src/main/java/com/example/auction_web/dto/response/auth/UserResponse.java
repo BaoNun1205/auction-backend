@@ -23,6 +23,7 @@ public class UserResponse {
     String email;
     String phone;
     String gender;
+    Long unreadNotificationCount;
     LocalDate dateOfBirth;
     String token;
     Boolean enabled;

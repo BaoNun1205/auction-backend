@@ -4,6 +4,7 @@ import com.example.auction_web.dto.request.AuctionSessionCreateRequest;
 import com.example.auction_web.dto.request.AuctionSessionUpdateRequest;
 import com.example.auction_web.dto.response.AuctionSessionInfoDetail;
 import com.example.auction_web.dto.response.AuctionSessionResponse;
+import com.example.auction_web.entity.auth.User;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -19,5 +20,5 @@ public interface AuctionSessionService {
     int totalAuctionSession(String status, LocalDateTime fromDate, LocalDateTime toDate, String keyword, Boolean isInCrease);
     AuctionSessionInfoDetail getDetailAuctionSessionById(String auctionSessionId);
     AuctionSessionInfoDetail getDetailAuctionSessionByAssetId(String assetId);
-
+    List<User> getUsersBiddingInSession(String sessionId);
 }

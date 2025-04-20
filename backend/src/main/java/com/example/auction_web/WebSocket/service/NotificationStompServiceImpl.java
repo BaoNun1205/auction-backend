@@ -1,16 +1,20 @@
 package com.example.auction_web.WebSocket.service;
 
+import java.util.List;
+
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import com.example.auction_web.dto.request.notification.NotificationRequest;
-import com.example.auction_web.dto.response.ApiResponse;
 import com.example.auction_web.dto.response.notification.NotificationResponse;
 import com.example.auction_web.entity.auth.User;
 import com.example.auction_web.entity.notification.Notification;
+import com.example.auction_web.enums.NotificationType;
+import com.example.auction_web.service.AuctionSessionService;
 import com.example.auction_web.service.auth.UserService;
 import com.example.auction_web.service.notification.NotificationService;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -23,37 +27,70 @@ public class NotificationStompServiceImpl implements NotificationStompService {
     NotificationService notificationService;
     UserService userService;
     SimpMessagingTemplate messagingTemplate;
+    AuctionSessionService auctionSessionService;
 
-    // Implement the methods to send notifications to the WebSocket clients
+    @Transactional
     @Override
-    public void sendMessageNotification(String receiverId, NotificationRequest notificationRequest) {
-        log.info("Calling sendMessageNotification with receiverId: {}, request: {}", receiverId, notificationRequest);
-        sendNotification(receiverId, notificationRequest, "/rt-notification/new-message/user/");
-    }
-
-    @Override
-    public void sendNewRegisterNotification(String ownerId, NotificationRequest notificationRequest) {
-        log.info("Calling sendNewRegisterNotification with ownerId: {}, request: {}", ownerId, notificationRequest);
-        sendNotification(ownerId, notificationRequest, "/rt-notification/new-register/owner/");
+    public void sendUserNotification(String receiverId, NotificationRequest notificationRequest) {
+        log.info("Sending notification for receiverId: {}", receiverId);
+        log.info("Notification details: senderId={}, receiverId={}, type={}, title={}, content={}, referenceId={}",
+                 notificationRequest.getSenderId(),
+                 notificationRequest.getReceiverId(),
+                 notificationRequest.getType(),
+                 notificationRequest.getTitle(),
+                 notificationRequest.getContent(),
+                 notificationRequest.getReferenceId());
+        sendNotification(receiverId, notificationRequest, "/rt-notification/user/");
     }
 
     @Override
     public void sendNewBidNotification(String sessionId, NotificationRequest notificationRequest) {
-        log.info("Calling sendNewBidNotification with sessionId: {}, request: {}", sessionId, notificationRequest);
-        sendNotification(sessionId, notificationRequest, "/rt-notification/new-bid/session/");
+        try {
+            // Lấy tất cả user đã từng đặt giá trong phiên
+            List<User> receivers = auctionSessionService.getUsersBiddingInSession(sessionId);
+    
+            User sender = userService.getUser(notificationRequest.getSenderId());
+
+            // Lọc ra những user khác sender
+            receivers.stream()
+                .filter(receiver -> !receiver.getUserId().equals(sender.getUserId()))
+                .forEach(receiver -> {
+                    try {
+                        NotificationRequest clonedRequest = NotificationRequest.builder()
+                            .senderId(notificationRequest.getSenderId())
+                            .receiverId(receiver.getUserId())
+                            .title(notificationRequest.getTitle())
+                            .content(notificationRequest.getContent())
+                            .referenceId(notificationRequest.getReferenceId())
+                            .type(notificationRequest.getType())
+                            .build();
+            
+                        sendUserNotification(receiver.getUserId(), clonedRequest);
+                    } catch (Exception e) {
+                        log.warn("Failed to save notification for user: {}", receiver.getUserId(), e);
+                    }
+                });
+        } catch (Exception e) {
+            log.error("Error broadcasting bid notification", e);
+        }
     }
 
     private void sendNotification(String targetId, NotificationRequest notificationRequest, String topicPrefix) {
         try {
             log.info("Preparing notification for targetId: {}, topic: {}", targetId, topicPrefix + targetId);
-            Notification notification = Notification.builder()
-                    .sender(userService.getUser(notificationRequest.getSenderId()))
-                    .receiver(userService.getUser(notificationRequest.getReceiverId()))
-                    .type(notificationRequest.getType())
-                    .title(notificationRequest.getTitle())
-                    .content(notificationRequest.getContent())
-                    .referenceId(notificationRequest.getReferenceId())
-                    .build();
+            Notification.NotificationBuilder builder = Notification.builder()
+                .sender(userService.getUser(notificationRequest.getSenderId()))
+                .type(notificationRequest.getType())
+                .title(notificationRequest.getTitle())
+                .content(notificationRequest.getContent())
+                .referenceId(notificationRequest.getReferenceId());
+
+            // Nếu receiverId không null thì map receiver
+            if (notificationRequest.getReceiverId() != null) {
+                builder.receiver(userService.getUser(notificationRequest.getReceiverId()));
+            }
+
+            Notification notification = builder.build();
 
             log.info("Creating notification in database...");
             NotificationResponse response = notificationService.createNotification(notification);

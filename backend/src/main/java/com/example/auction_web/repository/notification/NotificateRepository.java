@@ -12,8 +12,8 @@ import com.example.auction_web.enums.NotificationType;
 
 @Repository
 public interface NotificateRepository extends JpaRepository<Notification, String> {
-    List<Notification> findByReceiverAndDelFlagFalseOrderByUpdatedAtDesc(User receiver);
-    List<Notification> findByReceiverAndIsReadFalseAndDelFlagFalseOrderByUpdatedAtDesc(User receiver);
+    List<Notification> findByReceiverAndDelFlagFalseOrderByCreatedAtDesc(User receiver);
+    List<Notification> findByReceiverAndIsReadFalseAndDelFlagFalseOrderByCreatedAtDesc(User receiver);
     long countByReceiverAndIsReadFalseAndDelFlagFalse(User receiver);
     Optional<Notification> findFirstBySenderAndReceiverAndTypeAndReferenceId(
         User sender,

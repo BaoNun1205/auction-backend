@@ -82,6 +82,12 @@ public class UserServiceImpl implements UserService {
         );
     }
 
+    public UserResponse getUserByEmail(String email) {
+        return userMapper.toUserResponse(
+                userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED))
+        );
+    }
+
     public void updateAvatar(String userId, MultipartFile image) {
         User user = getUser(userId);
         try {
@@ -137,5 +143,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(String userId) {
         userRepository.deleteById(userId);
+    }
+
+    @Override
+    public void updateUnreadNotificationCount(String userId, Long count) {
+        User user = getUser(userId);
+        user.setUnreadNotificationCount(count);
+        userRepository.save(user);
     }
 }

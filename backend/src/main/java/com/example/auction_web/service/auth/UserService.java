@@ -16,9 +16,11 @@ public interface UserService {
     UserResponse getUserResponse(String id);
     User getUser(String id);
     UserResponse getUserByUsername(String username);
+    UserResponse getUserByEmail(String email);
     void updateAvatar(String erId, MultipartFile image);
     List<UserResponse> getUsers();
     UserResponse getMyInfo();
     UserResponse updateUser(String userId, UserUpdateRequest request);
     void deleteUser(String userId);
+    void updateUnreadNotificationCount(String userId, Long count);
 }

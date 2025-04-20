@@ -80,33 +80,6 @@ public class ChatServiceImpl implements ChatService {
 
         MessageResponse savedMessage = messageMapper.toMessageResponse(messageRepository.save(message));
 
-        // if (notificationFlag.shouldNotify()) {
-        //     // Tạo và gửi thông báo đến receiver (người còn lại trong conversation)
-        //         String receiverId = conversation.getBuyer().getUserId().equals(sender.getUserId())
-        //         ? conversation.getSeller().getUserId()
-        //         : conversation.getBuyer().getUserId();
-
-        //     NotificationRequest notificationRequest = NotificationRequest.builder()
-        //             .senderId(sender.getUserId())
-        //             .receiverId(receiverId)
-        //             .type(NotificationType.MESSAGE)
-        //             .title("Tin nhắn mới")
-        //             .content(sender.getUsername() + " đã gửi một tin nhắn.")
-        //             .referenceId(conversationId)
-        //             .build();
-
-        //     // Đăng ký gửi notification sau khi commit thành công
-        //     TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-        //         @Override
-        //         public void afterCommit() {
-        //             // Gửi notification sau khi transaction commit thành công
-        //             notificationStompService.sendMessageNotification(receiverId, notificationRequest);
-        //         }
-        //     });
-        // }
-
-        // notificationFlag.clear();
-
         return savedMessage;
     }
 

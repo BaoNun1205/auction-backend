@@ -53,13 +53,10 @@ public class NotificateServiceImpl implements NotificationService{
                     oldNotification.setCreatedAt(LocalDateTime.now());
                     oldNotification.setRead(false);
                     oldNotification.setContent(notification.getContent());
+                    
                     Notification updated = notificateRepository.save(oldNotification);
                     log.info("Updated existing message notification ID: {}", updated.getId());
                     return notificationMapper.toNotificationResponse(updated);
-                } else {
-                    Notification saved = notificateRepository.save(notification);
-                    log.info("Saved new notification ID: {}", saved.getId());
-                    return notificationMapper.toNotificationResponse(saved);
                 }
             }
 
@@ -76,7 +73,7 @@ public class NotificateServiceImpl implements NotificationService{
 
     public List<NotificationResponse> getNotificationByReceiver(String receiverId) {
         User receiver = userService.getUser(receiverId);
-        List<Notification> notifications = notificateRepository.findByReceiverAndDelFlagFalseOrderByUpdatedAtDesc(receiver);
+        List<Notification> notifications = notificateRepository.findByReceiverAndDelFlagFalseOrderByCreatedAtDesc(receiver);
         return notifications.stream()
                 .map(notificationMapper::toNotificationResponse)
                 .toList();

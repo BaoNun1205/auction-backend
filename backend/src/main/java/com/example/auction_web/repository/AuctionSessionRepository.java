@@ -2,6 +2,8 @@ package com.example.auction_web.repository;
 
 import com.example.auction_web.dto.response.AuctionSessionInfoDetail;
 import com.example.auction_web.entity.AuctionSession;
+import com.example.auction_web.entity.auth.User;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -29,5 +31,8 @@ public interface AuctionSessionRepository extends JpaRepository<AuctionSession, 
             "WHERE asession.auctionSessionId = :auctionSessionId")
     AuctionSessionInfoDetail findAuctionSessionInfoDetailById(@Param("auctionSessionId") String auctionSessionId);
 
-
+    // Lấy danh sách người tham gia phiên đấu giá
+    @Query("SELECT DISTINCT ah.user FROM AuctionHistory ah " +
+           "WHERE ah.auctionSession.auctionSessionId = :auctionSessionId AND ah.delFlag = false")
+    List<User> findDistinctUsersByAuctionSessionId(@Param("auctionSessionId") String auctionSessionId);
 }
