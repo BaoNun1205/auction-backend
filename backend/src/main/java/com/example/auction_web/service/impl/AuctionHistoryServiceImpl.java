@@ -23,9 +23,11 @@ import com.example.auction_web.utils.RabbitMQ.Dto.BidMessage;
 import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.print.Pageable;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -48,7 +50,9 @@ public class AuctionHistoryServiceImpl implements AuctionHistoryService {
     @Transactional
     public AuctionHistoryResponse createAuctionHistory(AuctionHistoryCreateRequest request) {
         try {
-            String userId = auctionHistoryRepository.findMaxUserBidPrice(request.getAuctionSessionId());
+            String userId = auctionHistoryRepository
+                    .findTopUserBidPriceByBidTime(request.getAuctionSessionId(), PageRequest.of(0, 1))
+                    .get(0);
             Deposit deposit = depositRepository.findByAuctionSession_AuctionSessionIdAndUser_UserId(request.getAuctionSessionId(), request.getUserId());
             if (deposit == null) {
                 throw new AppException(ErrorCode.DEPOSIT_NOT_EXISTED);

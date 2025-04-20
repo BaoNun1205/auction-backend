@@ -14,6 +14,8 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -45,9 +47,16 @@ public class AutoBidConsumer {
                 try {
                     auctionHistoryService.createAuctionHistory(auctionHistoryCreateRequest);
                     AuctionSessionInfoDetail auctionSessionInfoDetail = auctionSessionService.getDetailAuctionSessionById(auctionSessionId);
+
+                    Thread.sleep(150);
+
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("code", 200);
+                    response.put("result", auctionSessionInfoDetail);
+
                     messagingTemplate.convertAndSend(
                             "/rt-product/bidPrice-update/" + auctionSessionId,
-                            auctionSessionInfoDetail
+                            response
                     );
                     break;
                 } catch (Exception e) {
