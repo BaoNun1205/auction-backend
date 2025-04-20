@@ -6,15 +6,15 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import com.example.auction_web.dto.request.notification.NotificationRequest;
-import com.example.auction_web.dto.response.ApiResponse;
 import com.example.auction_web.dto.response.notification.NotificationResponse;
 import com.example.auction_web.entity.auth.User;
 import com.example.auction_web.entity.notification.Notification;
-import com.example.auction_web.service.AuctionHistoryService;
+import com.example.auction_web.enums.NotificationType;
 import com.example.auction_web.service.AuctionSessionService;
 import com.example.auction_web.service.auth.UserService;
 import com.example.auction_web.service.notification.NotificationService;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -29,8 +29,17 @@ public class NotificationStompServiceImpl implements NotificationStompService {
     SimpMessagingTemplate messagingTemplate;
     AuctionSessionService auctionSessionService;
 
+    @Transactional
     @Override
     public void sendUserNotification(String receiverId, NotificationRequest notificationRequest) {
+        log.info("Sending notification for receiverId: {}", receiverId);
+        log.info("Notification details: senderId={}, receiverId={}, type={}, title={}, content={}, referenceId={}",
+                 notificationRequest.getSenderId(),
+                 notificationRequest.getReceiverId(),
+                 notificationRequest.getType(),
+                 notificationRequest.getTitle(),
+                 notificationRequest.getContent(),
+                 notificationRequest.getReferenceId());
         sendNotification(receiverId, notificationRequest, "/rt-notification/user/");
     }
 
@@ -44,27 +53,23 @@ public class NotificationStompServiceImpl implements NotificationStompService {
 
             // Lọc ra những user khác sender
             receivers.stream()
-                    .filter(receiver -> !receiver.getUserId().equals(sender.getUserId()))
-                    .forEach(receiver -> {
-                        try {
-                            Notification notification = Notification.builder()
-                                    .sender(sender)
-                                    .receiver(receiver)
-                                    .type(notificationRequest.getType())
-                                    .title(notificationRequest.getTitle())
-                                    .content(notificationRequest.getContent())
-                                    .referenceId(notificationRequest.getReferenceId())
-                                    .build();
-    
-                            notificationService.createNotification(notification);
-                        } catch (Exception e) {
-                            log.warn("Failed to save notification for user: {}", receiver.getUserId(), e);
-                        }
-                    });
-    
-            // Gửi notification đến tất cả người dùng đã đặt giá
-            sendNotification(sessionId, notificationRequest, "/rt-notification/new-bid/session/");
-    
+                .filter(receiver -> !receiver.getUserId().equals(sender.getUserId()))
+                .forEach(receiver -> {
+                    try {
+                        NotificationRequest clonedRequest = NotificationRequest.builder()
+                            .senderId(notificationRequest.getSenderId())
+                            .receiverId(receiver.getUserId())
+                            .title(notificationRequest.getTitle())
+                            .content(notificationRequest.getContent())
+                            .referenceId(notificationRequest.getReferenceId())
+                            .type(notificationRequest.getType())
+                            .build();
+            
+                        sendUserNotification(receiver.getUserId(), clonedRequest);
+                    } catch (Exception e) {
+                        log.warn("Failed to save notification for user: {}", receiver.getUserId(), e);
+                    }
+                });
         } catch (Exception e) {
             log.error("Error broadcasting bid notification", e);
         }

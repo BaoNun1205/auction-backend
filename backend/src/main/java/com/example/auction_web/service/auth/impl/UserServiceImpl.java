@@ -144,4 +144,11 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(String userId) {
         userRepository.deleteById(userId);
     }
+
+    @Override
+    public void updateUnreadNotificationCount(String userId, Long count) {
+        User user = getUser(userId);
+        user.setUnreadNotificationCount(count);
+        userRepository.save(user);
+    }
 }

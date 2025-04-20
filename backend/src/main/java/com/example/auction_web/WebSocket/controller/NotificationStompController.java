@@ -4,18 +4,8 @@ import com.example.auction_web.WebSocket.service.NotificationStompService;
 import com.example.auction_web.dto.request.notification.NotificationRequest;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Controller;
-
-import com.example.auction_web.dto.response.ApiResponse;
-import com.example.auction_web.dto.response.AuctionSessionResponse;
-import com.example.auction_web.dto.response.notification.NotificationResponse;
-import com.example.auction_web.entity.notification.Notification;
-import com.example.auction_web.enums.NotificationType;
-import com.example.auction_web.service.AuctionSessionService;
-import com.example.auction_web.service.auth.UserService;
-import com.example.auction_web.service.notification.NotificationService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

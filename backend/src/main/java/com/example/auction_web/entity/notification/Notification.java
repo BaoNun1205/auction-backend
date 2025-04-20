@@ -36,13 +36,13 @@ public class Notification {
 
     String title;
 
-    @Column(name = "content", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "content", columnDefinition = "TEXT")
     String content;
 
     @Column(name = "reference_id")
     String referenceId;
 
-    @Column(name = "is_read", nullable = false)
+    @Column(name = "is_read")
     boolean isRead;
 
     Boolean delFlag;
