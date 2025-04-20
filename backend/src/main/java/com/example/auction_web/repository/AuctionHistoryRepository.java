@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import org.springframework.data.domain.Pageable;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -44,4 +45,9 @@ public interface AuctionHistoryRepository extends JpaRepository<AuctionHistory, 
 
     @Query("SELECT a.user.userId FROM AuctionHistory a WHERE a.bidPrice = (SELECT MAX(b.bidPrice) FROM AuctionHistory b WHERE b.auctionSession.auctionSessionId = :auctionSessionId)")
     String findMaxUserBidPrice(@Param("auctionSessionId") String auctionSessionId);
+    @Query("SELECT a.user.userId FROM AuctionHistory a " +
+            "WHERE a.auctionSession.auctionSessionId = :auctionSessionId " +
+            "AND a.bidPrice = (SELECT MAX(b.bidPrice) FROM AuctionHistory b WHERE b.auctionSession.auctionSessionId = :auctionSessionId) " +
+            "ORDER BY a.bidTime ASC")
+    List<String> findTopUserBidPriceByBidTime(@Param("auctionSessionId") String auctionSessionId, Pageable pageable);
 }
