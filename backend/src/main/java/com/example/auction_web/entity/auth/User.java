@@ -43,6 +43,9 @@ public class User {
 
     Long unreadNotificationCount;
 
+    @Column(name = "last_seen")
+    LocalDateTime lastSeen;
+
     LocalDate dateOfBirth;
     String token;
     Boolean enabled;

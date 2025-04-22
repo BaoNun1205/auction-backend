@@ -8,7 +8,7 @@ spring:
   datasource:
     url: ${DBMS_CONNECTION:jdbc:mysql://localhost:3306/auction_web}
     driverClassName: "com.mysql.cj.jdbc.Driver"
-    password: ${DBMS_PASSWORD:root}
+    password: ${DBMS_PASSWORD:120503}
     username: ${DBMS_USERNAME:root}
 
 # spring:
@@ -28,7 +28,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
   data:
     redis:
       host: "redis-19216.c266.us-east-1-3.ec2.redns.redis-cloud.com"
