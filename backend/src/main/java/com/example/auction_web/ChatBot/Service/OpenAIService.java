@@ -5,6 +5,7 @@ import com.example.auction_web.service.AuctionSessionService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -17,12 +18,16 @@ import java.util.Map;
 
 @Service
 public class OpenAIService {
-    private String azureApiKey = "FOBu7C9IH1ci0r7WValHyKXfDVR1iac5yuIBKL8gx1aUubQXaj4QJQQJ99BDACHYHv6XJ3w3AAAAACOGYNrl";
+    @Value("${openai.azure.api-key}")
+    private String azureApiKey;
 
-    private String azureEndpoint = "https://testaiservice23964566243.openai.azure.com/";
+    @Value("${openai.azure.endpoint}")
+    private String azureEndpoint;
 
-    private String deploymentName = "gpt-4o-hieut2";
+    @Value("${openai.azure.deployment-name}")
+    private String deploymentName;
 
+    @Autowired
     private final AuctionSessionService auctionSessionService;
 
     private final RestTemplate restTemplate;
