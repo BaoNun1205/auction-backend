@@ -43,6 +43,7 @@ public class AuctionHistory {
 
     @PrePersist
     protected void onCreate() {
+        this.bidTime = LocalDateTime.now();
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         this.delFlag = false;
