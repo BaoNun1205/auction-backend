@@ -1,24 +1,34 @@
 package com.example.auction_web.ChatBot.Controller;
 
+import com.example.auction_web.ChatBot.Dto.BotConversationResponse;
+import com.example.auction_web.ChatBot.Dto.BotMessageResponse;
+import com.example.auction_web.ChatBot.Service.ChatBotService;
 import com.example.auction_web.ChatBot.Service.OpenAIService;
-import com.example.auction_web.service.chat.ChatService;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/chat")
+@RequiredArgsConstructor
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class OpenAIController {
 
-    @Autowired
-    private OpenAIService openAIService;
+    OpenAIService openAIService;
+    ChatBotService chatBotService;
 
     @PostMapping("/test-tool-call")
     public ResponseEntity<?> testChatWithToolCall(@RequestBody String messages) {
@@ -29,5 +39,28 @@ public class OpenAIController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error: " + e.getMessage());
         }
+    }
+
+    
+    @PostMapping("/conversations")
+    public ResponseEntity<BotConversationResponse> createConversation(@RequestParam String userId) {
+        try {
+            BotConversationResponse response = chatBotService.createConversation(userId);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
+    @GetMapping("/conversations")
+    public ResponseEntity<List<BotConversationResponse>> getConversations(@RequestParam String userId) {
+        List<BotConversationResponse> conversations = chatBotService.getConversations(userId);
+        return ResponseEntity.ok(conversations);
+    }
+
+    @GetMapping("/messages/{conversationId}")
+    public ResponseEntity<List<BotMessageResponse>> getMessages(@PathVariable String conversationId) {
+        List<BotMessageResponse> messages = chatBotService.getMessages(conversationId);
+        return ResponseEntity.ok(messages);
     }
 }

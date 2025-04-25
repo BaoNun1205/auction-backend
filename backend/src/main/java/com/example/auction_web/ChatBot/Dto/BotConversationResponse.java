@@ -20,7 +20,6 @@ public class BotConversationResponse {
     String id;
     String topic;
     UserResponse user;
-    String lastMessage;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 }

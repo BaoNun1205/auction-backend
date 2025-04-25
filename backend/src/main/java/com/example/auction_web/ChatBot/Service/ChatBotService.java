@@ -10,6 +10,7 @@ import com.example.auction_web.ChatBot.Dto.BotConversationResponse;
 import com.example.auction_web.ChatBot.Dto.BotMessageResponse;
 import com.example.auction_web.ChatBot.Entity.BotConversation;
 import com.example.auction_web.ChatBot.Entity.BotMessage;
+import com.example.auction_web.ChatBot.Enum.SenderType;
 import com.example.auction_web.ChatBot.Mapper.BotConversationMapper;
 import com.example.auction_web.ChatBot.Mapper.BotMessageMapper;
 import com.example.auction_web.ChatBot.Repository.BotConversationRepository;
@@ -38,6 +39,17 @@ public class ChatBotService {
                 .collect(Collectors.toList());
     }
 
+    public void createMessage(String conversationId, SenderType sender, String content) {
+        BotMessage message = BotMessage.builder()
+                .conversationId(conversationId)
+                .sender(sender)
+                .content(content)
+                .build();
+
+        botMessageRepository.save(message);
+    }
+
+
     public List<BotMessageResponse> getMessages(String conversationId) {
         List<BotMessage> messages = botMessageRepository.findByConversationIdOrderByCreatedAtAsc(conversationId);
         return messages.stream()
@@ -52,7 +64,6 @@ public class ChatBotService {
         BotConversation conversation = new BotConversation();
         conversation.setUser(user);
         conversation.setTopic("Chat with AI - " + LocalDateTime.now());
-        conversation.setLastMessage("");
 
         BotConversation saved = botConversationRepository.save(conversation);
         return botConversationMapper.toConversationResponse(saved);

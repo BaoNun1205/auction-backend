@@ -4,11 +4,9 @@ import java.time.LocalDateTime;
 
 import com.example.auction_web.ChatBot.Enum.SenderType;
 
-import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-@Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
