@@ -9,15 +9,21 @@ import com.example.auction_web.dto.response.auth.UserResponse;
 import com.example.auction_web.entity.AuctionSession;
 import com.example.auction_web.entity.auth.Role;
 import com.example.auction_web.entity.auth.User;
+import com.example.auction_web.entity.chat.Conversation;
+import com.example.auction_web.entity.chat.Message;
 import com.example.auction_web.exception.AppException;
 import com.example.auction_web.exception.ErrorCode;
 import com.example.auction_web.mapper.AuctionSessionMapper;
 import com.example.auction_web.mapper.UserMapper;
 import com.example.auction_web.repository.auth.RoleRepository;
 import com.example.auction_web.repository.auth.UserRepository;
+import com.example.auction_web.repository.chat.ConversationRepository;
+import com.example.auction_web.repository.chat.MessageRepository;
 import com.example.auction_web.service.EmailVerificationTokenService;
 import com.example.auction_web.service.FileUploadService;
 import com.example.auction_web.service.auth.UserService;
+
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -30,8 +36,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -40,9 +51,10 @@ public class UserServiceImpl implements UserService {
     UserRepository userRepository;
     RoleRepository roleRepository;
     UserMapper userMapper;
-    AuctionSessionMapper auctionSessionMapper;
     PasswordEncoder passwordEncoder;
     FileUploadService fileUploadService;
+    MessageRepository messageRepository;
+    ConversationRepository conversationRepository;
 
     EmailVerificationTokenService emailVerificationTokenService;
 
@@ -151,4 +163,78 @@ public class UserServiceImpl implements UserService {
         user.setUnreadNotificationCount(count);
         userRepository.save(user);
     }
+
+    @Transactional
+    public void updateUserAverageResponseTime(User user) {
+        if (user == null) return;
+    
+        // 1. Lấy tất cả conversation mà user tham gia
+        List<Conversation> conversations = conversationRepository.findConversationsByBuyerOrSeller(user, user);
+        if (conversations.isEmpty()) return;
+    
+        List<String> conversationIds = conversations.stream()
+                .map(Conversation::getConversationId)
+                .toList();
+    
+        // 2. Xác định thời điểm bắt đầu lấy message mới
+        LocalDateTime lastCalculatedAt = user.getLastCalculatedAt();
+        if (lastCalculatedAt == null) {
+            // Nếu chưa từng tính bao giờ thì lấy từ quá khứ xa
+            lastCalculatedAt = LocalDateTime.of(2000, 1, 1, 0, 0); 
+        }
+    
+        // 3. Query tất cả opponent messages mới phát sinh
+        List<Message> opponentMessages = messageRepository.findAllByConversationIdInAndSender_UserIdNotAndCreatedAtAfter(
+                conversationIds, user.getUserId(), lastCalculatedAt
+        );
+        if (opponentMessages.isEmpty()) return;
+    
+        // 4. Query tất cả reply mới của user
+        List<Message> userReplies = messageRepository.findAllByConversationIdInAndSender_UserIdAndCreatedAtAfter(
+                conversationIds, user.getUserId(), lastCalculatedAt
+        );
+        if (userReplies.isEmpty()) return;
+    
+        // 5. Map replies
+        userReplies.sort(Comparator.comparing(Message::getConversationId).thenComparing(Message::getCreatedAt));
+    
+        List<Long> newResponseTimes = new ArrayList<>();
+    
+        for (Message opponentMessage : opponentMessages) {
+            Optional<Message> replyOpt = userReplies.stream()
+                    .filter(reply -> reply.getConversationId().equals(opponentMessage.getConversationId())
+                            && reply.getCreatedAt().isAfter(opponentMessage.getCreatedAt()))
+                    .findFirst();
+    
+            if (replyOpt.isPresent()) {
+                Message userReply = replyOpt.get();
+                long seconds = Duration.between(opponentMessage.getCreatedAt(), userReply.getCreatedAt()).getSeconds();
+                if (seconds > 0) {
+                    newResponseTimes.add(seconds);
+                }
+            }
+        }
+    
+        // 6. Cập nhật dữ liệu response time
+        if (!newResponseTimes.isEmpty()) {
+            long sumNewTimes = newResponseTimes.stream().mapToLong(Long::longValue).sum();
+            long newCount = newResponseTimes.size();
+    
+            Long oldTotalCount = user.getTotalResponseCount() != null ? user.getTotalResponseCount() : 0L;
+            Long oldAverageTime = user.getResponseTimeInSeconds() != null ? user.getResponseTimeInSeconds() : 0L;
+    
+            long oldTotalTime = oldAverageTime * oldTotalCount;
+    
+            long newTotalTime = oldTotalTime + sumNewTimes;
+            long updatedTotalCount = oldTotalCount + newCount;
+            long updatedAverageTime = newTotalTime / updatedTotalCount;
+    
+            user.setTotalResponseCount(updatedTotalCount);
+            user.setResponseTimeInSeconds(updatedAverageTime);
+            user.setLastCalculatedAt(LocalDateTime.now()); // Cập nhật thời điểm tính cuối cùng
+    
+            userRepository.save(user);
+        }
+    }    
+
 }
