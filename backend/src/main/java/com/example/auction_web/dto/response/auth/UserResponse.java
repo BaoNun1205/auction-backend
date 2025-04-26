@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Data
@@ -24,8 +25,12 @@ public class UserResponse {
     String phone;
     String gender;
     Long unreadNotificationCount;
+    LocalDateTime lastSeen;
+    Long responseTimeInSeconds;
     LocalDate dateOfBirth;
     String token;
     Boolean enabled;
+    LocalDateTime createdAt;
+    LocalDateTime updatedAt;
     Set<RoleResponse> roles;
 }

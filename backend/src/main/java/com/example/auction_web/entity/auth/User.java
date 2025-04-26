@@ -46,6 +46,10 @@ public class User {
     @Column(name = "last_seen")
     LocalDateTime lastSeen;
 
+    Long totalResponseCount;       // Tổng số lần đã phản hồi
+    Long responseTimeInSeconds;    // Trung bình phản hồi
+    LocalDateTime lastCalculatedAt;
+
     LocalDate dateOfBirth;
     String token;
     Boolean enabled;
@@ -57,6 +61,7 @@ public class User {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         this.unreadNotificationCount = 0L;
+        this.totalResponseCount = 0L;
         this.enabled = false;
     }
 
