@@ -6,7 +6,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 
-import com.example.auction_web.ChatBot.Enum.SenderType;
+import com.example.auction_web.ChatBot.Enum.Role;
 
 @Entity
 @Data
@@ -23,8 +23,10 @@ public class BotMessage {
     String conversationId;
 
     @Enumerated(EnumType.STRING)
-    SenderType sender;
+    Role role;
 
+    @Lob
+    @Column(columnDefinition = "TEXT")
     String content;
 
     LocalDateTime createdAt;

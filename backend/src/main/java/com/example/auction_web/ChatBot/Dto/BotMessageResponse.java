@@ -2,7 +2,7 @@ package com.example.auction_web.ChatBot.Dto;
 
 import java.time.LocalDateTime;
 
-import com.example.auction_web.ChatBot.Enum.SenderType;
+import com.example.auction_web.ChatBot.Enum.Role;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -15,7 +15,7 @@ import lombok.experimental.FieldDefaults;
 public class BotMessageResponse {
     String id;
     String conversationId;
-    SenderType sender;
+    Role role;
     String content;
     LocalDateTime createdAt;
 }

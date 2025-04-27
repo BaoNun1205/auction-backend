@@ -4,13 +4,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.example.auction_web.ChatBot.Dto.MessageCreateRequestDto;
 import org.springframework.stereotype.Service;
 
 import com.example.auction_web.ChatBot.Dto.BotConversationResponse;
 import com.example.auction_web.ChatBot.Dto.BotMessageResponse;
 import com.example.auction_web.ChatBot.Entity.BotConversation;
 import com.example.auction_web.ChatBot.Entity.BotMessage;
-import com.example.auction_web.ChatBot.Enum.SenderType;
 import com.example.auction_web.ChatBot.Mapper.BotConversationMapper;
 import com.example.auction_web.ChatBot.Mapper.BotMessageMapper;
 import com.example.auction_web.ChatBot.Repository.BotConversationRepository;
@@ -39,14 +39,8 @@ public class ChatBotService {
                 .collect(Collectors.toList());
     }
 
-    public void createMessage(String conversationId, SenderType sender, String content) {
-        BotMessage message = BotMessage.builder()
-                .conversationId(conversationId)
-                .sender(sender)
-                .content(content)
-                .build();
-
-        botMessageRepository.save(message);
+    public void createMessage(MessageCreateRequestDto request) {
+        botMessageRepository.save(botMessageMapper.toMessage(request));
     }
 
 

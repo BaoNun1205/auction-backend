@@ -2,6 +2,7 @@ package com.example.auction_web.ChatBot.Controller;
 
 import com.example.auction_web.ChatBot.Dto.BotConversationResponse;
 import com.example.auction_web.ChatBot.Dto.BotMessageResponse;
+import com.example.auction_web.ChatBot.Dto.ChatRequest;
 import com.example.auction_web.ChatBot.Service.ChatBotService;
 import com.example.auction_web.ChatBot.Service.OpenAIService;
 
@@ -31,9 +32,9 @@ public class OpenAIController {
     ChatBotService chatBotService;
 
     @PostMapping("/test-tool-call")
-    public ResponseEntity<?> testChatWithToolCall(@RequestBody String messages) {
+    public ResponseEntity<?> testChatWithToolCall(@RequestBody ChatRequest request) {
         try {
-            var response = openAIService.chatWithToolCalls(messages);
+            var response = openAIService.chatWithToolCalls(request);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
