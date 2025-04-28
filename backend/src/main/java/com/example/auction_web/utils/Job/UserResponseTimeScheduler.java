@@ -22,13 +22,14 @@ public class UserResponseTimeScheduler {
     UserService userService;
 
     // @Scheduled(cron = "0 0 0 * * *") 
-    @Scheduled(cron = "0 */10 * * * *")
+    @Scheduled(cron = "0 */1 * * * *")
 
     public void scheduledUpdateResponseTimes() {
         List<User> users = userRepository.findAll(); 
 
         for (User user : users) {
             userService.updateUserAverageResponseTime(user);
+            userService.updateUserResponseRate(user);  
         }
     }
 }

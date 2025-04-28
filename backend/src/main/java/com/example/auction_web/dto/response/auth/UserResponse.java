@@ -27,6 +27,7 @@ public class UserResponse {
     Long unreadNotificationCount;
     LocalDateTime lastSeen;
     Long responseTimeInSeconds;
+    Double responseRate;
     LocalDate dateOfBirth;
     String token;
     Boolean enabled;

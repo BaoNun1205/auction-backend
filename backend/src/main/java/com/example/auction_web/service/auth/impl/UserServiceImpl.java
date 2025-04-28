@@ -27,6 +27,8 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -47,6 +49,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Slf4j
 public class UserServiceImpl implements UserService {
     UserRepository userRepository;
     RoleRepository roleRepository;
@@ -177,7 +180,7 @@ public class UserServiceImpl implements UserService {
                 .toList();
     
         // 2. Xác định thời điểm bắt đầu lấy message mới
-        LocalDateTime lastCalculatedAt = user.getLastCalculatedAt();
+        LocalDateTime lastCalculatedAt = user.getLastRespontimeCalculatedAt();
         if (lastCalculatedAt == null) {
             // Nếu chưa từng tính bao giờ thì lấy từ quá khứ xa
             lastCalculatedAt = LocalDateTime.of(2000, 1, 1, 0, 0); 
@@ -231,10 +234,79 @@ public class UserServiceImpl implements UserService {
     
             user.setTotalResponseCount(updatedTotalCount);
             user.setResponseTimeInSeconds(updatedAverageTime);
-            user.setLastCalculatedAt(LocalDateTime.now()); // Cập nhật thời điểm tính cuối cùng
+            user.setLastRespontimeCalculatedAt(LocalDateTime.now()); // Cập nhật thời điểm tính cuối cùng
     
             userRepository.save(user);
         }
-    }    
+    }
+    
+    @Transactional
+    @Override
+    public void updateUserResponseRate(User user) {
+        if (user == null) {
+            return;
+        }
+
+        List<Conversation> conversations = conversationRepository.findConversationsByBuyerOrSeller(user, user);
+        if (conversations.isEmpty()) {
+            return;
+        }
+
+        List<String> conversationIds = conversations.stream()
+                .map(Conversation::getConversationId)
+                .toList();
+
+        LocalDateTime lastCalculatedAt = user.getLastResponRateCalculatedAt();
+        if (lastCalculatedAt == null) {
+            lastCalculatedAt = LocalDateTime.of(2000, 1, 1, 0, 0);
+        }
+
+        List<Message> opponentMessages = messageRepository.findAllByConversationIdInAndSender_UserIdNotAndCreatedAtAfter(
+                conversationIds, user.getUserId(), lastCalculatedAt
+        );
+        if (opponentMessages.isEmpty()) {
+            return;
+        }
+
+        List<Message> userReplies = messageRepository.findAllByConversationIdInAndSender_UserIdAndCreatedAtAfter(
+                conversationIds, user.getUserId(), lastCalculatedAt
+        );
+        if (userReplies.isEmpty()) {
+            return;
+        }
+
+        userReplies.sort(Comparator.comparing(Message::getConversationId).thenComparing(Message::getCreatedAt));
+
+        long respondedCount = 0L;
+
+        for (Message opponentMessage : opponentMessages) {
+            Optional<Message> replyOpt = userReplies.stream()
+                    .filter(userReply -> userReply.getConversationId().equals(opponentMessage.getConversationId())
+                            && userReply.getCreatedAt().isAfter(opponentMessage.getCreatedAt()))
+                    .findFirst();
+
+            if (replyOpt.isPresent()) {
+                respondedCount++;
+            }
+        }
+
+        long totalNewOpponentMessages = opponentMessages.size();
+        long oldTotalOpponentMessages = user.getTotalOpponentMessages() != null ? user.getTotalOpponentMessages() : 0L;
+        long oldTotalRespondedMessages = user.getTotalOpponentMessagesReplied() != null ? user.getTotalOpponentMessagesReplied() : 0L;
+
+        user.setTotalOpponentMessages(oldTotalOpponentMessages + totalNewOpponentMessages);
+        user.setTotalOpponentMessagesReplied(oldTotalRespondedMessages + respondedCount);
+
+        if (user.getTotalOpponentMessages() > 0) {
+            double responseRate = (user.getTotalOpponentMessagesReplied() * 100.0) / user.getTotalOpponentMessages();
+            user.setResponseRate((double) Math.round(responseRate));
+        } else {
+            user.setResponseRate(0.0);
+        }        
+
+        user.setLastResponRateCalculatedAt(LocalDateTime.now());
+
+        userRepository.save(user);
+    }
 
 }
