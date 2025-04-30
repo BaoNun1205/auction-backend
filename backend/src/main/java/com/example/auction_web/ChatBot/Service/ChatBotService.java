@@ -11,11 +11,15 @@ import com.example.auction_web.ChatBot.Dto.BotConversationResponse;
 import com.example.auction_web.ChatBot.Dto.BotMessageResponse;
 import com.example.auction_web.ChatBot.Entity.BotConversation;
 import com.example.auction_web.ChatBot.Entity.BotMessage;
+import com.example.auction_web.ChatBot.Enum.Role;
 import com.example.auction_web.ChatBot.Mapper.BotConversationMapper;
 import com.example.auction_web.ChatBot.Mapper.BotMessageMapper;
 import com.example.auction_web.ChatBot.Repository.BotConversationRepository;
 import com.example.auction_web.ChatBot.Repository.BotMessageRepository;
 import com.example.auction_web.entity.auth.User;
+import com.example.auction_web.exception.AppException;
+import com.example.auction_web.exception.ErrorCode;
+import com.example.auction_web.repository.chat.ConversationRepository;
 import com.example.auction_web.service.auth.UserService;
 
 import lombok.AccessLevel;
@@ -31,6 +35,7 @@ public class ChatBotService {
     UserService userService;
     BotConversationMapper botConversationMapper;
     BotMessageMapper botMessageMapper;
+    BotConversationRepository conversationRepository;
 
     public List<BotConversationResponse> getConversations(String userId) {
         List<BotConversation> conversations = botConversationRepository.findByUser_UserId(userId);
@@ -41,6 +46,14 @@ public class ChatBotService {
 
     public void createMessage(MessageCreateRequestDto request) {
         botMessageRepository.save(botMessageMapper.toMessage(request));
+        long messageCount = botMessageRepository.countByConversationId(request.getConversationId());
+
+        if (messageCount == 1 && request.getRole() == Role.user) {
+            conversationRepository.findById(request.getConversationId()).ifPresent(conversation -> {
+                conversation.setTopic(request.getContent());
+                conversationRepository.save(conversation);
+            });
+        }
     }
 
 
@@ -52,15 +65,18 @@ public class ChatBotService {
     }
 
     public BotConversationResponse createConversation(String userId) {
-        User user = userService.getUser(userId);
-
-        // Mỗi lần tạo là 1 chủ đề chatbot mới (không check tồn tại)
-        BotConversation conversation = new BotConversation();
-        conversation.setUser(user);
-        conversation.setTopic("Chat with AI - " + LocalDateTime.now());
-
-        BotConversation saved = botConversationRepository.save(conversation);
-        return botConversationMapper.toConversationResponse(saved);
+        try {
+            User user = userService.getUser(userId);
+    
+            BotConversation conversation = new BotConversation();
+            conversation.setUser(user);
+            conversation.setTopic("Đoạn chat mới");
+    
+            BotConversation saved = botConversationRepository.save(conversation);
+            return botConversationMapper.toConversationResponse(saved);
+        } catch (Exception e) {
+            throw new AppException(ErrorCode.CREATE_BOT_CONVERSATION_FAILED);
+        }
     }
 }
 

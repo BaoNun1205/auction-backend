@@ -50,7 +50,8 @@ public enum ErrorCode {
     CREATE_NOTIFICATION_FAILED(1044, "Create notification failed", HttpStatus.BAD_REQUEST),
     NOTIFICATION_NOT_EXISTED(1045, "Notification not existed", HttpStatus.NOT_FOUND),
     CREATE_CONVERSATION_FAILED(1046, "Create conversation failed", HttpStatus.BAD_REQUEST),
-    CREATE_REGISTER_SESSION_FAILED(1046, "Create register session failed", HttpStatus.BAD_REQUEST),
+    CREATE_REGISTER_SESSION_FAILED(1047, "Create register session failed", HttpStatus.BAD_REQUEST),
+    CREATE_BOT_CONVERSATION_FAILED(1048, "Create bot conversation failed", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

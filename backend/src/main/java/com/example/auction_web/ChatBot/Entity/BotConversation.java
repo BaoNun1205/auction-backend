@@ -35,8 +35,6 @@ public class BotConversation {
     @JoinColumn(name = "userId", referencedColumnName = "userId")
     User user;
 
-    String lastMessage;
-
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 

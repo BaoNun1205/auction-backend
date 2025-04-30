@@ -21,8 +21,7 @@ public class UserResponseTimeScheduler {
     UserRepository userRepository;
     UserService userService;
 
-    // @Scheduled(cron = "0 0 0 * * *") 
-    @Scheduled(cron = "0 */1 * * * *")
+    @Scheduled(cron = "0 0 0 * * *") 
 
     public void scheduledUpdateResponseTimes() {
         List<User> users = userRepository.findAll(); 
