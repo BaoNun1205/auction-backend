@@ -21,4 +21,5 @@ public interface UserService {
     void deleteUser(String userId);
     void updateUnreadNotificationCount(String userId, Long count);
     void updateUserAverageResponseTime(User user);
+    void updateUserResponseRate(User user);
 }

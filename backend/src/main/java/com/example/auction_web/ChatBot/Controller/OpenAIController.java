@@ -3,8 +3,10 @@ package com.example.auction_web.ChatBot.Controller;
 import com.example.auction_web.ChatBot.Dto.BotConversationResponse;
 import com.example.auction_web.ChatBot.Dto.BotMessageResponse;
 import com.example.auction_web.ChatBot.Dto.ChatRequest;
+import com.example.auction_web.ChatBot.Dto.ConversationRequest;
 import com.example.auction_web.ChatBot.Service.ChatBotService;
 import com.example.auction_web.ChatBot.Service.OpenAIService;
+import com.example.auction_web.dto.response.ApiResponse;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -44,14 +46,20 @@ public class OpenAIController {
 
     
     @PostMapping("/conversations")
-    public ResponseEntity<BotConversationResponse> createConversation(@RequestParam String userId) {
+    public ApiResponse<BotConversationResponse> createConversation(@RequestBody ConversationRequest request) {
         try {
-            BotConversationResponse response = chatBotService.createConversation(userId);
-            return ResponseEntity.ok(response);
+            BotConversationResponse response = chatBotService.createConversation(request.getUserId());
+            return ApiResponse.<BotConversationResponse>builder()
+                    .code(HttpStatus.OK.value())
+                    .result(response)
+                    .build();
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ApiResponse.<BotConversationResponse>builder()
+                    .code(HttpStatus.NOT_FOUND.value())
+                    .message(e.getMessage())
+                    .build();
         }
-    }
+    }    
 
     @GetMapping("/conversations")
     public ResponseEntity<List<BotConversationResponse>> getConversations(@RequestParam String userId) {

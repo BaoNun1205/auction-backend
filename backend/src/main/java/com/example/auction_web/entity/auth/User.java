@@ -48,7 +48,12 @@ public class User {
 
     Long totalResponseCount;       // Tổng số lần đã phản hồi
     Long responseTimeInSeconds;    // Trung bình phản hồi
-    LocalDateTime lastCalculatedAt;
+    LocalDateTime lastRespontimeCalculatedAt;
+
+    Long totalOpponentMessages;         // Tổng số tin nhắn đối phương gửi đến user
+    Long totalOpponentMessagesReplied;  // Tổng số lần user đã phản hồi lại
+    Double responseRate;                // Tỉ lệ phản hồi (theo %)
+    LocalDateTime lastResponRateCalculatedAt;
 
     LocalDate dateOfBirth;
     String token;
@@ -62,6 +67,8 @@ public class User {
         this.updatedAt = LocalDateTime.now();
         this.unreadNotificationCount = 0L;
         this.totalResponseCount = 0L;
+        this.totalOpponentMessages = 0L;
+        this.totalOpponentMessagesReplied = 0L;
         this.enabled = false;
     }
 
