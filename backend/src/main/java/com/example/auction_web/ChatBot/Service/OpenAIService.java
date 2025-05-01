@@ -1,10 +1,14 @@
 package com.example.auction_web.ChatBot.Service;
 
+import com.example.auction_web.ChatBot.Dto.ChatRequest;
 import com.example.auction_web.ChatBot.Dto.FilterSessionDto;
+import com.example.auction_web.ChatBot.Dto.MessageCreateRequestDto;
+import com.example.auction_web.ChatBot.Enum.Role;
 import com.example.auction_web.service.AuctionSessionService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -17,39 +21,57 @@ import java.util.Map;
 
 @Service
 public class OpenAIService {
-    private String azureApiKey = "FOBu7C9IH1ci0r7WValHyKXfDVR1iac5yuIBKL8gx1aUubQXaj4QJQQJ99BDACHYHv6XJ3w3AAAAACOGYNrl";
+    @Value("${openai.azure.api-key}")
+    private String azureApiKey;
 
-    private String azureEndpoint = "https://testaiservice23964566243.openai.azure.com/";
+    @Value("${openai.azure.endpoint}")
+    private String azureEndpoint;
 
-    private String deploymentName = "gpt-4o-hieut2";
+    @Value("${openai.azure.deployment-name}")
+    private String deploymentName;
 
+    @Autowired
     private final AuctionSessionService auctionSessionService;
 
     private final RestTemplate restTemplate;
     @Autowired
     private final ObjectMapper mapper = new ObjectMapper();
 
-    public OpenAIService(RestTemplate restTemplate, AuctionSessionService auctionSessionService) {
+    @Autowired
+    private final ChatBotService chatBotService;
+
+    public OpenAIService(RestTemplate restTemplate, AuctionSessionService auctionSessionService, ChatBotService chatBotService) {
         this.restTemplate = restTemplate;
         this.auctionSessionService = auctionSessionService;
+        this.chatBotService = chatBotService;
     }
 
-    public String chatWithToolCalls(String userMessage) throws Exception {
+    public String chatWithToolCalls(ChatRequest request) throws Exception {
+        var MessageList = chatBotService.getMessages(request.getConversationId());
         List<Map<String, Object>> messages = new ArrayList<>();
 
         // Add system prompt
         messages.add(Map.of(
-                "role", "system",
+                "role", Role.system,
                 "content", systemPrompt()
         ));
 
+        // Add message history
+        if (MessageList != null) {
+            for (var message : MessageList) {
+                messages.add(Map.of(
+                        "role", message.getRole(),
+                        "content", message.getContent()
+                ));
+            }
+        }
+
         // Add user message
         messages.add(Map.of(
-                "role", "user",
-                "content", userMessage
+                "role", Role.user,
+                "content", request.getContent()
         ));
 
-        // Định nghĩa functions
         List<Map<String, Object>> functions = getDefinedFunctions();
 
         boolean hasToolCalls = true;
@@ -57,11 +79,9 @@ public class OpenAIService {
 
         JsonNode responseJson = null;
         while (hasToolCalls) {
-            // Gọi API OpenAI
             responseBody = callOpenAI(messages, functions);
             responseJson = mapper.readTree(responseBody);
 
-            // Kiểm tra tool_calls
             JsonNode toolCall = responseJson.at("/choices/0/message/function_call");
 
             if (toolCall != null && !toolCall.isMissingNode() && toolCall.isObject()) {
@@ -93,12 +113,13 @@ public class OpenAIService {
 
         JsonNode finalMessageNode = responseJson.at("/choices/0/message/content");
         if (!finalMessageNode.isMissingNode()) {
+            addMessage(request.getConversationId(), Role.user, request.getContent());
+            addMessage(request.getConversationId(), Role.assistant, finalMessageNode.asText());
             return finalMessageNode.asText();
         } else {
             return "[Không có nội dung trả về từ assistant]";
         }
     }
-
 
     public String callOpenAI(List<Map<String, Object>> messages, List<Map<String, Object>> functions) {
         Map<String, Object> requestBody = new HashMap<>();
@@ -150,6 +171,10 @@ public class OpenAIService {
         }
     }
 
+    private void addMessage(String conversationId, Role role, String content) {
+        chatBotService.createMessage(new MessageCreateRequestDto(conversationId, role, content));
+    }
+
     private String systemPrompt() {
         var system_time = LocalDateTime.now();
         return "You are an intelligent assistant capable of answering user questions by utilizing multiple tools, including API calls and knowledge base lookups. You can select the most suitable function or tool to respond to the user based on the context of the question. Your role is to provide smart, context-aware answers, and optionally trigger tools when needed. You are polite, concise, and avoid hallucinations. If you're unsure, you will mention it explicitly.\n" +
@@ -157,6 +182,9 @@ public class OpenAIService {
                 "\n" +
                 "<general_guidelines>\n" +
                 "- Always respond in the language the user is using.\n" +
+                "- Always return responses in structured HTML format with basic styling (such as bold text, bullet points, and section headers) suitable for web display. Use clear and minimalistic HTML.\n " +
+                "- Ensure that lists are <ul><li> formatted, important text is <strong> highlighted, and sections have <h3> titles.\n" +
+                "- - Ensure images use <img> tags with responsive inline CSS (e.g., style=\"max-width:100%; height:auto;\") or add a class \"auction-image\" for frontend styling.\n" +
                 "- Analyze the user's intent and decide whether to call an API, search a knowledge base, or use internal knowledge.\n" +
                 "- If an API tool is available, map user-provided values to the API's parameters and call the appropriate method.\n" +
                 "- In case the API fails, tell the user to try again next time.\n" +
@@ -169,7 +197,9 @@ public class OpenAIService {
                 "<guidelines>\n" +
                 "- Always respond in the same language as the user.\n" +
                 "- When the user asks for a list of auction sessions without specifying filters, use default values for unspecified parameters. If some filters are specified, set the unspecified ones to null.\n" +
-                "- When displaying auction session information, strictly follow the format below. Translate the field labels (like 'Auction Name', 'Start Time', etc.) into the user's language:\n" +
+                "- When displaying auction session information, you must always include the following fields: " +
+                "       Auction Name, Description, Auction Type, Start Time, End Time, Starting Price, Bid Increment, Current Highest Bid, Status, and Image.\n" +
+                "- Translate the field labels (such as 'Auction Name', 'Start Time', etc.) into the user's language.\n" +
                 "  🔹 **[Label: Auction Name]**: [Auction Name]\n" +
                 "  - **[Label: Description]**: [Auction Description]\n" +
                 "  - **[Label: Auction Type]**: [Auction Type]\n" +
@@ -179,6 +209,7 @@ public class OpenAIService {
                 "  - **[Label: Bid Increment]**: [Bid Increment] VND\n" +
                 "  - **[Label: Current Highest Bid]**: [Current Highest Bid] VND\n" +
                 "  - **[Label: Status]**: [Auction Status]\n" +
+                "  - [Label: Image]: Display the image using an HTML <img> tag with the provided image URL. Add responsive styling (style=\"max-width:100%; height:auto;\") or apply the CSS class \"auction-image\".\n " +
                 "- Ensure correct formatting and consistent translation of labels to match the user's language.\n" +
                 "</guidelines>\n" +
 
