@@ -2,6 +2,9 @@ package com.example.auction_web.ChatBot.Controller;
 
 import com.example.auction_web.ChatBot.Dto.ProductRequest;
 import com.example.auction_web.ChatBot.Service.ProductFilterService;
+
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,7 +22,7 @@ public class ProductFilterController {
     }
 
     @PostMapping("/classify")
-    public String classifyProduct(@RequestBody ProductRequest request) {
+    public Map<String, String> classifyProduct(@RequestBody ProductRequest request) {
         return productFilterService.classifyProduct(
                 request.getName(),
                 request.getDescription(),

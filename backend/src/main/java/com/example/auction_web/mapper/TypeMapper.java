@@ -5,12 +5,15 @@ import com.example.auction_web.dto.request.TypeUpdateRequest;
 import com.example.auction_web.dto.response.TypeResponse;
 import com.example.auction_web.entity.Category;
 import com.example.auction_web.entity.Type;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 
 import java.util.List;
+
+import com.example.auction_web.dto.response.TypeFilterResponse;
 
 @Mapper(componentModel = "spring", uses = {CategoryMapper.class})
 public interface TypeMapper {
@@ -24,6 +27,8 @@ public interface TypeMapper {
     @Mapping(target = "categoryId", source = "category.categoryId")
     @Mapping(target = "categoryName", source = "category.categoryName")
     TypeResponse toTypeResponse(Type type);
+
+    TypeFilterResponse toTypeFilterResponse(Type type);
 
     List<TypeResponse> toTypeResponses(List<Type> types);
     void updateType(@MappingTarget Type type, TypeUpdateRequest request);
