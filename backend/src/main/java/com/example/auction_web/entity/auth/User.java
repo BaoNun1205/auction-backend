@@ -55,6 +55,8 @@ public class User {
     Double responseRate;                // Tỉ lệ phản hồi (theo %)
     LocalDateTime lastResponRateCalculatedAt;
 
+    Double averageReviewRating;
+
     LocalDate dateOfBirth;
     String token;
     Boolean enabled;
@@ -69,6 +71,7 @@ public class User {
         this.totalResponseCount = 0L;
         this.totalOpponentMessages = 0L;
         this.totalOpponentMessagesReplied = 0L;
+        this.averageReviewRating = 0.0;
         this.enabled = false;
     }
 

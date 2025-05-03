@@ -28,6 +28,7 @@ public class UserResponse {
     LocalDateTime lastSeen;
     Long responseTimeInSeconds;
     Double responseRate;
+    Double averageReviewRating;
     LocalDate dateOfBirth;
     String token;
     Boolean enabled;

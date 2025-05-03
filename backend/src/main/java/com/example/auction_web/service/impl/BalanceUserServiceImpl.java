@@ -17,9 +17,13 @@ import com.example.auction_web.repository.BalanceHistoryRepository;
 import com.example.auction_web.repository.BalanceUserRepository;
 import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.BalanceUserService;
+import com.example.auction_web.service.auth.UserService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -35,6 +39,11 @@ public class BalanceUserServiceImpl implements BalanceUserService {
     BalanceHistoryMapper balanceHistoryMapper;
     BalanceUserMapper balanceUserMapper;
     NotificationStompService notificationStompService;
+    UserService userService;
+
+    @NonFinal
+    @Value("${email.username}")
+    String EMAIL_ADMIN;
 
     public BalanceUserResponse createCoinUser(BalanceUserCreateRequest request) {
         var coinUser = balanceUserMapper.toBalanceUser(request);
@@ -78,7 +87,7 @@ public class BalanceUserServiceImpl implements BalanceUserService {
 
         // Gửi notification
         NotificationRequest notification = NotificationRequest.builder()
-            .senderId(userId)
+            .senderId(userService.getUserByEmail(EMAIL_ADMIN).getUserId())
             .receiverId(userId)
             .type(NotificationType.RECHARGE)
             .title("Nạp tiền thành công")

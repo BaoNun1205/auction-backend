@@ -25,6 +25,8 @@ import com.example.auction_web.repository.DepositRepository;
 import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.AuctionSessionService;
 import com.example.auction_web.service.DepositService;
+import com.example.auction_web.service.auth.UserService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
@@ -48,6 +50,7 @@ public class DepositServiceImpl implements DepositService {
     AuctionSessionMapper auctionSessionMapper;
     BalanceHistoryRepository balanceHistoryRepository;
     NotificationStompService notificationStompService;
+    UserService userService;
 
     @NonFinal
     @Value("${email.username}")
@@ -80,7 +83,7 @@ public class DepositServiceImpl implements DepositService {
 
         // Gửi thông báo đến người dùng
         NotificationRequest notification = NotificationRequest.builder()
-            .senderId(request.getUserId())
+            .senderId(userService.getUserByEmail(EMAIL_ADMIN).getUserId())
             .receiverId(request.getUserId())
             .type(NotificationType.DEPOSIT)
             .title("Đặt cọc thành công")
