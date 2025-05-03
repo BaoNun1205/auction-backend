@@ -20,6 +20,7 @@ import com.example.auction_web.service.BalanceUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -60,6 +61,11 @@ public class BalanceUserServiceImpl implements BalanceUserService {
         if (!userRepository.existsById(userId)) {
             throw new AppException(ErrorCode.USER_NOT_EXISTED);
         }
+        return balanceUserMapper.toBalanceUserResponse(balanceUserRepository.findBalanceUserByUser_UserId(userId));
+    }
+
+    public BalanceUserResponse getMyCoinUser() {
+        String userId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return balanceUserMapper.toBalanceUserResponse(balanceUserRepository.findBalanceUserByUser_UserId(userId));
     }
 

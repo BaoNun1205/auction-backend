@@ -1,5 +1,6 @@
 package com.example.auction_web.configuration;
 
+import com.fasterxml.jackson.databind.util.Converter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -26,8 +27,20 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import io.jsonwebtoken.Jwt;
+
 import javax.crypto.spec.SecretKeySpec;
+
+import java.util.Collection;
 import java.util.List;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 
 @Configuration
 @EnableWebSecurity
@@ -64,11 +77,13 @@ public class SecurityConfig {
                 .anyRequest()
                 .authenticated());
 
-        httpSecurity.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer
-                .decoder(customJwtDecoder)
-                .jwtAuthenticationConverter(jwtAuthenticationConverter()))
-                .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
-        )
+        httpSecurity.oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwtConfigurer -> jwtConfigurer
+                                .decoder(customJwtDecoder)
+                                .jwtAuthenticationConverter(new CustomJwtAuthenticationConverter())
+                        )
+                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
+                )
                 .csrf(AbstractHttpConfigurer::disable);
 
         return httpSecurity.build();
@@ -110,6 +125,7 @@ public class SecurityConfig {
 
         return jwtAuthenticationConverter;
     }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {

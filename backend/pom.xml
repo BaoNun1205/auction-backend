@@ -217,6 +217,7 @@
 			<artifactId>azure-ai-openai</artifactId>
 			<version>1.0.0-beta.10</version>
 		</dependency>
+
 	</dependencies>
 
 	<build>
