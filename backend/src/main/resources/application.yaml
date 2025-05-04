@@ -2,7 +2,10 @@ server:
   port: 8080
   servlet:
     context-path: /
-
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
 
 spring:
   datasource:
@@ -11,7 +14,7 @@ spring:
     password: ${DBMS_PASSWORD:root}
     username: ${DBMS_USERNAME:root}
 
-# spring:
+  # spring:
 #   datasource:
 #     url: ${DBMS_CONNECTION:jdbc:mysql://root:AcvMDoekXnSFbjMntWyhGNXDbBusxyjb@autorack.proxy.rlwy.net:55890/railway}
 #     driverClassName: "com.mysql.cj.jdbc.Driver"
