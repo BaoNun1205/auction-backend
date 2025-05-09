@@ -1,15 +1,9 @@
-package com.example.auction_web.dto.response.personalization;
+package com.example.auction_web.personalization.dto.response;
 
 import java.time.LocalDateTime;
 
 import com.example.auction_web.dto.response.auth.UserResponse;
-import com.example.auction_web.entity.auth.User;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,3 +24,4 @@ public class SearchHistoryResponse {
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 }
+

@@ -1,12 +1,12 @@
-package com.example.auction_web.service.personalization.impl;
+package com.example.auction_web.personalization.service.impl;
 
-import com.example.auction_web.dto.response.personalization.SearchHistoryResponse;
 import com.example.auction_web.entity.auth.User;
 import com.example.auction_web.entity.personalization.SearchHistory;
 import com.example.auction_web.mapper.SearchHistoryMapper;
-import com.example.auction_web.repository.personalization.SearchHistoryRepository;
+import com.example.auction_web.personalization.dto.response.SearchHistoryResponse;
+import com.example.auction_web.personalization.repository.SearchHistoryRepository;
+import com.example.auction_web.personalization.service.SearchHistoryService;
 import com.example.auction_web.service.auth.UserService;
-import com.example.auction_web.service.personalization.SearchHistoryService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -65,3 +65,4 @@ public class SearchHistoryServiceImpl implements SearchHistoryService {
                 .toList();
     }
 }
+
