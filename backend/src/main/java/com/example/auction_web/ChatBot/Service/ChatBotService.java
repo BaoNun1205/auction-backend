@@ -38,7 +38,7 @@ public class ChatBotService {
     BotConversationRepository conversationRepository;
 
     public List<BotConversationResponse> getConversations(String userId) {
-        List<BotConversation> conversations = botConversationRepository.findByUser_UserId(userId);
+        List<BotConversation> conversations = botConversationRepository.findByUser_UserIdOrderByCreatedAtDesc(userId);
         return conversations.stream()
                 .map(botConversationMapper::toConversationResponse)
                 .collect(Collectors.toList());
