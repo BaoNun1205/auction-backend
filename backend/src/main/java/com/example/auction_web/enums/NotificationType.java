@@ -7,5 +7,6 @@ public enum NotificationType {
     NEW_REGISTRATION,
     RECHARGE,
     DEPOSIT,
-    REFUND
+    REFUND,
+    AUCTION_REMINDER
 }

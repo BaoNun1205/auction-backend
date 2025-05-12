@@ -47,7 +47,7 @@ public class AssetServiceImpl implements AssetService {
     AssetMapper assetMapper;
     TypeMapper typeMapper;
     RequirementService requirementService;
-    InspectorService inspectorService;
+    RequirementRepository requirementRepository;
     InspectorRepository inspectorRepository;
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -73,7 +73,8 @@ public class AssetServiceImpl implements AssetService {
 
             // Set requirement and update its status
             Requirement requirement = requirementService.getRequirementById(request.getRequirementId());
-            requirement.setDelFlag(true);
+            requirement.setStatus("1");
+            requirementRepository.save(requirement);
             asset.setRequirement(requirement);
 
             Asset newAsset = assetRepository.save(asset);

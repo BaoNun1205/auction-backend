@@ -2,8 +2,9 @@ package com.example.auction_web.controller;
 
 import com.example.auction_web.dto.request.personalization.SearchHistoryRequest;
 import com.example.auction_web.dto.response.ApiResponse;
-import com.example.auction_web.dto.response.personalization.SearchHistoryResponse;
-import com.example.auction_web.service.personalization.SearchHistoryService;
+import com.example.auction_web.personalization.dto.response.SearchHistoryResponse;
+import com.example.auction_web.personalization.service.SearchHistoryService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;

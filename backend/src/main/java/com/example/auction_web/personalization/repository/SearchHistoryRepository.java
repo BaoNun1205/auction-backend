@@ -1,4 +1,4 @@
-package com.example.auction_web.repository.personalization;
+package com.example.auction_web.personalization.repository;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,3 +16,4 @@ public interface SearchHistoryRepository extends JpaRepository<SearchHistory, St
     List<SearchHistory> findByUserAndDelFlagFalseOrderByUpdatedAtDesc(User user);
     List<SearchHistory> findByKeywordAndDelFlagFalse(String keyword);
 }
+

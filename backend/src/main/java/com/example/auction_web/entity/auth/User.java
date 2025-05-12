@@ -57,6 +57,9 @@ public class User {
 
     Double averageReviewRating;
 
+    @Column(columnDefinition = "TEXT")
+    String vectorJson;
+
     LocalDate dateOfBirth;
     String token;
     Boolean enabled;
