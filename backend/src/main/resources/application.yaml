@@ -8,7 +8,7 @@ spring:
   datasource:
     url: ${DBMS_CONNECTION:jdbc:mysql://localhost:3306/auction_web}
     driverClassName: "com.mysql.cj.jdbc.Driver"
-    password: ${DBMS_PASSWORD:root}
+    password: ${DBMS_PASSWORD:120503}
     username: ${DBMS_USERNAME:root}
 
 # spring:

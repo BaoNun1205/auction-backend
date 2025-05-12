@@ -25,7 +25,7 @@ public class EmbeddingServiceImpl implements EmbeddingService {
     public List<Float> getEmbeddingFromText(String inputText) {
         EmbeddingsOptions options = new EmbeddingsOptions(List.of(inputText));
 
-        Embeddings embeddings = openAIClient.getEmbeddings("text-embedding-ada-002", options);
+        Embeddings embeddings = openAIClient.getEmbeddings("text-embedding-3-large", options);
 
         List<EmbeddingItem> embeddingItems = embeddings.getData();
         if (embeddingItems != null && !embeddingItems.isEmpty()) {

@@ -10,6 +10,8 @@ import lombok.experimental.FieldDefaults;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Table(name = "type")
 @Entity
 @Data
@@ -24,6 +26,7 @@ public class Type {
 
     @ManyToOne
     @JoinColumn(name = "categoryId", referencedColumnName = "categoryId")
+    @JsonIgnore
     Category category;
 
     String typeName;
