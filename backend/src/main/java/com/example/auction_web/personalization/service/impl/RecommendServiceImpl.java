@@ -24,6 +24,7 @@ import com.example.auction_web.mapper.AuctionSessionMapper;
 import com.example.auction_web.mapper.UserMapper;
 import com.example.auction_web.personalization.dto.response.SearchHistoryResponse;
 import com.example.auction_web.personalization.service.EmbeddingService;
+import com.example.auction_web.personalization.service.RecommendService;
 import com.example.auction_web.personalization.service.SearchHistoryService;
 import com.example.auction_web.repository.AuctionHistoryRepository;
 import com.example.auction_web.repository.AuctionSessionRepository;
@@ -38,7 +39,7 @@ import lombok.experimental.FieldDefaults;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = PRIVATE, makeFinal = true)
-public class RecommendServiceImpl {
+public class RecommendServiceImpl implements RecommendService {
     private static final Logger logger = LoggerFactory.getLogger(RecommendServiceImpl.class);
 
     AuctionSessionRepository auctionSessionRepository;
@@ -133,6 +134,7 @@ public class RecommendServiceImpl {
                     continue;
                 }
                 String json = VectorUtil.toJson(vector);
+                session.setVectorJson(json);
             } catch (Exception e) {
                 logger.error("Failed to update vector for auction session ID: {}", session.getAuctionSessionId(), e);
             }
@@ -237,4 +239,76 @@ public class RecommendServiceImpl {
             })
             .toList();
     }
+
+    public List<AuctionSession> recommendSessionsByAuctionSessionId(String auctionSessionId) {
+        AuctionSession baseSession = auctionSessionRepository.findById(auctionSessionId)
+            .orElseThrow(() -> new IllegalArgumentException("Auction session not found with ID: " + auctionSessionId));
+    
+        if (baseSession.getVectorJson() == null) {
+            logger.warn("No vector JSON for auction session ID: {}", auctionSessionId);
+            return List.of();
+        }
+    
+        List<Float> baseVector = VectorUtil.fromJson(baseSession.getVectorJson());
+    
+        List<AuctionSession> allSessions = auctionSessionRepository.findAll();
+    
+        return allSessions.stream()
+            .filter(session -> session.getAuctionSessionId() != auctionSessionId)
+            .filter(session -> session.getVectorJson() != null)
+            .map(session -> new AbstractMap.SimpleEntry<>(
+                    session, 
+                    cosineSimilarity(baseVector, VectorUtil.fromJson(session.getVectorJson()))))
+            .sorted((a, b) -> Double.compare(b.getValue(), a.getValue()))
+            .limit(5)
+            .map(Map.Entry::getKey)
+            .toList();
+    }
+
+    public List<AuctionSessionResponse> recommendAuctionSessionResponsesByAuctionSessionId(String auctionSessionId) {
+        List<AuctionSession> recommendedSessions = recommendSessionsByAuctionSessionId(auctionSessionId);
+    
+        Set<String> userIds = recommendedSessions.stream()
+            .flatMap(session -> auctionHistoryRepository
+                .findAuctionSessionInfo(session.getAuctionSessionId())
+                .stream()
+                .filter(info -> info.getUserId() != null)
+                .map(AuctionSessionInfoResponse::getUserId))
+            .collect(Collectors.toSet());
+    
+        Map<String, User> userMap = userRepository.findAllById(userIds).stream()
+            .collect(Collectors.toMap(User::getUserId, user -> user));
+    
+        return recommendedSessions.stream()
+            .map(session -> {
+                AuctionSessionResponse response = auctionSessionMapper.toAuctionItemResponse(session);
+    
+                List<AuctionSessionInfoResponse> auctionSessionInfoResponse = 
+                    auctionHistoryRepository.findAuctionSessionInfo(session.getAuctionSessionId());
+    
+                if (!auctionSessionInfoResponse.isEmpty()) {
+                    AuctionSessionInfoResponse info = auctionSessionInfoResponse.get(0);
+    
+                    if (info.getHighestBid().compareTo(BigDecimal.ZERO) == 0) {
+                        info.setHighestBid(session.getStartingBids());
+                    }
+    
+                    if (info.getUserId() != null) {
+                        User user = userMap.get(info.getUserId());
+                        info.setUser(user != null ? userMapper.toUserResponse(user) : null);
+                    } else {
+                        info.setUser(null);
+                    }
+    
+                    response.setAuctionSessionInfo(info);
+                } else {
+                    response.setAuctionSessionInfo(
+                        new AuctionSessionInfoResponse(0L, 0L, "", session.getStartingBids(), null)
+                    );
+                }
+    
+                return response;
+            })
+            .toList();
+    }    
 }
