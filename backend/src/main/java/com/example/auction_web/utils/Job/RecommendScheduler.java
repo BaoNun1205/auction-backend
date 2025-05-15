@@ -3,7 +3,7 @@ package com.example.auction_web.utils.Job;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.example.auction_web.personalization.service.impl.RecommendServiceImpl;
+import com.example.auction_web.personalization.service.RecommendService;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -13,14 +13,14 @@ import lombok.experimental.FieldDefaults;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class RecommendScheduler {
-    RecommendServiceImpl recommendService;
+    RecommendService recommendService;
 
-    @Scheduled(cron = "0 0 0 * * ?") // Run daily at 1 AM
+    @Scheduled(cron = "0 2 0 * * ?")
     public void scheduleUserVectorUpdate() {
         recommendService.batchUpdateUserVectors();
     }
 
-    @Scheduled(cron = "0 0 0 * * ?") // Run daily at 1:30 AM
+    @Scheduled(cron = "0 2 0 * * ?")
     public void scheduleAuctionSessionVectorUpdate() {
         recommendService.batchUpdateAuctionSessionVectors();
     }

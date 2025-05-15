@@ -12,22 +12,28 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.auction_web.dto.response.ApiResponse;
 import com.example.auction_web.dto.response.AuctionSessionResponse;
-import com.example.auction_web.personalization.service.impl.RecommendServiceImpl;
-
-import lombok.RequiredArgsConstructor;
+import com.example.auction_web.personalization.service.RecommendService;
 
 @RestController
 @RequestMapping("/recommend")
 public class RecommendController {
 
     @Autowired
-    RecommendServiceImpl recommendService;
+    RecommendService recommendService;
 
     @GetMapping("/{userId}")
-    public ApiResponse<List<AuctionSessionResponse>> recommend(@PathVariable String userId) {
+    public ApiResponse<List<AuctionSessionResponse>> recommendByUser(@PathVariable String userId) {
         return ApiResponse.<List<AuctionSessionResponse>>builder()
                 .code(HttpStatus.OK.value())
                 .result(recommendService.recommendAuctionSessionResponses(userId))
+                .build();
+    }
+
+    @GetMapping("/session/{sessionId}")
+    public ApiResponse<List<AuctionSessionResponse>> recommendBySession(@PathVariable String sessionId) {
+        return ApiResponse.<List<AuctionSessionResponse>>builder()
+                .code(HttpStatus.OK.value())
+                .result(recommendService.recommendAuctionSessionResponsesByAuctionSessionId(sessionId))
                 .build();
     }
 }
