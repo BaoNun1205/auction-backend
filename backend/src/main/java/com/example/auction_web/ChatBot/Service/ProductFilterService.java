@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ public class ProductFilterService {
     @Autowired
     private TypeService typeService;
 
-    public ProductFilterService(OpenAIClient openAIClient) {
+    public ProductFilterService(@Qualifier("azureOpenAIClient") OpenAIClient openAIClient) {
         this.openAIClient = openAIClient;
     }
 

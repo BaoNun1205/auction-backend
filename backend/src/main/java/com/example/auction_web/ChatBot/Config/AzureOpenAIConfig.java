@@ -15,7 +15,7 @@ public class AzureOpenAIConfig {
     @Value("${openai.azure.endpoint}")
     private String azureEndpoint;
 
-    @Bean
+    @Bean(name = "azureOpenAIClient")
     public OpenAIClient openAIClient() {
         AzureKeyCredential credential = new AzureKeyCredential(azureApiKey);
         return new OpenAIClientBuilder()
