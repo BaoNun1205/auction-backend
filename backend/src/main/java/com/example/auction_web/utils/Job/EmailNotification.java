@@ -7,12 +7,15 @@ import com.example.auction_web.entity.ScheduleLog.NotificationLog;
 import com.example.auction_web.enums.NotificationType;
 import com.example.auction_web.repository.AuctionSessionRepository;
 import com.example.auction_web.repository.NotificationRepository;
+import com.example.auction_web.service.auth.UserService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
@@ -28,6 +31,11 @@ public class EmailNotification implements Job {
 
     AuctionSessionRepository auctionSessionRepository;
     NotificationStompService notificationService;
+    UserService userService;
+
+    @NonFinal
+    @Value("${email.username}")
+    String EMAIL_ADMIN;
 
     @Override
     public void execute(JobExecutionContext context) {
@@ -43,7 +51,7 @@ public class EmailNotification implements Job {
 
             // Tạo và gửi thông báo socket
             NotificationRequest socketNotification = new NotificationRequest();
-            socketNotification.setSenderId("system");
+            socketNotification.setSenderId(userService.getUserByEmail(EMAIL_ADMIN).getUserId());
             socketNotification.setReceiverId(email);
             socketNotification.setType(NotificationType.AUCTION_REMINDER);
             socketNotification.setTitle("Sắp bắt đầu phiên đấu giá");

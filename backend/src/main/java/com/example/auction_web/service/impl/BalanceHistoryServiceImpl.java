@@ -38,7 +38,7 @@ public class BalanceHistoryServiceImpl implements BalanceHistoryService {
     public List<BalanceHistoryResponse> getAllBalanceHistoriesByUserId(String userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        return balanceHistoryRepository.findBalanceHistoriesByBalanceUser_User_UserId(user.getUserId()).stream()
+        return balanceHistoryRepository.findBalanceHistoriesByBalanceUser_User_UserIdOrderByCreatedAtDesc(user.getUserId()).stream()
                 .map(balanceHistoryMapper::toBalanceHistoryResponse)
                 .toList();
     }
