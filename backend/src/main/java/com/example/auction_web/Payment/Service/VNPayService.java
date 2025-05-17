@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -32,7 +34,10 @@ public class VNPayService {
             Map<String, String> vnpParamsMap = new TreeMap<>(vnPayConfig.getVNPayConfig());
             vnpParamsMap.put("vnp_Amount", String.valueOf(amount));
             vnpParamsMap.put("vnp_TxnRef", txnRef);
-            vnpParamsMap.put("vnp_OrderInfo", "Thanh toán nạp tiền - " + System.currentTimeMillis());
+
+            String orderInfo = "Thanh toán nạp tiền - " + System.currentTimeMillis();
+            String encodedOrderInfo = URLEncoder.encode(orderInfo, StandardCharsets.UTF_8.toString());
+            vnpParamsMap.put("vnp_OrderInfo", encodedOrderInfo);
 
             if (bankCode != null && !bankCode.isEmpty()) {
                 vnpParamsMap.put("vnp_BankCode", bankCode);

@@ -53,6 +53,8 @@ public enum ErrorCode {
     CREATE_REGISTER_SESSION_FAILED(1047, "Create register session failed", HttpStatus.BAD_REQUEST),
     CREATE_BOT_CONVERSATION_FAILED(1048, "Create bot conversation failed", HttpStatus.BAD_REQUEST),
     REVIEW_NOT_EXISTED(1049, "Review not existed", HttpStatus.NOT_FOUND),
+    USER_NOT_CONFIRMATION(1050, "User not comformation", HttpStatus.OK),
+    DEPOSIT_IS_EXISTED(1051, "Deposit is existed", HttpStatus.OK),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

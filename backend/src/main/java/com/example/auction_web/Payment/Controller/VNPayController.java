@@ -9,6 +9,7 @@ import com.example.auction_web.dto.response.AssetResponse;
 import com.example.auction_web.dto.response.BalanceUserResponse;
 import com.example.auction_web.service.BalanceUserService;
 import com.example.auction_web.utils.Payment.VNPayUtil;
+import com.example.auction_web.utils.decodeUTF8Param;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,8 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 @RestController
 @RequestMapping("/payment")
@@ -44,7 +47,10 @@ public class VNPayController {
         String[] parts = txnRef.split("/");
         String userId = parts[0];
         String status = request.getParameter("vnp_ResponseCode");
-        String orderInfo = request.getParameter("vnp_OrderInfo");
+        request.setCharacterEncoding("UTF-8");
+        String encodedOrderInfo = request.getParameter("vnp_OrderInfo");
+        String orderInfo = URLDecoder.decode(encodedOrderInfo, StandardCharsets.UTF_8.toString());
+
         String amountStr = request.getParameter("vnp_Amount");
         BigDecimal amount = new BigDecimal(amountStr).divide(new BigDecimal(100));
 

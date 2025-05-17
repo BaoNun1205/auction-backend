@@ -31,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,6 +60,30 @@ public class DepositServiceImpl implements DepositService {
     // create a deposit
     @Transactional
     public DepositResponse createDeposit(DepositCreateRequest request) {
+
+        if (request.getUserId() == null) {
+            String userId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            request.setUserId(userId);
+        }
+        if (request.getDepositPrice() == null) {
+            var auctionSession = auctionSessionRepository.getById(request.getAuctionSessionId());
+            request.setDepositPrice(auctionSession.getDepositAmount());
+        }
+
+        var checkDeposit = depositRepository.findByAuctionSession_AuctionSessionIdAndUser_UserId(request.getAuctionSessionId(), request.getUserId());
+        if (checkDeposit != null) {
+            throw new AppException(ErrorCode.DEPOSIT_IS_EXISTED);
+        }
+
+        if (request.getUserConfirmation() != null && !request.getUserConfirmation()) {
+            var auctionSession = auctionSessionRepository.getById(request.getAuctionSessionId());
+            throw new AppException(ErrorCode.USER_NOT_CONFIRMATION,
+                    "Please confirm the information before making a deposit: SessionId: "
+                            + request.getAuctionSessionId()
+                            + " Session Name: " + auctionSession.getName()
+                            + " Deposit Amount: " + request.getDepositPrice());
+        }
+
         var deposit = depositMapper.toDeposit(request);
         var admin = userRepository.findByEmail(EMAIL_ADMIN)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));

@@ -18,4 +18,5 @@ public class DepositCreateRequest {
     String auctionSessionId;
     String userId;
     BigDecimal depositPrice;
+    Boolean userConfirmation;
 }
