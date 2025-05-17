@@ -20,6 +20,7 @@ import com.example.auction_web.dto.response.RegisterSessionResponse;
 import com.example.auction_web.dto.response.UsersJoinSessionResponse;
 import com.example.auction_web.entity.AuctionSession;
 import com.example.auction_web.entity.auth.User;
+import com.example.auction_web.enums.AUCTION_STATUS;
 import com.example.auction_web.mapper.AuctionSessionMapper;
 import com.example.auction_web.mapper.UserMapper;
 import com.example.auction_web.personalization.dto.response.SearchHistoryResponse;
@@ -167,7 +168,7 @@ public class RecommendServiceImpl implements RecommendService {
         return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
     }
 
-    public List<AuctionSession> recommendSessions(String userId) {
+    public List<AuctionSession> recommendSessions(String userId, String status) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
         String vectorJson = user.getVectorJson();
@@ -181,8 +182,9 @@ public class RecommendServiceImpl implements RecommendService {
 
         return allSessions.stream()
             .filter(session -> session.getVectorJson() != null)
+            .filter(session -> session.getStatus().equals(status))
             .map(session -> new AbstractMap.SimpleEntry<>(
-                    session, 
+                    session,
                     cosineSimilarity(userVector, VectorUtil.fromJson(session.getVectorJson()))))
             .sorted((a, b) -> Double.compare(b.getValue(), a.getValue()))
             .limit(10)
@@ -190,8 +192,8 @@ public class RecommendServiceImpl implements RecommendService {
             .toList();
     }
 
-    public List<AuctionSessionResponse> recommendAuctionSessionResponses(String userId) {
-        List<AuctionSession> recommendedSessions = recommendSessions(userId);
+    public List<AuctionSessionResponse> recommendAuctionSessionResponses(String userId, String status) {
+        List<AuctionSession> recommendedSessions = recommendSessions(userId, status);
 
         // Collect all user IDs needed for mapping
         Set<String> userIds = recommendedSessions.stream()
