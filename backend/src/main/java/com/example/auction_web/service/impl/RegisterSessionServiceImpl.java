@@ -79,7 +79,7 @@ public class RegisterSessionServiceImpl implements RegisterSessionService {
             }
     
             // Thiết lập thông báo trước giờ phiên đấu giá
-            LocalDateTime notificationTime = auctionSession.getStartTime().minusMinutes(30);
+            LocalDateTime notificationTime = auctionSession.getStartTime();
             notificationService.setSchedulerNotification(
                     user.getEmail(), auctionSession.getAuctionSessionId(), notificationTime
             );
