@@ -119,4 +119,8 @@ public class BalanceUserServiceImpl implements BalanceUserService {
         balanceHistory.setBalanceUser(balanceUser);
         balanceHistoryRepository.save(balanceHistory);
     }
+
+    public BalanceUserResponse getBalanceUserAdmin() {
+        return balanceUserMapper.toBalanceUserResponse(balanceUserRepository.findBalanceUserByUser_Email(EMAIL_ADMIN));
+    }
 }

@@ -14,4 +14,5 @@ public interface BalanceUserService {
     BalanceUserResponse getCoinUserByUserId(String userId);
     BalanceUserResponse updateCoinUserVnPay(String userId, String orderInfo, BigDecimal amount);
     BalanceUserResponse getMyCoinUser();
+    BalanceUserResponse getBalanceUserAdmin();
 }
