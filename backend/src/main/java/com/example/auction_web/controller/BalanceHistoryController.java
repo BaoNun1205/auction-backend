@@ -1,15 +1,14 @@
 package com.example.auction_web.controller;
 
+import com.example.auction_web.dto.request.PaymentSessionDTO;
 import com.example.auction_web.dto.response.ApiResponse;
 import com.example.auction_web.dto.response.BalanceHistoryResponse;
 import com.example.auction_web.service.BalanceHistoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestClient;
 
 import java.util.List;
 
@@ -19,6 +18,7 @@ import java.util.List;
 @FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
 public class BalanceHistoryController {
     BalanceHistoryService balanceHistoryService;
+    private final RestClient.Builder builder;
 
     @GetMapping("/user/{userId}")
     public ApiResponse<List<BalanceHistoryResponse>> getAllBalanceHistoriesByUserId(@PathVariable String userId) {
@@ -27,4 +27,20 @@ public class BalanceHistoryController {
                 .result(balanceHistoryService.getAllBalanceHistoriesByUserId(userId))
                 .build();
     }
+
+    @PostMapping("/payment-session")
+    public ApiResponse<String> paymentSession(@RequestBody PaymentSessionDTO request) {
+        try {
+            return ApiResponse.<String>builder()
+                    .code(HttpStatus.OK.value())
+                    .result("Thanh toán thành công")
+                    .build();
+        } catch (Exception ex) {
+            return ApiResponse.<String>builder()
+                    .code(HttpStatus.BAD_REQUEST.value())
+                    .message(ex.getMessage())
+                    .build();
+        }
+    }
+
 }
