@@ -91,8 +91,18 @@ public class BalanceHistoryServiceImpl implements BalanceHistoryService {
     }
 
 
-    public void cancelSession(String buyerId, String sellerId, String sessionId) {
+    public void cancelSession(String sellerId, String sessionId) {
+        var auctionSession = auctionSessionRepository.findById(sessionId).orElseThrow(() -> new AppException(ErrorCode.AUCTION_SESSION_NOT_EXISTED));
+        var admin = userRepository.findById(EMAIL_ADMIN).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        var adminBalance = balanceUserRepository.findBalanceUserByUser_UserId(admin.getUserId());
 
+        BigDecimal depositAmount = auctionSession.getDepositAmount();
+
+        balanceUserRepository.minusBalance(adminBalance.getBalanceUserId(), depositAmount);
+        addBalanceHistory(adminBalance.getBalanceUserId(), depositAmount, "Thanh toán hủy thanh toán cho phiên " + sessionId, ACTIONBALANCE.ADD);
+
+        balanceUserRepository.increaseBalance(sellerId, depositAmount);
+        addBalanceHistory(sellerId, depositAmount, "Nhận thanh toán hủy thanh toán phiên " + sessionId, ACTIONBALANCE.ADD);
     }
 
     void addBalanceHistory(String BalanceUserId, BigDecimal amount, String Description, ACTIONBALANCE action) {
