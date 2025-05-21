@@ -42,6 +42,10 @@ public class BalanceHistoryServiceImpl implements BalanceHistoryService {
     BalanceHistoryMapper balanceHistoryMapper;
     AuctionSessionRepository auctionSessionRepository;
 
+    private static final BigDecimal TEN_MILLION = new BigDecimal("10000000");
+    private static final BigDecimal HUNDRED_MILLION = new BigDecimal("100000000");
+    private static final BigDecimal ONE_BILLION = new BigDecimal("1000000000");
+
     @Override
     public List<BalanceHistoryResponse> getAllBalanceHistoriesByBalanceUserId(String balanceUserId) {
         BalanceUser balanceUser = balanceUserRepository.findById(balanceUserId)
@@ -72,7 +76,7 @@ public class BalanceHistoryServiceImpl implements BalanceHistoryService {
             throw new AppException(ErrorCode.BALANCE_NOT_ENOUGH);
         }
 
-        BigDecimal commissionPercent = new BigDecimal("3");
+        BigDecimal commissionPercent = new BigDecimal(calculateCommission(PricePayment));
         BigDecimal hundred = new BigDecimal("100");
         BigDecimal depositAmount = auctionSession.getDepositAmount();
 
@@ -84,6 +88,7 @@ public class BalanceHistoryServiceImpl implements BalanceHistoryService {
         addBalanceHistory(balanceBuyer.getBalanceUserId(), priceRemaining, "Thanh toán phiên " + sessionId, ACTIONBALANCE.SUBTRACT);
 
         balanceUserRepository.increaseBalance(adminBalance.getBalanceUserId(), priceCommission);
+        balanceUserRepository.minusBalance(adminBalance.getBalanceUserId(), depositAmount);
         addBalanceHistory(adminBalance.getBalanceUserId(), priceCommission, "Hoa hồng phiên " + sessionId, ACTIONBALANCE.ADD);
 
         balanceUserRepository.increaseBalance(sellerId, sellerReceive);
@@ -97,12 +102,20 @@ public class BalanceHistoryServiceImpl implements BalanceHistoryService {
         var adminBalance = balanceUserRepository.findBalanceUserByUser_UserId(admin.getUserId());
 
         BigDecimal depositAmount = auctionSession.getDepositAmount();
+        BigDecimal commissionPercent = new BigDecimal(calculateCommission(depositAmount));
+        BigDecimal hundred = new BigDecimal("100");
 
-        balanceUserRepository.minusBalance(adminBalance.getBalanceUserId(), depositAmount);
-        addBalanceHistory(adminBalance.getBalanceUserId(), depositAmount, "Thanh toán hủy thanh toán cho phiên " + sessionId, ACTIONBALANCE.ADD);
+        BigDecimal priceCommission = depositAmount.multiply(commissionPercent).divide(hundred, 2, RoundingMode.HALF_UP);
+        BigDecimal sellerReceive = depositAmount.subtract(priceCommission);
 
-        balanceUserRepository.increaseBalance(sellerId, depositAmount);
-        addBalanceHistory(sellerId, depositAmount, "Nhận thanh toán hủy thanh toán phiên " + sessionId, ACTIONBALANCE.ADD);
+        balanceUserRepository.increaseBalance(adminBalance.getBalanceUserId(), priceCommission);
+        addBalanceHistory(adminBalance.getBalanceUserId(), priceCommission, "Hoa hồng phiên " + sessionId, ACTIONBALANCE.ADD);
+
+        balanceUserRepository.minusBalance(adminBalance.getBalanceUserId(), sellerReceive);
+        addBalanceHistory(adminBalance.getBalanceUserId(), sellerReceive, "Thanh toán hủy thanh toán cho phiên " + sessionId, ACTIONBALANCE.SUBTRACT);
+
+        balanceUserRepository.increaseBalance(sellerId, sellerReceive);
+        addBalanceHistory(sellerId, sellerReceive, "Nhận thanh toán hủy thanh toán phiên " + sessionId, ACTIONBALANCE.ADD);
     }
 
     void addBalanceHistory(String BalanceUserId, BigDecimal amount, String Description, ACTIONBALANCE action) {
@@ -116,5 +129,17 @@ public class BalanceHistoryServiceImpl implements BalanceHistoryService {
         var balanceHistory = balanceHistoryMapper.toBalanceHistory(request);
         balanceHistory.setBalanceUser(balanceUser);
         balanceHistoryRepository.save(balanceHistory);
+    }
+
+    public int calculateCommission(BigDecimal pricePayment) {
+        if (pricePayment.compareTo(TEN_MILLION) < 0) {
+            return 8;
+        } else if (pricePayment.compareTo(HUNDRED_MILLION) < 0) {
+            return 5;
+        } else if (pricePayment.compareTo(ONE_BILLION) < 0) {
+            return 3;
+        } else {
+            return 2;
+        }
     }
 }
