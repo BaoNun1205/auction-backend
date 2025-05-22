@@ -12,7 +12,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class PaymentSessionDTO {
-    String BuyerId;
-    String SellerId;
-    String SessionId;
+    String buyerId;
+    String sellerId;
+    String sessionId;
 }

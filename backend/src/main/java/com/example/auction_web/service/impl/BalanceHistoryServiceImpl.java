@@ -69,7 +69,7 @@ public class BalanceHistoryServiceImpl implements BalanceHistoryService {
         var PricePayment = auctionHistoryRepository.findMaxBidPriceByAuctionSessionId(sessionId);
         var balanceBuyer = balanceUserRepository.findById(buyerId).orElseThrow(() -> new AppException(ErrorCode.BALANCE_USER_NOT_EXISTED));
         var auctionSession = auctionSessionRepository.findById(sessionId).orElseThrow(() -> new AppException(ErrorCode.AUCTION_SESSION_NOT_EXISTED));
-        var admin = userRepository.findById(EMAIL_ADMIN).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        var admin = userRepository.findByEmail(EMAIL_ADMIN).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         var adminBalance = balanceUserRepository.findBalanceUserByUser_UserId(admin.getUserId());
 
         if (balanceBuyer.getAccountBalance().compareTo(PricePayment) < 0) {
@@ -98,7 +98,7 @@ public class BalanceHistoryServiceImpl implements BalanceHistoryService {
 
     public void cancelSession(String sellerId, String sessionId) {
         var auctionSession = auctionSessionRepository.findById(sessionId).orElseThrow(() -> new AppException(ErrorCode.AUCTION_SESSION_NOT_EXISTED));
-        var admin = userRepository.findById(EMAIL_ADMIN).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        var admin = userRepository.findByEmail(EMAIL_ADMIN).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         var adminBalance = balanceUserRepository.findBalanceUserByUser_UserId(admin.getUserId());
 
         BigDecimal depositAmount = auctionSession.getDepositAmount();
