@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -67,7 +68,9 @@ public class BalanceHistoryServiceImpl implements BalanceHistoryService {
     @Transactional
     public void paymentSession(String buyerId, String sellerId, String sessionId) {
         var PricePayment = auctionHistoryRepository.findMaxBidPriceByAuctionSessionId(sessionId);
-        var balanceBuyer = balanceUserRepository.findById(buyerId).orElseThrow(() -> new AppException(ErrorCode.BALANCE_USER_NOT_EXISTED));
+        BalanceUser balanceBuyer = Optional.ofNullable(
+                balanceUserRepository.findBalanceUserByUser_UserId(buyerId)
+        ).orElseThrow(() -> new AppException(ErrorCode.BALANCE_USER_NOT_EXISTED));
         var auctionSession = auctionSessionRepository.findById(sessionId).orElseThrow(() -> new AppException(ErrorCode.AUCTION_SESSION_NOT_EXISTED));
         var admin = userRepository.findByEmail(EMAIL_ADMIN).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         var adminBalance = balanceUserRepository.findBalanceUserByUser_UserId(admin.getUserId());
