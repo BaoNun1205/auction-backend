@@ -8,7 +8,10 @@ import com.example.auction_web.entity.auth.User;
 import com.example.auction_web.enums.ACTIONBALANCE;
 import com.example.auction_web.exception.AppException;
 import com.example.auction_web.exception.ErrorCode;
+import com.example.auction_web.mapper.AuctionSessionMapper;
 import com.example.auction_web.mapper.BalanceHistoryMapper;
+import com.example.auction_web.mapper.BalanceUserMapper;
+import com.example.auction_web.mapper.UserMapper;
 import com.example.auction_web.repository.AuctionHistoryRepository;
 import com.example.auction_web.repository.AuctionSessionRepository;
 import com.example.auction_web.repository.BalanceHistoryRepository;
@@ -19,6 +22,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +32,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class BalanceHistoryServiceImpl implements BalanceHistoryService {
@@ -41,6 +46,9 @@ public class BalanceHistoryServiceImpl implements BalanceHistoryService {
     UserRepository userRepository;
 
     BalanceHistoryMapper balanceHistoryMapper;
+    BalanceUserMapper balanceUserMapper;
+    AuctionSessionMapper auctionSessionMapper;
+    UserMapper userMapper;
     AuctionSessionRepository auctionSessionRepository;
 
     private static final BigDecimal TEN_MILLION = new BigDecimal("10000000");
@@ -68,12 +76,11 @@ public class BalanceHistoryServiceImpl implements BalanceHistoryService {
     @Transactional
     public void paymentSession(String buyerId, String sellerId, String sessionId) {
         var PricePayment = auctionHistoryRepository.findMaxBidPriceByAuctionSessionId(sessionId);
-        BalanceUser balanceBuyer = Optional.ofNullable(
-                balanceUserRepository.findBalanceUserByUser_UserId(buyerId)
-        ).orElseThrow(() -> new AppException(ErrorCode.BALANCE_USER_NOT_EXISTED));
-        var auctionSession = auctionSessionRepository.findById(sessionId).orElseThrow(() -> new AppException(ErrorCode.AUCTION_SESSION_NOT_EXISTED));
-        var admin = userRepository.findByEmail(EMAIL_ADMIN).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        var adminBalance = balanceUserRepository.findBalanceUserByUser_UserId(admin.getUserId());
+        var balanceBuyer = balanceUserMapper.toBalanceUserResponse(balanceUserRepository.findBalanceUserByUser_UserId(buyerId));
+        var balanceSeller = balanceUserMapper.toBalanceUserResponse(balanceUserRepository.findBalanceUserByUser_UserId(sellerId));
+        var auctionSession = auctionSessionMapper.toAuctionItemResponse(auctionSessionRepository.findById(sessionId).get());
+        var admin = userMapper.toUserResponse(userRepository.findByEmail(EMAIL_ADMIN).get());
+        var adminBalance = balanceUserMapper.toBalanceUserResponse(balanceUserRepository.findBalanceUserByUser_UserId(admin.getUserId()));
 
         if (balanceBuyer.getAccountBalance().compareTo(PricePayment) < 0) {
             throw new AppException(ErrorCode.BALANCE_NOT_ENOUGH);
@@ -87,15 +94,15 @@ public class BalanceHistoryServiceImpl implements BalanceHistoryService {
         BigDecimal priceCommission = PricePayment.multiply(commissionPercent).divide(hundred, 2, RoundingMode.HALF_UP);
         BigDecimal sellerReceive = PricePayment.subtract(priceCommission);
 
-        balanceUserRepository.minusBalance(buyerId, priceRemaining);
+        balanceUserRepository.minusBalance(balanceBuyer.getBalanceUserId(), priceRemaining);
         addBalanceHistory(balanceBuyer.getBalanceUserId(), priceRemaining, "Thanh toán phiên " + sessionId, ACTIONBALANCE.SUBTRACT);
 
         balanceUserRepository.increaseBalance(adminBalance.getBalanceUserId(), priceCommission);
         balanceUserRepository.minusBalance(adminBalance.getBalanceUserId(), depositAmount);
         addBalanceHistory(adminBalance.getBalanceUserId(), priceCommission, "Hoa hồng phiên " + sessionId, ACTIONBALANCE.ADD);
 
-        balanceUserRepository.increaseBalance(sellerId, sellerReceive);
-        addBalanceHistory(sellerId, sellerReceive, "Nhận thanh toán phiên " + sessionId, ACTIONBALANCE.ADD);
+        balanceUserRepository.increaseBalance(balanceSeller.getBalanceUserId(), sellerReceive);
+        addBalanceHistory(balanceSeller.getBalanceUserId(), sellerReceive, "Nhận thanh toán phiên " + sessionId, ACTIONBALANCE.ADD);
     }
 
 

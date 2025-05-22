@@ -30,18 +30,13 @@ public class BalanceHistoryController {
 
     @PostMapping("/payment-session")
     public ApiResponse<String> paymentSession(@RequestBody PaymentSessionDTO request) {
-        try {
+
             balanceHistoryService.paymentSession(request.getBuyerId(), request.getSellerId(), request.getSessionId());
             return ApiResponse.<String>builder()
                     .code(HttpStatus.OK.value())
                     .result("Thanh toán thành công")
                     .build();
-        } catch (Exception ex) {
-            return ApiResponse.<String>builder()
-                    .code(HttpStatus.BAD_REQUEST.value())
-                    .message(ex.getMessage())
-                    .build();
-        }
+
     }
 
     @PostMapping("/cancel-payment-session")
