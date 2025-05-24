@@ -77,4 +77,27 @@ public class SessionWinnerServiceImpl implements SessionWinnerService {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
     }
+
+    public SessionWinnerResponse getSessionWinnerByAuctionSessionId(String auctionSessionId) {
+        SessionWinner sessionWinner = sessionWinnerRepository
+                .findByAuctionSession_AuctionSessionId(auctionSessionId);
+
+        if (sessionWinner == null) {
+            throw new AppException(ErrorCode.SESSION_WINNER_NOT_FOUND);
+        }
+
+        SessionWinnerResponse response = sessionWinnerMapper.toSessionWinnerResponse(sessionWinner);
+
+        if (sessionWinner.getAuctionSession().getAsset() != null) {
+            response.getAuctionSession().setAsset(
+                    assetMapper.toAssetResponse(
+                            assetRepository.findById(sessionWinner.getAuctionSession().getAsset().getAssetId()).orElse(null)
+                    )
+            );
+        } else {
+            response.getAuctionSession().setAsset(null);
+        }
+
+        return response;
+    }
 }

@@ -9,4 +9,5 @@ public interface SessionWinnerService {
     SessionWinnerResponse createSessionWinner(SessionWinnerCreateRequest request);
     SessionWinnerResponse getSessionWinner(String userId);
     List<SessionWinnerResponse> getSessionsWinner(String userId);
+    SessionWinnerResponse getSessionWinnerByAuctionSessionId(String auctionSessionId);
 }
