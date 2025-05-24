@@ -4,8 +4,10 @@ import com.example.auction_web.dto.request.BalanceHistoryCreateRequest;
 import com.example.auction_web.dto.response.BalanceHistoryResponse;
 import com.example.auction_web.dto.response.BalanceUserResponse;
 import com.example.auction_web.entity.BalanceUser;
+import com.example.auction_web.entity.SessionWinner;
 import com.example.auction_web.entity.auth.User;
 import com.example.auction_web.enums.ACTIONBALANCE;
+import com.example.auction_web.enums.SESSION_WIN_STATUS;
 import com.example.auction_web.exception.AppException;
 import com.example.auction_web.exception.ErrorCode;
 import com.example.auction_web.mapper.AuctionSessionMapper;
@@ -16,6 +18,7 @@ import com.example.auction_web.repository.AuctionHistoryRepository;
 import com.example.auction_web.repository.AuctionSessionRepository;
 import com.example.auction_web.repository.BalanceHistoryRepository;
 import com.example.auction_web.repository.BalanceUserRepository;
+import com.example.auction_web.repository.SessionWinnerRepository;
 import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.BalanceHistoryService;
 import jakarta.transaction.Transactional;
@@ -50,6 +53,7 @@ public class BalanceHistoryServiceImpl implements BalanceHistoryService {
     AuctionSessionMapper auctionSessionMapper;
     UserMapper userMapper;
     AuctionSessionRepository auctionSessionRepository;
+    SessionWinnerRepository sessionWinnerRepository;
 
     private static final BigDecimal TEN_MILLION = new BigDecimal("10000000");
     private static final BigDecimal HUNDRED_MILLION = new BigDecimal("100000000");
@@ -103,6 +107,12 @@ public class BalanceHistoryServiceImpl implements BalanceHistoryService {
 
         balanceUserRepository.increaseBalance(balanceSeller.getBalanceUserId(), sellerReceive);
         addBalanceHistory(balanceSeller.getBalanceUserId(), sellerReceive, "Nhận thanh toán phiên " + sessionId, ACTIONBALANCE.ADD);
+
+        SessionWinner sessionWinner = sessionWinnerRepository.findByAuctionSession_AuctionSessionId(sessionId);
+        if (sessionWinner != null) {
+            sessionWinner.setStatus(SESSION_WIN_STATUS.PAYMENT_SUCCESSFUL.toString());
+            sessionWinnerRepository.save(sessionWinner);
+        }
     }
 
 
