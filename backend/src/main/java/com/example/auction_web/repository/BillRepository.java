@@ -9,5 +9,6 @@ import java.util.List;
 
 @Repository
 public interface BillRepository extends JpaRepository<Bill, String> {
-    Bill findBillByDeposit_DepositId(String depositId);
+    List<Bill> findBillByUser_UserId(String userId);
+    Bill findBillByBillId(String id);
 }

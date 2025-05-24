@@ -9,6 +9,8 @@ import lombok.experimental.FieldDefaults;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import static com.example.auction_web.utils.TransactionCodeGenerator.generateTransactionCode;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,11 +18,13 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class BillResponse {
     String billId;
+    String transactionCode;
     LocalDateTime billDate;
+    String userId;
     String addressId;
-    String depositId;
+    String sessionId;
     BigDecimal bidPrice;
-    BigDecimal profitPrice;
+    BigDecimal depositPrice;
     Boolean delFlag;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;

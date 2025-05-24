@@ -164,8 +164,13 @@ public class DepositServiceImpl implements DepositService {
         }
         return depositRepository.findSessionsJoinByUserId(userId).stream()
                 .map(usersJoinSessionResponse -> {
+                    var auctionSession = auctionSessionRepository.findById(usersJoinSessionResponse.getSessionId())
+                            .orElseThrow(() -> new AppException(ErrorCode.AUCTION_SESSION_NOT_EXISTED));
                     usersJoinSessionResponse.setAuctionSession(auctionSessionMapper.toAuctionItemResponse(auctionSessionRepository.findById(usersJoinSessionResponse.getSessionId()).orElseThrow()));
-                    usersJoinSessionResponse.getAuctionSession().setAuctionSessionInfo(auctionHistoryRepository.findAuctionSessionInfo(usersJoinSessionResponse.getSessionId()).get(0));
+                    var auctionSessionInfos = auctionHistoryRepository.findAuctionSessionInfo(usersJoinSessionResponse.getSessionId());
+                    if (!auctionSessionInfos.isEmpty()) {
+                        usersJoinSessionResponse.getAuctionSession().setAuctionSessionInfo(auctionSessionInfos.get(0));
+                    }
                     return usersJoinSessionResponse;
                 })
                 .toList();

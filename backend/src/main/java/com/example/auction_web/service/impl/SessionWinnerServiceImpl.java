@@ -1,19 +1,20 @@
 package com.example.auction_web.service.impl;
 
+import com.example.auction_web.dto.request.BillCreateRequest;
 import com.example.auction_web.dto.request.DepositCreateRequest;
 import com.example.auction_web.dto.request.SessionWinnerCreateRequest;
 import com.example.auction_web.dto.response.SessionWinnerResponse;
 import com.example.auction_web.entity.AuctionSession;
+import com.example.auction_web.entity.Bill;
 import com.example.auction_web.entity.Deposit;
 import com.example.auction_web.entity.SessionWinner;
 import com.example.auction_web.entity.auth.User;
 import com.example.auction_web.exception.AppException;
 import com.example.auction_web.exception.ErrorCode;
 import com.example.auction_web.mapper.AssetMapper;
+import com.example.auction_web.mapper.BillMapper;
 import com.example.auction_web.mapper.SessionWinnerMapper;
-import com.example.auction_web.repository.AssetRepository;
-import com.example.auction_web.repository.AuctionSessionRepository;
-import com.example.auction_web.repository.SessionWinnerRepository;
+import com.example.auction_web.repository.*;
 import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.SessionWinnerService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,8 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import static com.example.auction_web.utils.TransactionCodeGenerator.generateTransactionCode;
 
 @Service
 @RequiredArgsConstructor
@@ -31,11 +34,28 @@ public class SessionWinnerServiceImpl implements SessionWinnerService {
     UserRepository userRepository;
     SessionWinnerMapper sessionWinnerMapper;
     AssetMapper assetMapper;
+    DepositRepository depositRepository;
+    BillMapper billMapper;
+    BillRepository billRepository;
     private final AssetRepository assetRepository;
 
     public SessionWinnerResponse createSessionWinner(SessionWinnerCreateRequest request) {
         var sessionWinner = sessionWinnerMapper.toSessionWinner(request);
         setSessionWinnerReference(sessionWinner, request);
+
+        // Create bill
+        var deposit = depositRepository.findByAuctionSession_AuctionSessionIdAndUser_UserId(request.getAuctionSessionId(), request.getUserId());
+        var billRequest = BillCreateRequest.builder()
+                .transactionCode(generateTransactionCode())
+                .sessionId(sessionWinner.getAuctionSession().getAuctionSessionId())
+                .bidPrice(request.getPrice())
+                .depositPrice(deposit.getDepositPrice())
+                .billDate(request.getVictoryTime())
+                .build();
+
+        var bill = billMapper.toBill(billRequest);
+        setBillReference(bill, request);
+        billRepository.save(bill);
         return sessionWinnerMapper.toSessionWinnerResponse(sessionWinnerRepository.save(sessionWinner));
     }
 
@@ -46,6 +66,11 @@ public class SessionWinnerServiceImpl implements SessionWinnerService {
     void setSessionWinnerReference(SessionWinner sessionWinner, SessionWinnerCreateRequest request) {
         sessionWinner.setAuctionSession(getAuctionSession(request.getAuctionSessionId()));
         sessionWinner.setUser(getUser(request.getUserId()));
+    }
+
+    void setBillReference(Bill bill, SessionWinnerCreateRequest request) {
+        bill.setSession(getAuctionSession(request.getAuctionSessionId()));
+        bill.setUser(getUser(request.getUserId()));
     }
 
     public List<SessionWinnerResponse> getSessionsWinner(String userId) {

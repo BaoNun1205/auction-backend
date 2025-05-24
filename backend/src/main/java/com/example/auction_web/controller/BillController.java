@@ -4,6 +4,7 @@ import com.example.auction_web.dto.request.BillCreateRequest;
 import com.example.auction_web.dto.request.BillUpdateRequest;
 import com.example.auction_web.dto.response.ApiResponse;
 import com.example.auction_web.dto.response.BillResponse;
+import com.example.auction_web.entity.Bill;
 import com.example.auction_web.service.BillService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -43,11 +44,35 @@ public class BillController {
                 .build();
     }
 
-    @GetMapping("/deposit/id/{depositId}")
-    ApiResponse<BillResponse> findBillByDeposit_DepositId(@PathVariable String depositId) {
-        return ApiResponse.<BillResponse>builder()
-                .code(HttpStatus.OK.value())
-                .result(billService.findBillByDeposit_DepositId(depositId))
-                .build();
+    @GetMapping("/{userId}")
+    ApiResponse<List<BillResponse>> getBillsByUserId(@PathVariable String userId) {
+        try {
+            return ApiResponse.<List<BillResponse>>builder()
+                    .code(HttpStatus.OK.value())
+                    .result(billService.getBillByUserId(userId))
+                    .build();
+        } catch (Exception e) {
+            return ApiResponse.<List<BillResponse>>builder()
+                    .code(HttpStatus.OK.value())
+                    .result(null)
+                    .message(e.getMessage())
+                    .build();
+        }
+    }
+
+    @GetMapping("/{id}")
+    ApiResponse<BillResponse> getBillById(@PathVariable String id) {
+        try {
+            return ApiResponse.<BillResponse>builder()
+                    .code(HttpStatus.OK.value())
+                    .result(billService.getBillById(id))
+                    .build();
+        } catch (Exception e) {
+            return ApiResponse.<BillResponse>builder()
+                    .code(HttpStatus.OK.value())
+                    .result(null)
+                    .message(e.getMessage())
+                    .build();
+        }
     }
 }
