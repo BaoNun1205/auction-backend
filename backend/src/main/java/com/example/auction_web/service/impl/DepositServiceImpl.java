@@ -18,10 +18,7 @@ import com.example.auction_web.exception.ErrorCode;
 import com.example.auction_web.mapper.AuctionSessionMapper;
 import com.example.auction_web.mapper.BalanceHistoryMapper;
 import com.example.auction_web.mapper.DepositMapper;
-import com.example.auction_web.repository.AuctionSessionRepository;
-import com.example.auction_web.repository.BalanceHistoryRepository;
-import com.example.auction_web.repository.BalanceUserRepository;
-import com.example.auction_web.repository.DepositRepository;
+import com.example.auction_web.repository.*;
 import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.AuctionSessionService;
 import com.example.auction_web.service.DepositService;
@@ -51,6 +48,7 @@ public class DepositServiceImpl implements DepositService {
     AuctionSessionMapper auctionSessionMapper;
     BalanceHistoryRepository balanceHistoryRepository;
     NotificationStompService notificationStompService;
+    AuctionHistoryRepository auctionHistoryRepository;
     UserService userService;
 
     @NonFinal
@@ -167,6 +165,7 @@ public class DepositServiceImpl implements DepositService {
         return depositRepository.findSessionsJoinByUserId(userId).stream()
                 .map(usersJoinSessionResponse -> {
                     usersJoinSessionResponse.setAuctionSession(auctionSessionMapper.toAuctionItemResponse(auctionSessionRepository.findById(usersJoinSessionResponse.getSessionId()).orElseThrow()));
+                    usersJoinSessionResponse.getAuctionSession().setAuctionSessionInfo(auctionHistoryRepository.findAuctionSessionInfo(usersJoinSessionResponse.getSessionId()).get(0));
                     return usersJoinSessionResponse;
                 })
                 .toList();
