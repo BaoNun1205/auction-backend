@@ -38,16 +38,21 @@ public class Bill {
     AuctionSession session;
 
     @ManyToOne
-    @JoinColumn(name = "userId", referencedColumnName = "userId")
-    User user;
+    @JoinColumn(name = "buyerId", referencedColumnName = "userId")
+    User buyerBill;
+
+    @ManyToOne
+    @JoinColumn(name = "sellerId", referencedColumnName = "userId")
+    User sellerBill;
+
+    @Column(precision = 15, scale = 0)
+    BigDecimal totalPrice;
 
     @Column(precision = 15, scale = 0)
     BigDecimal bidPrice;
 
     @Column(precision = 15, scale = 0)
     BigDecimal depositPrice;
-
-    SESSION_WIN_STATUS status;
 
     Boolean delFlag;
     LocalDateTime createdAt;
@@ -58,7 +63,6 @@ public class Bill {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         this.delFlag = false;
-        this.status = SESSION_WIN_STATUS.PENDING_PAYMENT;
     }
 
     @PreUpdate

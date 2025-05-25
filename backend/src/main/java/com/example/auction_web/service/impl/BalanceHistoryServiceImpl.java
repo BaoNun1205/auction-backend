@@ -1,24 +1,21 @@
 package com.example.auction_web.service.impl;
 
 import com.example.auction_web.dto.request.BalanceHistoryCreateRequest;
+import com.example.auction_web.dto.request.BillCreateRequest;
+import com.example.auction_web.dto.request.SessionWinnerCreateRequest;
 import com.example.auction_web.dto.response.BalanceHistoryResponse;
 import com.example.auction_web.dto.response.BalanceUserResponse;
+import com.example.auction_web.entity.AuctionSession;
 import com.example.auction_web.entity.BalanceUser;
+import com.example.auction_web.entity.Bill;
 import com.example.auction_web.entity.SessionWinner;
 import com.example.auction_web.entity.auth.User;
 import com.example.auction_web.enums.ACTIONBALANCE;
 import com.example.auction_web.enums.SESSION_WIN_STATUS;
 import com.example.auction_web.exception.AppException;
 import com.example.auction_web.exception.ErrorCode;
-import com.example.auction_web.mapper.AuctionSessionMapper;
-import com.example.auction_web.mapper.BalanceHistoryMapper;
-import com.example.auction_web.mapper.BalanceUserMapper;
-import com.example.auction_web.mapper.UserMapper;
-import com.example.auction_web.repository.AuctionHistoryRepository;
-import com.example.auction_web.repository.AuctionSessionRepository;
-import com.example.auction_web.repository.BalanceHistoryRepository;
-import com.example.auction_web.repository.BalanceUserRepository;
-import com.example.auction_web.repository.SessionWinnerRepository;
+import com.example.auction_web.mapper.*;
+import com.example.auction_web.repository.*;
 import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.BalanceHistoryService;
 import jakarta.transaction.Transactional;
@@ -31,8 +28,11 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+
+import static com.example.auction_web.utils.TransactionCodeGenerator.generateTransactionCode;
 
 @Service
 @Slf4j
@@ -52,6 +52,9 @@ public class BalanceHistoryServiceImpl implements BalanceHistoryService {
     BalanceUserMapper balanceUserMapper;
     AuctionSessionMapper auctionSessionMapper;
     UserMapper userMapper;
+    BillMapper billMapper;
+    BillRepository billRepository;
+
     AuctionSessionRepository auctionSessionRepository;
     SessionWinnerRepository sessionWinnerRepository;
 
@@ -79,24 +82,24 @@ public class BalanceHistoryServiceImpl implements BalanceHistoryService {
 
     @Transactional
     public void paymentSession(String buyerId, String sellerId, String sessionId) {
-        var PricePayment = auctionHistoryRepository.findMaxBidPriceByAuctionSessionId(sessionId);
+        var pricePayment = auctionHistoryRepository.findMaxBidPriceByAuctionSessionId(sessionId);
         var balanceBuyer = balanceUserMapper.toBalanceUserResponse(balanceUserRepository.findBalanceUserByUser_UserId(buyerId));
         var balanceSeller = balanceUserMapper.toBalanceUserResponse(balanceUserRepository.findBalanceUserByUser_UserId(sellerId));
         var auctionSession = auctionSessionMapper.toAuctionItemResponse(auctionSessionRepository.findById(sessionId).get());
         var admin = userMapper.toUserResponse(userRepository.findByEmail(EMAIL_ADMIN).get());
         var adminBalance = balanceUserMapper.toBalanceUserResponse(balanceUserRepository.findBalanceUserByUser_UserId(admin.getUserId()));
 
-        if (balanceBuyer.getAccountBalance().compareTo(PricePayment) < 0) {
+        if (balanceBuyer.getAccountBalance().compareTo(pricePayment) < 0) {
             throw new AppException(ErrorCode.BALANCE_NOT_ENOUGH);
         }
 
-        BigDecimal commissionPercent = new BigDecimal(calculateCommission(PricePayment));
+        BigDecimal commissionPercent = new BigDecimal(calculateCommission(pricePayment));
         BigDecimal hundred = new BigDecimal("100");
         BigDecimal depositAmount = auctionSession.getDepositAmount();
 
-        BigDecimal priceRemaining = PricePayment.subtract(depositAmount);
-        BigDecimal priceCommission = PricePayment.multiply(commissionPercent).divide(hundred, 2, RoundingMode.HALF_UP);
-        BigDecimal sellerReceive = PricePayment.subtract(priceCommission);
+        BigDecimal priceRemaining = pricePayment.subtract(depositAmount);
+        BigDecimal priceCommission = pricePayment.multiply(commissionPercent).divide(hundred, 2, RoundingMode.HALF_UP);
+        BigDecimal sellerReceive = pricePayment.subtract(priceCommission);
 
         balanceUserRepository.minusBalance(balanceBuyer.getBalanceUserId(), priceRemaining);
         addBalanceHistory(balanceBuyer.getBalanceUserId(), priceRemaining, "Thanh toán phiên " + sessionId, ACTIONBALANCE.SUBTRACT);
@@ -113,6 +116,22 @@ public class BalanceHistoryServiceImpl implements BalanceHistoryService {
             sessionWinner.setStatus(SESSION_WIN_STATUS.PAYMENT_SUCCESSFUL.toString());
             sessionWinnerRepository.save(sessionWinner);
         }
+
+        // Create bill
+        var billRequest = BillCreateRequest.builder()
+                .transactionCode(generateTransactionCode())
+                .sessionId(sessionWinner.getAuctionSession().getAuctionSessionId())
+                .buyerId(buyerId)
+                .sellerId(sellerId)
+                .totalPrice(pricePayment)
+                .bidPrice(priceRemaining)
+                .depositPrice(auctionSession.getDepositAmount())
+                .billDate(LocalDateTime.now())
+                .build();
+
+        var bill = billMapper.toBill(billRequest);
+        setBillReference(bill, billRequest);
+        billRepository.save(bill);
     }
 
 
@@ -161,5 +180,21 @@ public class BalanceHistoryServiceImpl implements BalanceHistoryService {
         } else {
             return 2;
         }
+    }
+
+    void setBillReference(Bill bill, BillCreateRequest request) {
+        bill.setSession(getAuctionSession(request.getSessionId()));
+        bill.setBuyerBill(getUser(request.getBuyerId()));
+        bill.setSellerBill(getUser(request.getSellerId()));
+    }
+
+    AuctionSession getAuctionSession(String auctionSession) {
+        return auctionSessionRepository.findById(auctionSession)
+                .orElseThrow(() -> new AppException(ErrorCode.AUCTION_SESSION_NOT_EXISTED));
+    }
+
+    User getUser(String userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
     }
 }

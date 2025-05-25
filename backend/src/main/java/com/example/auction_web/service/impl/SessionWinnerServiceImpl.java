@@ -42,20 +42,6 @@ public class SessionWinnerServiceImpl implements SessionWinnerService {
     public SessionWinnerResponse createSessionWinner(SessionWinnerCreateRequest request) {
         var sessionWinner = sessionWinnerMapper.toSessionWinner(request);
         setSessionWinnerReference(sessionWinner, request);
-
-        // Create bill
-        var deposit = depositRepository.findByAuctionSession_AuctionSessionIdAndUser_UserId(request.getAuctionSessionId(), request.getUserId());
-        var billRequest = BillCreateRequest.builder()
-                .transactionCode(generateTransactionCode())
-                .sessionId(sessionWinner.getAuctionSession().getAuctionSessionId())
-                .bidPrice(request.getPrice())
-                .depositPrice(deposit.getDepositPrice())
-                .billDate(request.getVictoryTime())
-                .build();
-
-        var bill = billMapper.toBill(billRequest);
-        setBillReference(bill, request);
-        billRepository.save(bill);
         return sessionWinnerMapper.toSessionWinnerResponse(sessionWinnerRepository.save(sessionWinner));
     }
 
@@ -66,11 +52,6 @@ public class SessionWinnerServiceImpl implements SessionWinnerService {
     void setSessionWinnerReference(SessionWinner sessionWinner, SessionWinnerCreateRequest request) {
         sessionWinner.setAuctionSession(getAuctionSession(request.getAuctionSessionId()));
         sessionWinner.setUser(getUser(request.getUserId()));
-    }
-
-    void setBillReference(Bill bill, SessionWinnerCreateRequest request) {
-        bill.setSession(getAuctionSession(request.getAuctionSessionId()));
-        bill.setUser(getUser(request.getUserId()));
     }
 
     public List<SessionWinnerResponse> getSessionsWinner(String userId) {

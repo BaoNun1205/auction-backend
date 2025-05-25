@@ -17,26 +17,29 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface BillMapper {
-    @Mapping(target = "user", ignore = true)
+    @Mapping(target = "buyerBill", ignore = true)
+    @Mapping(target = "sellerBill", ignore = true)
     @Mapping(target = "session", ignore = true)
     @Mapping(target = "address", ignore = true)
     Bill toBill(BillCreateRequest request);
     List<Bill> toBills(List<BillCreateRequest> requests);
 
-    @Mapping(target = "userId", source = "user", qualifiedByName = "userToString")
+    @Mapping(target = "buyerId", source = "buyerBill", qualifiedByName = "userToString")
+    @Mapping(target = "sellerId", source = "sellerBill", qualifiedByName = "userToString")
     @Mapping(target = "sessionId", source = "session", qualifiedByName = "sessionToString")
     @Mapping(target = "addressId", source = "address", qualifiedByName = "addressToString")
     BillResponse toBillResponse(Bill bill);
     List<BillResponse> toBillResponses(List<Bill> bills);
 
-    @Mapping(target = "user", ignore = true)
+    @Mapping(target = "buyerBill", ignore = true)
+    @Mapping(target = "sellerBill", ignore = true)
     @Mapping(target = "session", ignore = true)
     @Mapping(target = "address", ignore = true)
     void updateBill(@MappingTarget Bill bill, BillUpdateRequest request);
 
     @Named("userToString")
     default String userToString(User user) {
-        return user != null ? user.toString() : "";
+        return user != null ? user.getUserId() : null;
     }
 
     @Named("sessionToString")

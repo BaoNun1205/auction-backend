@@ -20,9 +20,11 @@ import static com.example.auction_web.utils.TransactionCodeGenerator.generateTra
 public class BillCreateRequest {
     String transactionCode = generateTransactionCode();
     LocalDateTime billDate;
-    String userId;
+    String buyerId;
+    String sellerId;
     String addressId;
     String sessionId;
+    BigDecimal totalPrice;
     BigDecimal bidPrice;
     BigDecimal depositPrice;
 }

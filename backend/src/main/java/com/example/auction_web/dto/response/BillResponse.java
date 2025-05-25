@@ -20,9 +20,11 @@ public class BillResponse {
     String billId;
     String transactionCode;
     LocalDateTime billDate;
-    String userId;
+    String buyerId;
+    String sellerId;
     String addressId;
     String sessionId;
+    BigDecimal totalPrice;
     BigDecimal bidPrice;
     BigDecimal depositPrice;
     Boolean delFlag;

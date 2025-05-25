@@ -44,7 +44,7 @@ public class BillController {
                 .build();
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/userId/{userId}")
     ApiResponse<List<BillResponse>> getBillsByUserId(@PathVariable String userId) {
         try {
             return ApiResponse.<List<BillResponse>>builder()

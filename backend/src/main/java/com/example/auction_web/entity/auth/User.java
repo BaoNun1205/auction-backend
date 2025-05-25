@@ -131,6 +131,9 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<AutoBid> autoBids;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    List<Bill> bills;
+    @OneToMany(mappedBy = "buyerBill", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<Bill> buyerBills;
+
+    @OneToMany(mappedBy = "sellerId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<Bill> sellerBills;
 }
