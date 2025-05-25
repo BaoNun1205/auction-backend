@@ -136,6 +136,7 @@ public class RegisterSessionServiceImpl implements RegisterSessionService {
                     } else {
                         response.getAuctionSession().setAsset(null);
                     }
+                    response.setTotalRegistrations(registerSessionRepository.countRegisterSessionsByAuctionSession_AuctionSessionId(registerSession.getAuctionSession().getAuctionSessionId()));
                     return response;
                 })
                 .toList();
@@ -157,6 +158,7 @@ public class RegisterSessionServiceImpl implements RegisterSessionService {
                     } else {
                         response.getAuctionSession().setAsset(null);
                     }
+                    response.setTotalRegistrations(registerSessionRepository.countRegisterSessionsByAuctionSession_AuctionSessionId(registerSession.getAuctionSession().getAuctionSessionId()));
                     return response;
                 })
                 .toList();
