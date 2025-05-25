@@ -12,6 +12,7 @@ public interface BillService {
     BillResponse createBill(BillCreateRequest request);
     BillResponse updateBill(String id, BillUpdateRequest request);
     List<BillResponse> getAllBills();
-    List<BillResponse> getBillByUserId(String userId);
+    List<BillResponse> getBillByBuyerBillId(String buyerBillId);
+    List<BillResponse> getBillBySellerBillId(String sellerBillId);
     BillResponse getBillById(String id);
 }

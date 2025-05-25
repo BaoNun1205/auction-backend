@@ -53,9 +53,16 @@ public class BillServiceImpl implements BillService {
                 .toList();
     }
 
-    public List<BillResponse> getBillByUserId(String userId) {
+    public List<BillResponse> getBillByBuyerBillId(String userId) {
         var user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        return billRepository.findBillByUser_UserId(userId).stream()
+        return billRepository.findBillsByBuyerBill_UserId(userId).stream()
+                .map(billMapper::toBillResponse)
+                .toList();
+    }
+
+    public List<BillResponse> getBillBySellerBillId(String userId) {
+        var user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        return billRepository.findBillsBySellerBill_UserId(userId).stream()
                 .map(billMapper::toBillResponse)
                 .toList();
     }
@@ -68,7 +75,8 @@ public class BillServiceImpl implements BillService {
 
     void setBillReference(Bill bill, BillCreateRequest request) {
         bill.setAddress(getAddressById(request.getAddressId()));
-        bill.setUser(getUser(request.getUserId()));
+        bill.setSellerBill(getUser(request.getSellerId()));
+        bill.setBuyerBill(getUser(request.getBuyerId()));
         bill.setSession(getAuctionSession(request.getSessionId()));
     }
 

@@ -44,12 +44,28 @@ public class BillController {
                 .build();
     }
 
-    @GetMapping("/userId/{userId}")
-    ApiResponse<List<BillResponse>> getBillsByUserId(@PathVariable String userId) {
+    @GetMapping("/buyerId/{buyerId}")
+    ApiResponse<List<BillResponse>> getBillsByBuyerId(@PathVariable String buyerId) {
         try {
             return ApiResponse.<List<BillResponse>>builder()
                     .code(HttpStatus.OK.value())
-                    .result(billService.getBillByUserId(userId))
+                    .result(billService.getBillByBuyerBillId(buyerId))
+                    .build();
+        } catch (Exception e) {
+            return ApiResponse.<List<BillResponse>>builder()
+                    .code(HttpStatus.OK.value())
+                    .result(null)
+                    .message(e.getMessage())
+                    .build();
+        }
+    }
+
+    @GetMapping("/sellerId/{sellerId}")
+    ApiResponse<List<BillResponse>> getBillsBySellerId(@PathVariable String sellerId) {
+        try {
+            return ApiResponse.<List<BillResponse>>builder()
+                    .code(HttpStatus.OK.value())
+                    .result(billService.getBillByBuyerBillId(sellerId))
                     .build();
         } catch (Exception e) {
             return ApiResponse.<List<BillResponse>>builder()
