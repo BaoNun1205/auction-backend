@@ -2,10 +2,12 @@ package com.example.auction_web.WebSocket.service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import com.example.auction_web.dto.request.notification.NotificationRequest;
+import com.example.auction_web.dto.response.auth.UserResponse;
 import com.example.auction_web.dto.response.notification.NotificationResponse;
 import com.example.auction_web.entity.auth.User;
 import com.example.auction_web.entity.notification.Notification;
@@ -17,6 +19,7 @@ import com.example.auction_web.service.notification.NotificationService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -51,6 +54,8 @@ public class NotificationStompServiceImpl implements NotificationStompService {
     
             User sender = userService.getUser(notificationRequest.getSenderId());
 
+            UserResponse sessionOwner = auctionSessionService.getAuctionSessionById(sessionId).getAsset().getVendor();
+
             // Lọc ra những user khác sender
             receivers.stream()
                 .filter(receiver -> !receiver.getUserId().equals(sender.getUserId()))
@@ -70,6 +75,22 @@ public class NotificationStompServiceImpl implements NotificationStompService {
                         log.warn("Failed to save notification for user: {}", receiver.getUserId(), e);
                     }
                 });
+
+            try {
+                NotificationRequest clonedOwnerRequest = NotificationRequest.builder()
+                            .senderId(notificationRequest.getSenderId())
+                            .receiverId(sessionOwner.getUserId())
+                            .title("Phiên đấu giá của bạn đã có người đặt giá mới!")
+                            .content(notificationRequest.getContent())
+                            .referenceId(notificationRequest.getReferenceId())
+                            .type(notificationRequest.getType())
+                            .build();
+            
+                sendUserNotification(sessionOwner.getUserId(), clonedOwnerRequest);
+            } catch (Exception e) {
+                log.error("Error sending notification to auction session topic", e);
+            }
+
         } catch (Exception e) {
             log.error("Error broadcasting bid notification", e);
         }
