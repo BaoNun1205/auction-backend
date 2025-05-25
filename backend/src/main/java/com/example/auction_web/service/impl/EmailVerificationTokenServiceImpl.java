@@ -54,7 +54,8 @@ public class EmailVerificationTokenServiceImpl implements EmailVerificationToken
             helper.setTo(recipientEmail);
 
             String subject = "Please confirm your account";
-            String link = "https://auction-frontend-ebon.vercel.app/confirm-account?token=" + token;
+            // String link = "https://auction-frontend-ebon.vercel.app/confirm-account?token=" + token;
+            String link = "http://localhost:5173/confirm-account?token=" + token;
 
             String content = "<p>Hello,</p>" +
                     "<p>Thank you for registering with Online Auction.</p>"
