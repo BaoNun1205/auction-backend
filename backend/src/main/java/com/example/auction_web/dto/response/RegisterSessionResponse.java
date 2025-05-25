@@ -19,6 +19,7 @@ public class RegisterSessionResponse {
     String registerSessionId;
     User user;
     AuctionSessionResponse auctionSession;
+    int totalRegistrations;
     Boolean delFlag;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
