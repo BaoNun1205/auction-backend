@@ -17,10 +17,12 @@ import com.example.auction_web.mapper.SessionWinnerMapper;
 import com.example.auction_web.repository.*;
 import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.SessionWinnerService;
+import com.example.auction_web.utils.Quataz.PaymentCancelService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.example.auction_web.utils.TransactionCodeGenerator.generateTransactionCode;
@@ -39,6 +41,8 @@ public class SessionWinnerServiceImpl implements SessionWinnerService {
     BillRepository billRepository;
     private final AssetRepository assetRepository;
 
+    private final PaymentCancelService paymentCancelService;
+
     public SessionWinnerResponse createSessionWinner(SessionWinnerCreateRequest request) {
         var sessionWinner = sessionWinnerMapper.toSessionWinner(request);
         setSessionWinnerReference(sessionWinner, request);
@@ -50,8 +54,10 @@ public class SessionWinnerServiceImpl implements SessionWinnerService {
     }
 
     void setSessionWinnerReference(SessionWinner sessionWinner, SessionWinnerCreateRequest request) {
-        sessionWinner.setAuctionSession(getAuctionSession(request.getAuctionSessionId()));
+        var auctionSession = getAuctionSession(request.getAuctionSessionId());
+        sessionWinner.setAuctionSession(auctionSession);
         sessionWinner.setUser(getUser(request.getUserId()));
+        paymentCancelService.setSchedulerPaymentCancel(auctionSession.getUser().getUserId(), auctionSession.getAuctionSessionId(), LocalDateTime.now().plusDays(3));
     }
 
     public List<SessionWinnerResponse> getSessionsWinner(String userId) {
