@@ -24,10 +24,10 @@ public interface BillMapper {
     Bill toBill(BillCreateRequest request);
     List<Bill> toBills(List<BillCreateRequest> requests);
 
-    @Mapping(target = "buyerId", source = "buyerBill", qualifiedByName = "userToString")
-    @Mapping(target = "sellerId", source = "sellerBill", qualifiedByName = "userToString")
-    @Mapping(target = "sessionId", source = "session", qualifiedByName = "sessionToString")
-    @Mapping(target = "addressId", source = "address", qualifiedByName = "addressToString")
+    // @Mapping(target = "buyerId", source = "buyerBill", qualifiedByName = "userToString")
+    // @Mapping(target = "sellerId", source = "sellerBill", qualifiedByName = "userToString")
+    // @Mapping(target = "sessionId", source = "session", qualifiedByName = "sessionToString")
+    // @Mapping(target = "addressId", source = "address", qualifiedByName = "addressToString")
     BillResponse toBillResponse(Bill bill);
     List<BillResponse> toBillResponses(List<Bill> bills);
 
