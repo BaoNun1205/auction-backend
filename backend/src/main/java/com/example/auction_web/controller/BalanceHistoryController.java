@@ -18,7 +18,6 @@ import java.util.List;
 @FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
 public class BalanceHistoryController {
     BalanceHistoryService balanceHistoryService;
-    private final RestClient.Builder builder;
 
     @GetMapping("/user/{userId}")
     public ApiResponse<List<BalanceHistoryResponse>> getAllBalanceHistoriesByUserId(@PathVariable String userId) {
@@ -35,6 +34,17 @@ public class BalanceHistoryController {
             return ApiResponse.<String>builder()
                     .code(HttpStatus.OK.value())
                     .result("Thanh toán thành công")
+                    .build();
+
+    }
+
+    @PostMapping("/completed-payment-session")
+    public ApiResponse<String> completedPaymentSession(@RequestBody PaymentSessionDTO request) {
+
+            balanceHistoryService.comletedPaymentSession(request.getBuyerId(), request.getSellerId(), request.getSessionId());
+            return ApiResponse.<String>builder()
+                    .code(HttpStatus.OK.value())
+                    .result("Hoàn tất thanh toán")
                     .build();
 
     }

@@ -8,5 +8,6 @@ public enum NotificationType {
     RECHARGE,
     DEPOSIT,
     REFUND,
-    AUCTION_REMINDER
+    AUCTION_REMINDER,
+    ORDER_CONFIRMED
 }

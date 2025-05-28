@@ -5,12 +5,14 @@ import com.example.auction_web.dto.request.BillCreateRequest;
 import com.example.auction_web.dto.request.SessionWinnerCreateRequest;
 import com.example.auction_web.dto.response.BalanceHistoryResponse;
 import com.example.auction_web.dto.response.BalanceUserResponse;
+import com.example.auction_web.entity.Asset;
 import com.example.auction_web.entity.AuctionSession;
 import com.example.auction_web.entity.BalanceUser;
 import com.example.auction_web.entity.Bill;
 import com.example.auction_web.entity.SessionWinner;
 import com.example.auction_web.entity.auth.User;
 import com.example.auction_web.enums.ACTIONBALANCE;
+import com.example.auction_web.enums.ASSET_STATUS;
 import com.example.auction_web.enums.SESSION_WIN_STATUS;
 import com.example.auction_web.exception.AppException;
 import com.example.auction_web.exception.ErrorCode;
@@ -57,6 +59,7 @@ public class BalanceHistoryServiceImpl implements BalanceHistoryService {
 
     AuctionSessionRepository auctionSessionRepository;
     SessionWinnerRepository sessionWinnerRepository;
+    AssetRepository assetRepository;
 
     private static final BigDecimal TEN_MILLION = new BigDecimal("10000000");
     private static final BigDecimal HUNDRED_MILLION = new BigDecimal("100000000");
@@ -80,6 +83,7 @@ public class BalanceHistoryServiceImpl implements BalanceHistoryService {
                 .toList();
     }
 
+    // Khi người mua thanh toán phiên đấu giá
     @Transactional
     public void paymentSession(String buyerId, String sellerId, String sessionId) {
         var pricePayment = auctionHistoryRepository.findMaxBidPriceByAuctionSessionId(sessionId);
@@ -104,12 +108,14 @@ public class BalanceHistoryServiceImpl implements BalanceHistoryService {
         balanceUserRepository.minusBalance(balanceBuyer.getBalanceUserId(), priceRemaining);
         addBalanceHistory(balanceBuyer.getBalanceUserId(), priceRemaining, "Thanh toán phiên " + sessionId, ACTIONBALANCE.SUBTRACT);
 
-        balanceUserRepository.increaseBalance(adminBalance.getBalanceUserId(), priceCommission);
-        balanceUserRepository.minusBalance(adminBalance.getBalanceUserId(), depositAmount);
-        addBalanceHistory(adminBalance.getBalanceUserId(), priceCommission, "Hoa hồng phiên " + sessionId, ACTIONBALANCE.ADD);
+        // 2025/05/28 Bao Delete Start
+        // balanceUserRepository.increaseBalance(adminBalance.getBalanceUserId(), priceCommission);
+        // balanceUserRepository.minusBalance(adminBalance.getBalanceUserId(), depositAmount);
+        // addBalanceHistory(adminBalance.getBalanceUserId(), priceCommission, "Hoa hồng phiên " + sessionId, ACTIONBALANCE.ADD);
 
-        balanceUserRepository.increaseBalance(balanceSeller.getBalanceUserId(), sellerReceive);
-        addBalanceHistory(balanceSeller.getBalanceUserId(), sellerReceive, "Nhận thanh toán phiên " + sessionId, ACTIONBALANCE.ADD);
+        // balanceUserRepository.increaseBalance(balanceSeller.getBalanceUserId(), sellerReceive);
+        // addBalanceHistory(balanceSeller.getBalanceUserId(), sellerReceive, "Nhận thanh toán phiên " + sessionId, ACTIONBALANCE.ADD);
+        // 2025/05/28 Bao Delete End
 
         SessionWinner sessionWinner = sessionWinnerRepository.findByAuctionSession_AuctionSessionId(sessionId);
         if (sessionWinner != null) {
@@ -129,11 +135,61 @@ public class BalanceHistoryServiceImpl implements BalanceHistoryService {
                 .billDate(LocalDateTime.now())
                 .build();
 
+        // 2025/05/28 Bao Add Start
+        // Update Asset status
+        AuctionSession auctionSessionEntity = auctionSessionRepository.findById(sessionId)
+                .orElseThrow(() -> new AppException(ErrorCode.AUCTION_SESSION_NOT_EXISTED));
+        if (auctionSessionEntity.getAsset() != null) {
+            Asset asset = auctionSessionEntity.getAsset();
+            asset.setStatus(ASSET_STATUS.PAYMENT_SUCCESSFUL.toString());
+            asset.setUpdatedAt(LocalDateTime.now());
+            assetRepository.save(asset);
+        }
+        // 2025/05/28 Bao Add End
+
         var bill = billMapper.toBill(billRequest);
         setBillReference(bill, billRequest);
         billRepository.save(bill);
     }
 
+    // Khi người mua xác nhận đã nhận hàng thành công
+    @Transactional
+    public void comletedPaymentSession(String buyerId, String sellerId, String sessionId) {
+        var pricePayment = auctionHistoryRepository.findMaxBidPriceByAuctionSessionId(sessionId);
+        var balanceSeller = balanceUserMapper.toBalanceUserResponse(balanceUserRepository.findBalanceUserByUser_UserId(sellerId));
+        var auctionSession = auctionSessionMapper.toAuctionItemResponse(auctionSessionRepository.findById(sessionId).get());
+        var admin = userMapper.toUserResponse(userRepository.findByEmail(EMAIL_ADMIN).get());
+        var adminBalance = balanceUserMapper.toBalanceUserResponse(balanceUserRepository.findBalanceUserByUser_UserId(admin.getUserId()));
+
+        BigDecimal commissionPercent = new BigDecimal(calculateCommission(pricePayment));
+        BigDecimal hundred = new BigDecimal("100");
+        BigDecimal depositAmount = auctionSession.getDepositAmount();
+
+        BigDecimal priceCommission = pricePayment.multiply(commissionPercent).divide(hundred, 2, RoundingMode.HALF_UP);
+        BigDecimal sellerReceive = pricePayment.subtract(priceCommission);
+
+        balanceUserRepository.increaseBalance(adminBalance.getBalanceUserId(), priceCommission);
+        balanceUserRepository.minusBalance(adminBalance.getBalanceUserId(), depositAmount);
+        addBalanceHistory(adminBalance.getBalanceUserId(), priceCommission, "Hoa hồng phiên " + sessionId, ACTIONBALANCE.ADD);
+
+        balanceUserRepository.increaseBalance(balanceSeller.getBalanceUserId(), sellerReceive);
+        addBalanceHistory(balanceSeller.getBalanceUserId(), sellerReceive, "Nhận thanh toán phiên " + sessionId, ACTIONBALANCE.ADD);
+
+        SessionWinner sessionWinner = sessionWinnerRepository.findByAuctionSession_AuctionSessionId(sessionId);
+        if (sessionWinner != null) {
+            sessionWinner.setStatus(SESSION_WIN_STATUS.RECEIVED.toString());
+            sessionWinnerRepository.save(sessionWinner);
+        }
+
+        AuctionSession auctionSessionEntity = auctionSessionRepository.findById(sessionId)
+                .orElseThrow(() -> new AppException(ErrorCode.AUCTION_SESSION_NOT_EXISTED));
+        if (auctionSessionEntity.getAsset() != null) {
+            Asset asset = auctionSessionEntity.getAsset();
+            asset.setStatus(ASSET_STATUS.COMPLETED.toString());
+            asset.setUpdatedAt(LocalDateTime.now());
+            assetRepository.save(asset);
+        }
+    }
 
     public void cancelSession(String sellerId, String sessionId) {
         var auctionSession = auctionSessionRepository.findById(sessionId).orElseThrow(() -> new AppException(ErrorCode.AUCTION_SESSION_NOT_EXISTED));

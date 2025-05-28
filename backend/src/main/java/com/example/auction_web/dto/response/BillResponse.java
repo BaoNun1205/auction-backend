@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import static com.example.auction_web.utils.TransactionCodeGenerator.generateTransactionCode;
+import com.example.auction_web.dto.response.auth.UserResponse;
 
 @Data
 @NoArgsConstructor
@@ -20,10 +20,14 @@ public class BillResponse {
     String billId;
     String transactionCode;
     LocalDateTime billDate;
-    String buyerId;
-    String sellerId;
-    String addressId;
-    String sessionId;
+    // String buyerId;
+    // String sellerId;
+    // String addressId;
+    // String sessionId;
+    UserResponse buyerBill;
+    UserResponse sellerBill;
+    AddressResponse address;
+    AuctionSessionResponse session;
     BigDecimal totalPrice;
     BigDecimal bidPrice;
     BigDecimal depositPrice;

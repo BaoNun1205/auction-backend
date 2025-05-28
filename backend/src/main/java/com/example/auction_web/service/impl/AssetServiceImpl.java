@@ -1,14 +1,20 @@
 package com.example.auction_web.service.impl;
 
+import com.example.auction_web.WebSocket.service.NotificationStompService;
 import com.example.auction_web.dto.request.AssetCreateRequest;
 import com.example.auction_web.dto.request.AssetUpdateRequest;
+import com.example.auction_web.dto.request.notification.NotificationRequest;
 import com.example.auction_web.dto.response.AssetResponse;
 import com.example.auction_web.dto.response.InspectorResponse;
 import com.example.auction_web.entity.Asset;
 import com.example.auction_web.entity.Inspector;
 import com.example.auction_web.entity.Requirement;
+import com.example.auction_web.entity.SessionWinner;
 import com.example.auction_web.entity.Type;
 import com.example.auction_web.entity.auth.User;
+import com.example.auction_web.enums.ASSET_STATUS;
+import com.example.auction_web.enums.NotificationType;
+import com.example.auction_web.enums.SESSION_WIN_STATUS;
 import com.example.auction_web.exception.AppException;
 import com.example.auction_web.exception.ErrorCode;
 import com.example.auction_web.mapper.AssetMapper;
@@ -16,6 +22,7 @@ import com.example.auction_web.mapper.TypeMapper;
 import com.example.auction_web.repository.AssetRepository;
 import com.example.auction_web.repository.InspectorRepository;
 import com.example.auction_web.repository.RequirementRepository;
+import com.example.auction_web.repository.SessionWinnerRepository;
 import com.example.auction_web.repository.TypeRepository;
 import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.*;
@@ -32,6 +39,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -49,6 +57,7 @@ public class AssetServiceImpl implements AssetService {
     RequirementService requirementService;
     RequirementRepository requirementRepository;
     InspectorRepository inspectorRepository;
+    SessionWinnerRepository sessionWinnerRepository;
 
     @PreAuthorize("hasRole('ADMIN')")
     public AssetResponse createAsset(AssetCreateRequest request){
