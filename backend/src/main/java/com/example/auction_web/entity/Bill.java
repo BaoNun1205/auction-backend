@@ -29,7 +29,7 @@ public class Bill {
 
     LocalDateTime billDate;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "addressId", referencedColumnName = "addressId")
     Address address;
 

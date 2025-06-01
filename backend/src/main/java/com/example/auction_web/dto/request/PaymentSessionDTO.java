@@ -15,4 +15,5 @@ public class PaymentSessionDTO {
     String buyerId;
     String sellerId;
     String sessionId;
+    String addressId;
 }

@@ -196,7 +196,7 @@ public class SessionWinnerServiceImpl implements SessionWinnerService {
                             .receiverId(sessionWinner.getUser().getUserId())
                             .type(NotificationType.ORDER_CONFIRMED)
                             .title("Vật phẩm đang được giao")
-                            .content("Vui lòng xác nhận " + asset.getAssetName() + " đã nhận hàng thành công.")
+                            .content("Vui lòng xác nhận " + asset.getAssetName() + " khi nhận hàng thành công.")
                             .referenceId(assetId)
                             .build();
                     notificationService.sendUserNotification(sessionWinner.getUser().getUserId(), notificationRequest);
