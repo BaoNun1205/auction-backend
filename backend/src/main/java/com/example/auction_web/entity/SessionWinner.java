@@ -53,4 +53,9 @@ public class SessionWinner {
         this.delFlag = false;
         this.status = SESSION_WIN_STATUS.PENDING_PAYMENT.toString();
     }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }

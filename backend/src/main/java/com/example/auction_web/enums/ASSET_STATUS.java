@@ -9,4 +9,5 @@ public enum ASSET_STATUS {
     RECEIVED,
     COMPLETED,
     AUCTION_FAILED,
+    CANCELED
 }

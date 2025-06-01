@@ -30,7 +30,7 @@ public class BalanceHistoryController {
     @PostMapping("/payment-session")
     public ApiResponse<String> paymentSession(@RequestBody PaymentSessionDTO request) {
 
-            balanceHistoryService.paymentSession(request.getBuyerId(), request.getSellerId(), request.getSessionId());
+            balanceHistoryService.paymentSession(request.getBuyerId(), request.getSellerId(), request.getSessionId(), request.getAddressId());
             return ApiResponse.<String>builder()
                     .code(HttpStatus.OK.value())
                     .result("Thanh toán thành công")
