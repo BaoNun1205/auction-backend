@@ -29,6 +29,7 @@ import com.example.auction_web.personalization.service.RecommendService;
 import com.example.auction_web.personalization.service.SearchHistoryService;
 import com.example.auction_web.repository.AuctionHistoryRepository;
 import com.example.auction_web.repository.AuctionSessionRepository;
+import com.example.auction_web.repository.RegisterSessionRepository;
 import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.DepositService;
 import com.example.auction_web.service.RegisterSessionService;
@@ -52,6 +53,7 @@ public class RecommendServiceImpl implements RecommendService {
     UserMapper userMapper;
     UserRepository userRepository;
     AuctionHistoryRepository auctionHistoryRepository;
+    RegisterSessionRepository registerSessionRepository;
 
     public String buildUserProfileText(String userId) {
         StringBuilder sb = new StringBuilder();
@@ -168,6 +170,30 @@ public class RecommendServiceImpl implements RecommendService {
         return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
     }
 
+    // public List<AuctionSession> recommendSessions(String userId, String status) {
+    //     User user = userRepository.findById(userId)
+    //             .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
+    //     String vectorJson = user.getVectorJson();
+    //     if (vectorJson == null) {
+    //         logger.warn("No vector JSON for user ID: {}", userId);
+    //         return List.of();
+    //     }
+    //     List<Float> userVector = VectorUtil.fromJson(vectorJson);
+
+    //     List<AuctionSession> allSessions = auctionSessionRepository.findAll();
+
+    //     return allSessions.stream()
+    //         .filter(session -> session.getVectorJson() != null)
+    //         .filter(session -> session.getStatus().equals(status))
+    //         .map(session -> new AbstractMap.SimpleEntry<>(
+    //                 session,
+    //                 cosineSimilarity(userVector, VectorUtil.fromJson(session.getVectorJson()))))
+    //         .sorted((a, b) -> Double.compare(b.getValue(), a.getValue()))
+    //         .limit(10)
+    //         .map(Map.Entry::getKey)
+    //         .toList();
+    // }
+
     public List<AuctionSession> recommendSessions(String userId, String status) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
@@ -180,16 +206,54 @@ public class RecommendServiceImpl implements RecommendService {
 
         List<AuctionSession> allSessions = auctionSessionRepository.findAll();
 
-        return allSessions.stream()
+        AUCTION_STATUS auctionStatus;
+        try {
+            auctionStatus = AUCTION_STATUS.valueOf(status);
+        } catch (IllegalArgumentException e) {
+            logger.warn("Invalid auction status: {}", status);
+            return List.of();
+        }
+
+        if (auctionStatus == AUCTION_STATUS.HOT) {
+            return allSessions.stream()
             .filter(session -> session.getVectorJson() != null)
-            .filter(session -> session.getStatus().equals(status))
-            .map(session -> new AbstractMap.SimpleEntry<>(
-                    session,
-                    cosineSimilarity(userVector, VectorUtil.fromJson(session.getVectorJson()))))
-            .sorted((a, b) -> Double.compare(b.getValue(), a.getValue()))
+            .map(session -> {
+                List<AuctionSessionInfoResponse> infoList = auctionHistoryRepository
+                    .findAuctionSessionInfo(session.getAuctionSessionId());
+                long bidCount = infoList.isEmpty() ? 0 : infoList.get(0).getTotalAuctionHistory();
+                double similarity = cosineSimilarity(userVector, VectorUtil.fromJson(session.getVectorJson()));
+                return new AbstractMap.SimpleEntry<>(session, new double[]{bidCount, similarity});
+            })
+            .sorted((a, b) -> {
+                // Compare by bid count first (descending)
+                int bidCompare = Double.compare(b.getValue()[0], a.getValue()[0]);
+                if (bidCompare != 0) {
+                    return bidCompare;
+                }
+                // If bid counts are equal, compare by similarity (descending)
+                return Double.compare(b.getValue()[1], a.getValue()[1]);
+            })
             .limit(10)
             .map(Map.Entry::getKey)
             .toList();
+        } else {
+            return allSessions.stream()
+                .filter(session -> session.getVectorJson() != null)
+                .filter(session -> {
+                    try {
+                        return AUCTION_STATUS.valueOf(session.getStatus()).equals(auctionStatus);
+                    } catch (IllegalArgumentException e) {
+                        return false; // Skip sessions with invalid status
+                    }
+                })
+                .map(session -> new AbstractMap.SimpleEntry<>(
+                        session,
+                        cosineSimilarity(userVector, VectorUtil.fromJson(session.getVectorJson()))))
+                .sorted((a, b) -> Double.compare(b.getValue(), a.getValue()))
+                .limit(10)
+                .map(Map.Entry::getKey)
+                .toList();
+        }
     }
 
     public List<AuctionSessionResponse> recommendAuctionSessionResponses(String userId, String status) {
@@ -216,6 +280,9 @@ public class RecommendServiceImpl implements RecommendService {
                 List<AuctionSessionInfoResponse> auctionSessionInfoResponse = 
                     auctionHistoryRepository.findAuctionSessionInfo(auctionSession.getAuctionSessionId());
 
+                int totalRegistrations = registerSessionRepository
+                    .countRegisterSessionsByAuctionSession_AuctionSessionId(auctionSession.getAuctionSessionId());
+
                 if (!auctionSessionInfoResponse.isEmpty()) {
                     AuctionSessionInfoResponse info = auctionSessionInfoResponse.get(0);
 
@@ -229,11 +296,11 @@ public class RecommendServiceImpl implements RecommendService {
                     } else {
                         info.setUser(null);
                     }
-
+                    info.setTotalRegistrations(totalRegistrations);
                     response.setAuctionSessionInfo(info);
                 } else {
                     response.setAuctionSessionInfo(
-                        new AuctionSessionInfoResponse(0L, 0L, "", auctionSession.getStartingBids(), null)
+                        new AuctionSessionInfoResponse(0L, 0L, "", auctionSession.getStartingBids(), null, totalRegistrations)
                     );
                 }
 
@@ -301,7 +368,7 @@ public class RecommendServiceImpl implements RecommendService {
                     } else {
                         info.setUser(null);
                     }
-    
+                    info.setTotalRegistrations(registerSessionRepository.countRegisterSessionsByAuctionSession_AuctionSessionId(session.getAuctionSessionId()));
                     response.setAuctionSessionInfo(info);
                 } else {
                     response.setAuctionSessionInfo(

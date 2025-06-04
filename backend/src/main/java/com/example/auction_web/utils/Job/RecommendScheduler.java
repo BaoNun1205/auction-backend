@@ -20,8 +20,8 @@ public class RecommendScheduler {
         recommendService.batchUpdateUserVectors();
     }
 
-    @Scheduled(cron = "0 18 0 * * ?")
-    public void scheduleAuctionSessionVectorUpdate() {
-        recommendService.batchUpdateAuctionSessionVectors();
-    }
+    // @Scheduled(cron = "0 18 0 * * ?")
+    // public void scheduleAuctionSessionVectorUpdate() {
+    //     recommendService.batchUpdateAuctionSessionVectors();
+    // }
 }

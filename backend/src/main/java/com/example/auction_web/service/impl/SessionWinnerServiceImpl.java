@@ -74,7 +74,12 @@ public class SessionWinnerServiceImpl implements SessionWinnerService {
         var auctionSession = getAuctionSession(request.getAuctionSessionId());
         sessionWinner.setAuctionSession(auctionSession);
         sessionWinner.setUser(getUser(request.getUserId()));
-        paymentCancelService.setSchedulerPaymentCancel(auctionSession.getUser().getUserId(), auctionSession.getAuctionSessionId(), LocalDateTime.now().plusDays(3));
+        // paymentCancelService.setSchedulerPaymentCancel(auctionSession.getUser().getUserId(), auctionSession.getAuctionSessionId(), LocalDateTime.now().plusDays(3));
+        paymentCancelService.setSchedulerPaymentCancel(
+            auctionSession.getUser().getUserId(),
+            auctionSession.getAuctionSessionId(),
+            LocalDateTime.now().plusMinutes(5)
+        );
     }
 
     public List<SessionWinnerResponse> getSessionsWinner(String userId) {
