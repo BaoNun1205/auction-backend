@@ -118,16 +118,7 @@ public class BalanceHistoryServiceImpl implements BalanceHistoryService {
         BigDecimal sellerReceive = pricePayment.subtract(priceCommission);
 
         balanceUserRepository.minusBalance(balanceBuyer.getBalanceUserId(), priceRemaining);
-        addBalanceHistory(balanceBuyer.getBalanceUserId(), priceRemaining, "Thanh toán phiên " + sessionId, ACTIONBALANCE.SUBTRACT);
-
-        // 2025/05/28 Bao Delete Start
-        // balanceUserRepository.increaseBalance(adminBalance.getBalanceUserId(), priceCommission);
-        // balanceUserRepository.minusBalance(adminBalance.getBalanceUserId(), depositAmount);
-        // addBalanceHistory(adminBalance.getBalanceUserId(), priceCommission, "Hoa hồng phiên " + sessionId, ACTIONBALANCE.ADD);
-
-        // balanceUserRepository.increaseBalance(balanceSeller.getBalanceUserId(), sellerReceive);
-        // addBalanceHistory(balanceSeller.getBalanceUserId(), sellerReceive, "Nhận thanh toán phiên " + sessionId, ACTIONBALANCE.ADD);
-        // 2025/05/28 Bao Delete End
+        addBalanceHistory(balanceBuyer.getBalanceUserId(), priceRemaining, "Thanh toán phiên " + auctionSession.getName(), ACTIONBALANCE.SUBTRACT);
 
         SessionWinner sessionWinner = sessionWinnerRepository.findByAuctionSession_AuctionSessionId(sessionId);
         if (sessionWinner != null) {
@@ -165,8 +156,6 @@ public class BalanceHistoryServiceImpl implements BalanceHistoryService {
         // setBillReference(bill, billRequest);
         billRepository.save(bill);
 
-        // 2025/05/28 Bao Add Start
-        // Update Asset status
         AuctionSession auctionSessionEntity = auctionSessionRepository.findById(sessionId)
                 .orElseThrow(() -> new AppException(ErrorCode.AUCTION_SESSION_NOT_EXISTED));
         Asset asset = null;
@@ -176,7 +165,6 @@ public class BalanceHistoryServiceImpl implements BalanceHistoryService {
             asset.setUpdatedAt(LocalDateTime.now());
             assetRepository.save(asset);
         }
-        // 2025/05/28 Bao Add End
 
         // Thông báo cho người bán về việc thanh toán thành công
         NotificationRequest notificationRequest = NotificationRequest.builder()
@@ -208,10 +196,10 @@ public class BalanceHistoryServiceImpl implements BalanceHistoryService {
 
         balanceUserRepository.increaseBalance(adminBalance.getBalanceUserId(), priceCommission);
         balanceUserRepository.minusBalance(adminBalance.getBalanceUserId(), depositAmount);
-        addBalanceHistory(adminBalance.getBalanceUserId(), priceCommission, "Hoa hồng phiên " + sessionId, ACTIONBALANCE.ADD);
+        addBalanceHistory(adminBalance.getBalanceUserId(), priceCommission, "Hoa hồng phiên " + auctionSession.getName(), ACTIONBALANCE.ADD);
 
         balanceUserRepository.increaseBalance(balanceSeller.getBalanceUserId(), sellerReceive);
-        addBalanceHistory(balanceSeller.getBalanceUserId(), sellerReceive, "Nhận thanh toán phiên " + sessionId, ACTIONBALANCE.ADD);
+        addBalanceHistory(balanceSeller.getBalanceUserId(), sellerReceive, "Nhận thanh toán phiên " + auctionSession.getName(), ACTIONBALANCE.ADD);
 
         SessionWinner sessionWinner = sessionWinnerRepository.findByAuctionSession_AuctionSessionId(sessionId);
         if (sessionWinner != null) {

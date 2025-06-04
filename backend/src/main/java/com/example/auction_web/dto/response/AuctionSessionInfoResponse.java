@@ -19,6 +19,7 @@ public class AuctionSessionInfoResponse {
     String userId;
     BigDecimal highestBid;
     UserResponse user;
+    int totalRegistrations;
 
     public AuctionSessionInfoResponse(Long totalBidder, Long totalAuctionHistory, String userId, BigDecimal highestBid) {
         this.totalBidder = totalBidder;
@@ -33,5 +34,14 @@ public class AuctionSessionInfoResponse {
         this.userId = userId;
         this.highestBid = highestBid;
         this.user = user;
+    }
+
+        public AuctionSessionInfoResponse(Long totalBidder, Long totalAuctionHistory, String userId, BigDecimal highestBid, UserResponse user, int totalRegistrations) {
+        this.totalBidder = totalBidder;
+        this.totalAuctionHistory = totalAuctionHistory;
+        this.userId = userId;
+        this.highestBid = highestBid;
+        this.user = user;
+        this.totalRegistrations = totalRegistrations;
     }
 }

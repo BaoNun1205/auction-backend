@@ -4,5 +4,7 @@ public enum AUCTION_STATUS {
     UPCOMING,
     ONGOING,
     AUCTION_SUCCESS,
-    AUCTION_FAILED
+    AUCTION_FAILED,
+    HOT,
+    ENDING
 }

@@ -46,6 +46,7 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
     UserMapper userMapper;
     AssetService assetService;
     SessionService sessionService;
+    RegisterSessionRepository registerSessionRepository;
 
     public AuctionSessionResponse createAuctionSession(AuctionSessionCreateRequest request) {
         var auctionSession = auctionSessionMapper.toAuctionItem(request);
@@ -158,6 +159,8 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
                 .map(auctionSession -> {
                     AuctionSessionResponse response = auctionSessionMapper.toAuctionItemResponse(auctionSession);
 
+                    int totalRegistrations = registerSessionRepository.countRegisterSessionsByAuctionSession_AuctionSessionId(auctionSession.getAuctionSessionId());
+
                     List<AuctionSessionInfoResponse> auctionSessionInfoResponse = auctionHistoryRepository.findAuctionSessionInfo(auctionSession.getAuctionSessionId());
                     if (!auctionSessionInfoResponse.isEmpty()) {
                         if (auctionSessionInfoResponse.get(0).getHighestBid().compareTo(BigDecimal.ZERO) == 0) {
@@ -169,9 +172,10 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
                         } else {
                             auctionSessionInfoResponse.get(0).setUser(null);
                         }
+                        auctionSessionInfoResponse.get(0).setTotalRegistrations(totalRegistrations);
                         response.setAuctionSessionInfo(auctionSessionInfoResponse.get(0));
                     } else {
-                        response.setAuctionSessionInfo(new AuctionSessionInfoResponse(0L, 0L, "", response.getStartingBids(), null));
+                        response.setAuctionSessionInfo(new AuctionSessionInfoResponse(0L, 0L, "", response.getStartingBids(), null, totalRegistrations));
                     }
                     return response;
                     })
