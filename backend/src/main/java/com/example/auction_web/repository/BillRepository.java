@@ -12,4 +12,5 @@ public interface BillRepository extends JpaRepository<Bill, String> {
     List<Bill> findBillsByBuyerBill_UserId(String buyerBillId);
     List<Bill> findBillsBySellerBill_UserId(String sellerBillId);
     Bill findBillByBillId(String id);
+    Bill findBillBySession_AuctionSessionId(String sessionId);
 }

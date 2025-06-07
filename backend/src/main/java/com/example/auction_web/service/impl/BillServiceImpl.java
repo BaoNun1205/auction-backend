@@ -99,4 +99,12 @@ public class BillServiceImpl implements BillService {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
     }
+
+    public BillResponse getBillBySessionId(String sessionId) {
+        Bill bill = billRepository.findBillBySession_AuctionSessionId(sessionId);
+        if (bill == null) {
+            throw new AppException(ErrorCode.BILL_NOT_EXISTED);
+        }
+        return billMapper.toBillResponse(bill);
+    }
 }
