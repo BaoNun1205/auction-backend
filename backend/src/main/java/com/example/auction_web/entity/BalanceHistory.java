@@ -30,7 +30,9 @@ public class BalanceHistory {
     @Column(precision = 15, scale = 0)
     BigDecimal amount;
 
+    @Column(columnDefinition = "TEXT")
     String description;
+
     @Enumerated(EnumType.STRING)
     ACTIONBALANCE actionbalance;
     

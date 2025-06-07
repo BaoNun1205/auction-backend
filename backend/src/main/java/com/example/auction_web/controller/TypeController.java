@@ -6,6 +6,7 @@ import com.example.auction_web.dto.request.TypeUpdateRequest;
 import com.example.auction_web.dto.request.filter.CategoryFilterRequest;
 import com.example.auction_web.dto.response.ApiResponse;
 import com.example.auction_web.dto.response.DataResponse;
+import com.example.auction_web.dto.response.TypeFilterResponse;
 import com.example.auction_web.dto.response.TypeResponse;
 import com.example.auction_web.service.TypeService;
 import lombok.RequiredArgsConstructor;
@@ -80,5 +81,13 @@ public class TypeController {
     ApiResponse<String> delete(@PathVariable String typeId){
         typeService.deleteType(typeId);
         return ApiResponse.<String>builder().result("Type has been deleted").build();
+    }
+
+    @GetMapping("/get-all-type-filter-response")
+    ApiResponse<List<TypeFilterResponse>> getAllTypeFilterResponse() {
+        return ApiResponse.<List<TypeFilterResponse>>builder()
+                .code(HttpStatus.OK.value())
+                .result(typeService.getAllTypeFilterResponse())
+                .build();
     }
 }

@@ -2,6 +2,7 @@ package com.example.auction_web.controller;
 
 import com.example.auction_web.dto.request.*;
 import com.example.auction_web.dto.response.*;
+import com.example.auction_web.enums.SESSION_WIN_STATUS;
 import com.example.auction_web.service.AuctionSessionService;
 import com.example.auction_web.service.RegisterSessionService;
 import com.example.auction_web.service.SessionWinnerService;
@@ -148,6 +149,15 @@ public class AuctionSessionController {
         return ApiResponse.<List<SessionWinnerResponse>>builder()
                 .code(HttpStatus.OK.value())
                 .result(sessionWinnerService.getSessionsWinner(userId))
+                .build();
+    }
+
+    @PutMapping("/win-sessions/{sessionWinnerId}/status")
+    ApiResponse<SessionWinnerResponse> updateSessionWinnerStatus(@PathVariable String sessionWinnerId,
+                                                                 @RequestParam SESSION_WIN_STATUS status) {
+        return ApiResponse.<SessionWinnerResponse>builder()
+                .code(HttpStatus.OK.value())
+                .result(sessionWinnerService.updateSessionWinnerStatus(sessionWinnerId, status))
                 .build();
     }
 }

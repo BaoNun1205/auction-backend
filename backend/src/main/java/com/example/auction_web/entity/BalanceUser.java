@@ -1,6 +1,7 @@
 package com.example.auction_web.entity;
 
 import com.example.auction_web.entity.auth.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,7 +23,8 @@ public class BalanceUser {
     @GeneratedValue(strategy = GenerationType.UUID)
     String balanceUserId;
 
-    @OneToOne
+    @JsonIgnore
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", referencedColumnName = "userId")
     User user;
 

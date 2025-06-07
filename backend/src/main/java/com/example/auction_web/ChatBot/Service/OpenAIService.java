@@ -4,7 +4,16 @@ import com.example.auction_web.ChatBot.Dto.ChatRequest;
 import com.example.auction_web.ChatBot.Dto.FilterSessionDto;
 import com.example.auction_web.ChatBot.Dto.MessageCreateRequestDto;
 import com.example.auction_web.ChatBot.Enum.Role;
+import com.example.auction_web.Payment.Dto.VNPayDTO;
+import com.example.auction_web.Payment.Dto.VNPayRequestDTO;
+import com.example.auction_web.Payment.Service.VNPayService;
+import com.example.auction_web.dto.request.AuctionHistoryCreateRequest;
+import com.example.auction_web.dto.request.DepositCreateRequest;
+import com.example.auction_web.exception.AppException;
+import com.example.auction_web.service.AuctionHistoryService;
 import com.example.auction_web.service.AuctionSessionService;
+import com.example.auction_web.service.BalanceUserService;
+import com.example.auction_web.service.DepositService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +42,18 @@ public class OpenAIService {
     @Autowired
     private final AuctionSessionService auctionSessionService;
 
+    @Autowired
+    private final AuctionHistoryService auctionHistoryService;
+
+    @Autowired
+    private final BalanceUserService balanceUserService;
+
+    @Autowired
+    private final DepositService depositService;
+
+    @Autowired
+    private final VNPayService vnPayService;
+
     private final RestTemplate restTemplate;
     @Autowired
     private final ObjectMapper mapper = new ObjectMapper();
@@ -40,10 +61,14 @@ public class OpenAIService {
     @Autowired
     private final ChatBotService chatBotService;
 
-    public OpenAIService(RestTemplate restTemplate, AuctionSessionService auctionSessionService, ChatBotService chatBotService) {
+    public OpenAIService(RestTemplate restTemplate, AuctionSessionService auctionSessionService, ChatBotService chatBotService, AuctionHistoryService auctionHistoryService, BalanceUserService balanceUserService, VNPayService vnPayService, DepositService depositService) {
         this.restTemplate = restTemplate;
         this.auctionSessionService = auctionSessionService;
         this.chatBotService = chatBotService;
+        this.auctionHistoryService = auctionHistoryService;
+        this.balanceUserService = balanceUserService;
+        this.vnPayService = vnPayService;
+        this.depositService = depositService;
     }
 
     public String chatWithToolCalls(ChatRequest request) throws Exception {
@@ -166,6 +191,31 @@ public class OpenAIService {
                         args1.getSize()
                 ).toString();
 
+            case "PlaceBidSession":
+                try {
+                    AuctionHistoryCreateRequest placeBidSession = mapper.treeToValue(argumentsNode, AuctionHistoryCreateRequest.class);
+                    return auctionHistoryService.createAuctionHistory(placeBidSession).toString();
+                } catch (AppException ex) {
+                    return ex.getMessage();
+                }
+
+            case "GetMyBalanceUser":
+                return balanceUserService.getMyCoinUser().toString();
+
+            case "PaymentVnPay":
+                VNPayRequestDTO vnpayDTO = mapper.treeToValue(argumentsNode, VNPayRequestDTO.class);
+                vnpayDTO.setBankCode("NCB");
+                var response = vnPayService.createVnPayPayment(vnpayDTO, "");
+                return response.paymentUrl.toString();
+
+            case "depositSessionTool":
+                try {
+                    DepositCreateRequest deposit = mapper.treeToValue(argumentsNode, DepositCreateRequest.class);
+                    return depositService.createDeposit(deposit).toString();
+                } catch (AppException ex) {
+                    return ex.getMessage();
+                }
+
             default:
                 throw new IllegalArgumentException("Function not supported: " + functionName);
         }
@@ -177,45 +227,76 @@ public class OpenAIService {
 
     private String systemPrompt() {
         var system_time = LocalDateTime.now();
-        return "You are an intelligent assistant capable of answering user questions by utilizing multiple tools, including API calls and knowledge base lookups. You can select the most suitable function or tool to respond to the user based on the context of the question. Your role is to provide smart, context-aware answers, and optionally trigger tools when needed. You are polite, concise, and avoid hallucinations. If you're unsure, you will mention it explicitly.\n" +
-
-                "\n" +
-                "<general_guidelines>\n" +
-                "- Always respond in the language the user is using.\n" +
-                "- Always return responses in structured HTML format with basic styling (such as bold text, bullet points, and section headers) suitable for web display. Use clear and minimalistic HTML.\n " +
-                "- Ensure that lists are <ul><li> formatted, important text is <strong> highlighted, and sections have <h3> titles.\n" +
-                "- - Ensure images use <img> tags with responsive inline CSS (e.g., style=\"max-width:100%; height:auto;\") or add a class \"auction-image\" for frontend styling.\n" +
-                "- Analyze the user's intent and decide whether to call an API, search a knowledge base, or use internal knowledge.\n" +
-                "- If an API tool is available, map user-provided values to the API's parameters and call the appropriate method.\n" +
-                "- In case the API fails, tell the user to try again next time.\n" +
-                "- If the query is related to documented knowledge, use the knowledge base tools.\n" +
-                "- If tools are not sufficient, rely on your internal model knowledge to provide a helpful answer.\n" +
-                "- Respond in a clear and helpful manner, suitable for business communication.\n" +
-                "</general_guidelines>\n" +
-
-                "\n" +
-                "<guidelines>\n" +
-                "- Always respond in the same language as the user.\n" +
-                "- When the user asks for a list of auction sessions without specifying filters, use default values for unspecified parameters. If some filters are specified, set the unspecified ones to null.\n" +
-                "- When displaying auction session information, you must always include the following fields: " +
-                "       Auction Name, Description, Auction Type, Start Time, End Time, Starting Price, Bid Increment, Current Highest Bid, Status, and Image.\n" +
-                "- Translate the field labels (such as 'Auction Name', 'Start Time', etc.) into the user's language.\n" +
-                "  🔹 **[Label: Auction Name]**: [Auction Name]\n" +
-                "  - **[Label: Description]**: [Auction Description]\n" +
-                "  - **[Label: Auction Type]**: [Auction Type]\n" +
-                "  - **[Label: Start Time]**: [Start Time in yyyy-MM-dd HH:mm:ss format]\n" +
-                "  - **[Label: End Time]**: [End Time in yyyy-MM-dd HH:mm:ss format]\n" +
-                "  - **[Label: Starting Price]**: [Starting Price] VND\n" +
-                "  - **[Label: Bid Increment]**: [Bid Increment] VND\n" +
-                "  - **[Label: Current Highest Bid]**: [Current Highest Bid] VND\n" +
-                "  - **[Label: Status]**: [Auction Status]\n" +
-                "  - [Label: Image]: Display the image using an HTML <img> tag with the provided image URL. Add responsive styling (style=\"max-width:100%; height:auto;\") or apply the CSS class \"auction-image\".\n " +
-                "- Ensure correct formatting and consistent translation of labels to match the user's language.\n" +
-                "</guidelines>\n" +
-
-                "\nCurrent datetime: " + system_time + "\n";
+        return """
+            You are a smart assistant capable of using various tools such as API calls and data lookup to answer user questions. Analyze the context to choose the appropriate tool and provide accurate, clear, and polite responses. If uncertain, clearly communicate that.
+            
+            <h3>⚙️ General Rules</h3>
+            <ul>
+              <li>Always respond in the same language the user is using.</li>
+              <li>Respond using simple HTML format suitable for web display:
+                <ul>
+                  <li>Bold text: use <strong>.</li>
+                  <li>Lists: use <ul><li>.</li>
+                  <li>Headings: use <h3>.</li>
+                  <li>Images: use &lt;img&gt; with style="max-width:100%; height:auto;" or class="auction-image".</li>
+                </ul>
+              </li>
+              <li>Do not use markdown or triple backticks (```).</li>
+              <li>If a tool is needed, map parameters correctly and call the appropriate function.</li>
+              <li>If an API call fails, report the error clearly to the user.</li>
+            </ul>
+            
+            <h3>📦 Specific Instructions</h3>
+            <ul>
+              <li><strong>Auction Session List:</strong> If the user does not provide filters, use default values. If only some filters are provided, leave the others null.</li>
+                <li><strong>Auction Session Details:</strong> Always display all the following fields, including the <strong>auctionSessionId (UUID)</strong>:
+                  <ul>
+                    <li><strong>ID:</strong> [auctionSessionId] (UUID, always include this)</li>
+                    <li><strong>Session Name:</strong> [Auction Name]</li>
+                    <li><strong>Description:</strong> [Description]</li>
+                    <li><strong>Type:</strong> [Auction Type]</li>
+                    <li><strong>Start Time:</strong> yyyy-MM-dd HH:mm:ss</li>
+                    <li><strong>End Time:</strong> yyyy-MM-dd HH:mm:ss</li>
+                    <li><strong>Starting Price:</strong> [Starting Price] VND</li>
+                    <li><strong>Bid Increment:</strong> [Bid Increment] VND</li>
+                    <li><strong>Current Highest Bid:</strong> [Current Highest Bid] VND</li>
+                    <li><strong>Status:</strong> [Status]</li>
+                    <li><strong>Image:</strong> displayed using &lt;img&gt;</li>
+                  </ul>
+                </li>
+              <li><strong>Placing a Bid:</strong>
+                <ul>
+                  <li>If auctionSessionId is missing, call FilterAuctionSession with status = ONGOING.</li>
+                  <li>Ask the user to select a suitable session name.</li>
+                  <li>Look up the corresponding session ID and call placeBidSessionTool with auctionSessionId and bidAmount.</li>
+                </ul>
+              </li>
+              <li><strong>Account Top-up:</strong>
+                <ul>
+                  <li>If amount is missing, ask the user to enter it.</li>
+                  <li>Call PaymentVnPay with the amount.</li>
+                  <li>If paymentUrl is returned, show the link “Click here to proceed with the payment.”</li>
+                  <li>If not returned or error occurs, notify the user to retry or contact support.</li>
+                </ul>
+              </li>
+              <li><strong>Deposit Submission:</strong>
+                <ul>
+                  <li>Check the last 6–8 messages for an attempt to bid that failed due to missing deposit.</li>
+                  <li>If session name is found, look up ID using FilterAuctionSession and call depositSessionTool.</li>
+                  <li>If no context is found, call FilterAuctionSession (ONGOING), ask for session name, find ID, and then proceed with deposit.</li>
+                </ul>
+              </li>
+              <li><strong>View Account Info:</strong> Call getMyBalanceUser.</li>
+            </ul>
+            
+            <h3>📌 Notes</h3>
+            <ul>
+              <li>Never assume sessionId based on the name. Always look it up using FilterAuctionSession.</li>
+              <li>Only call tools when sufficient and valid information is available and the logic flow makes sense.</li>
+            </ul>
+            
+            <p><em>Current datetime:</em> """ + system_time + "</p>";
     }
-
 
     private List<Map<String, Object>> getDefinedFunctions() {
         List<Map<String, Object>> functions = new ArrayList<>();
@@ -231,8 +312,75 @@ public class OpenAIService {
                 )
         );
 
-        // Add all
+        Map<String, Object> placeBidSessionTool = Map.of(
+                "name", "PlaceBidSession",
+                "description", "Place a bid on an auction session.",
+                "parameters", Map.of(
+                        "type", "object",
+                        "properties", Map.of(
+                                "auctionSessionId", Map.of(
+                                        "type", "string",
+                                        "description", "ID of the auction session."
+                                ),
+                                "bidPrice", Map.of(
+                                        "type", "number",
+                                        "format", "decimal",
+                                        "description", "The bid price."
+                                )
+                        ),
+                        "required", List.of("auctionSessionId", "bidPrice")
+                )
+        );
+
+        Map<String, Object> getMyBalanceUser = Map.of(
+                "name", "GetMyBalanceUser",
+                "description", "Get the current user's balance.",
+                "parameters", Map.of(
+                        "type", "object",
+                        "properties", Map.of()
+                )
+        );
+
+        Map<String, Object> PaymentVnPay = Map.of(
+                "name", "PaymentVnPay",
+                "description", "",
+                "parameters", Map.of(
+                        "type", "object",
+                        "properties", Map.of(
+                                "amount", Map.of(
+                                        "type", "string",
+                                        "description", "The amount of the payment via VN."
+
+                                )
+                        ),
+                        "required", List.of("amount")
+                )
+        );
+
+        Map<String, Object> depositSessionTool = Map.of(
+                "name", "depositSessionTool",
+                "description", "Make a deposit to confirm participation in a selected auction session.",
+                "parameters", Map.of(
+                        "type", "object",
+                        "properties", Map.of(
+                                "auctionSessionId", Map.of(
+                                        "type", "string",
+                                        "description", "The ID of the auction session the user wants to join."
+                                ),
+                                "userConfirmation", Map.of(
+                                        "type", "boolean",
+                                        "description", "Whether the user has confirmed the information to create the request. Values: \"true\" or \"false\". If not confirmed, the value is always \"false\"."
+                                )
+                        ),
+                        "required", List.of("auctionSessionId", "userConfirmation")
+                )
+        );
+
         functions.add(filterAuctionSessionTool);
+        functions.add(placeBidSessionTool);
+        functions.add(getMyBalanceUser);
+        functions.add(PaymentVnPay);
+        functions.add(depositSessionTool);
 
         return functions;
     }
@@ -242,7 +390,8 @@ public class OpenAIService {
 
         properties.put("status", Map.of(
                 "type", "string",
-                "description", "Status of the auction session. Optional. Leave empty to ignore."
+                "description", "Status of the auction session. Optional. Leave empty to ignore. Possible values: UPCOMING (about to start), ONGOING (currently ongoing), AUCTION_SUCCESS (successfully auctioned), AUCTION_FAILED (auction failed).",
+                "enum", List.of("UPCOMING", "ONGOING", "AUCTION_SUCCESS", "AUCTION_FAILED")
         ));
         properties.put("typeId", Map.of(
                 "type", "string",

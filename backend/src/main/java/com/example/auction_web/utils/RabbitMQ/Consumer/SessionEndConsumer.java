@@ -4,9 +4,12 @@ import com.example.auction_web.WebSocket.service.NotificationStompService;
 import com.example.auction_web.configuration.ApplicationInitConfig;
 import com.example.auction_web.dto.request.BalanceHistoryCreateRequest;
 import com.example.auction_web.dto.request.notification.NotificationRequest;
+import com.example.auction_web.dto.response.BalanceUserResponse;
 import com.example.auction_web.entity.auth.User;
 import com.example.auction_web.enums.ACTIONBALANCE;
 import com.example.auction_web.enums.NotificationType;
+import com.example.auction_web.exception.AppException;
+import com.example.auction_web.exception.ErrorCode;
 import com.example.auction_web.mapper.BalanceHistoryMapper;
 import com.example.auction_web.repository.AuctionSessionRepository;
 import com.example.auction_web.repository.BalanceHistoryRepository;
@@ -14,8 +17,11 @@ import com.example.auction_web.repository.BalanceUserRepository;
 import com.example.auction_web.repository.DepositRepository;
 import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.AuctionSessionService;
+import com.example.auction_web.service.BalanceUserService;
+import com.example.auction_web.service.DepositService;
 import com.example.auction_web.service.auth.UserService;
 import com.example.auction_web.utils.RabbitMQ.Dto.SessionEndMessage;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
@@ -39,31 +45,33 @@ public class SessionEndConsumer {
     BalanceHistoryMapper balanceHistoryMapper;
     NotificationStompService notificationStompService;
     AuctionSessionService auctionSessionService;
+    BalanceUserService balanceUserService;
+    DepositService depositService;
     UserService userService;
 
+    @Transactional
     @RabbitListener(queues = "sessionEndQueue")
     public void processSessionEnd(SessionEndMessage sessionEndMessage) {
         String auctionSessionWinnerId = sessionEndMessage.getAuctionSessionWinnerId();
         String auctionSessionId = sessionEndMessage.getAuctionSessionId();
 
-        var deposits = depositRepository.findActiveDepositsByAuctionSessionIdAndDelFlag(auctionSessionId);
+        var deposits = depositService.findDepositByAuctionSessionId(auctionSessionId);
         var auctionSession = auctionSessionService.getAuctionSessionById(auctionSessionId);
         var senderId = userService.getUserByEmail(EMAIL_ADMIN).getUserId();
+        var balanceUserAdmin = balanceUserService.getBalanceUserAdmin();
 
         for (var deposit : deposits) {
-            String userId = deposit.getUser().getUserId();
+            String userId = deposit.getUserId();
+            var balanUser = balanceUserService.getCoinUserByUserId(userId);
             if (!userId.equals(auctionSessionWinnerId)) {
-                // Cộng tiền lại cho user
                 balanceUserRepository.increaseBalance(userId, deposit.getDepositPrice());
-                addBalanceHistory(userId, deposit.getDepositPrice(), 
+                addBalanceHistory(balanUser, deposit.getDepositPrice(),
                     "Refund for auctionSessionId: " + auctionSessionId, ACTIONBALANCE.ADD);
 
-                // Trừ tiền từ admin
                 balanceUserRepository.minusBalance(EMAIL_ADMIN, deposit.getDepositPrice());
-                addBalanceHistory(balanceUserRepository.findBalanceUserByUser_Email(EMAIL_ADMIN).getBalanceUserId(),
+                addBalanceHistory(balanceUserAdmin,
                     deposit.getDepositPrice(), "Refund for auctionSessionId: " + auctionSessionId, ACTIONBALANCE.SUBTRACT);
 
-                // Gửi thông báo hoàn tiền cho người dùng
                 NotificationRequest notification = NotificationRequest.builder()
                     .senderId(senderId)
                     .receiverId(userId)
@@ -78,13 +86,16 @@ public class SessionEndConsumer {
         }
     }
 
-    void addBalanceHistory(String BalanceUserId, BigDecimal amount, String Description, ACTIONBALANCE action) {
+    void addBalanceHistory(BalanceUserResponse BalanceUser, BigDecimal amount, String Description, ACTIONBALANCE action) {
+        var balanceUser = balanceUserRepository.findById(BalanceUser.getBalanceUserId())
+                .orElseThrow(() -> new AppException(ErrorCode.BALANCE_USER_NOT_EXISTED));
         BalanceHistoryCreateRequest request = BalanceHistoryCreateRequest.builder()
-                .balanceUserId(BalanceUserId)
                 .amount(amount)
                 .description(Description)
                 .actionbalance(action)
                 .build();
-        balanceHistoryRepository.save(balanceHistoryMapper.toBalanceHistory(request));
+        var balanceHistory = balanceHistoryMapper.toBalanceHistory(request);
+        balanceHistory.setBalanceUser(balanceUser);
+        balanceHistoryRepository.save(balanceHistory);
     }
 }

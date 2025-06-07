@@ -18,17 +18,17 @@ import com.example.auction_web.exception.ErrorCode;
 import com.example.auction_web.mapper.AuctionSessionMapper;
 import com.example.auction_web.mapper.BalanceHistoryMapper;
 import com.example.auction_web.mapper.DepositMapper;
-import com.example.auction_web.repository.AuctionSessionRepository;
-import com.example.auction_web.repository.BalanceHistoryRepository;
-import com.example.auction_web.repository.BalanceUserRepository;
-import com.example.auction_web.repository.DepositRepository;
+import com.example.auction_web.repository.*;
 import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.AuctionSessionService;
 import com.example.auction_web.service.DepositService;
+import com.example.auction_web.service.auth.UserService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,6 +48,8 @@ public class DepositServiceImpl implements DepositService {
     AuctionSessionMapper auctionSessionMapper;
     BalanceHistoryRepository balanceHistoryRepository;
     NotificationStompService notificationStompService;
+    AuctionHistoryRepository auctionHistoryRepository;
+    UserService userService;
 
     @NonFinal
     @Value("${email.username}")
@@ -56,6 +58,30 @@ public class DepositServiceImpl implements DepositService {
     // create a deposit
     @Transactional
     public DepositResponse createDeposit(DepositCreateRequest request) {
+
+        if (request.getUserId() == null) {
+            String userId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            request.setUserId(userId);
+        }
+        if (request.getDepositPrice() == null) {
+            var auctionSession = auctionSessionRepository.getById(request.getAuctionSessionId());
+            request.setDepositPrice(auctionSession.getDepositAmount());
+        }
+
+        var checkDeposit = depositRepository.findByAuctionSession_AuctionSessionIdAndUser_UserId(request.getAuctionSessionId(), request.getUserId());
+        if (checkDeposit != null) {
+            throw new AppException(ErrorCode.DEPOSIT_IS_EXISTED);
+        }
+
+        if (request.getUserConfirmation() != null && !request.getUserConfirmation()) {
+            var auctionSession = auctionSessionRepository.getById(request.getAuctionSessionId());
+            throw new AppException(ErrorCode.USER_NOT_CONFIRMATION,
+                    "Please confirm the information before making a deposit: SessionId: "
+                            + request.getAuctionSessionId()
+                            + " Session Name: " + auctionSession.getName()
+                            + " Deposit Amount: " + request.getDepositPrice());
+        }
+
         var deposit = depositMapper.toDeposit(request);
         var admin = userRepository.findByEmail(EMAIL_ADMIN)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
@@ -80,7 +106,7 @@ public class DepositServiceImpl implements DepositService {
 
         // Gửi thông báo đến người dùng
         NotificationRequest notification = NotificationRequest.builder()
-            .senderId(request.getUserId())
+            .senderId(userService.getUserByEmail(EMAIL_ADMIN).getUserId())
             .receiverId(request.getUserId())
             .type(NotificationType.DEPOSIT)
             .title("Đặt cọc thành công")
@@ -138,7 +164,13 @@ public class DepositServiceImpl implements DepositService {
         }
         return depositRepository.findSessionsJoinByUserId(userId).stream()
                 .map(usersJoinSessionResponse -> {
+                    var auctionSession = auctionSessionRepository.findById(usersJoinSessionResponse.getSessionId())
+                            .orElseThrow(() -> new AppException(ErrorCode.AUCTION_SESSION_NOT_EXISTED));
                     usersJoinSessionResponse.setAuctionSession(auctionSessionMapper.toAuctionItemResponse(auctionSessionRepository.findById(usersJoinSessionResponse.getSessionId()).orElseThrow()));
+                    var auctionSessionInfos = auctionHistoryRepository.findAuctionSessionInfo(usersJoinSessionResponse.getSessionId());
+                    if (!auctionSessionInfos.isEmpty()) {
+                        usersJoinSessionResponse.getAuctionSession().setAuctionSessionInfo(auctionSessionInfos.get(0));
+                    }
                     return usersJoinSessionResponse;
                 })
                 .toList();

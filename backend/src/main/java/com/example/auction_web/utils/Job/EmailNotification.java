@@ -1,13 +1,21 @@
 package com.example.auction_web.utils.Job;
 
+import com.example.auction_web.WebSocket.service.NotificationStompService;
+import com.example.auction_web.dto.request.notification.NotificationRequest;
 import com.example.auction_web.entity.AuctionSession;
 import com.example.auction_web.entity.ScheduleLog.NotificationLog;
+import com.example.auction_web.enums.NotificationType;
 import com.example.auction_web.repository.AuctionSessionRepository;
 import com.example.auction_web.repository.NotificationRepository;
+import com.example.auction_web.service.auth.UserService;
+
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
+
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
@@ -16,12 +24,18 @@ import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor
+@FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
 public class EmailNotification implements Job {
     private final JavaMailSender javaMailSender;
     private final NotificationRepository notificationLogRepository;
 
-    @Autowired
-    private AuctionSessionRepository auctionSessionRepository;
+    AuctionSessionRepository auctionSessionRepository;
+    NotificationStompService notificationService;
+    UserService userService;
+
+    @NonFinal
+    @Value("${email.username}")
+    String EMAIL_ADMIN;
 
     @Override
     public void execute(JobExecutionContext context) {
@@ -34,6 +48,17 @@ public class EmailNotification implements Job {
         try {
             // Tạo và gửi email
             sendNotification(email, auctionSession);
+
+            // Tạo và gửi thông báo socket
+            NotificationRequest socketNotification = new NotificationRequest();
+            socketNotification.setSenderId(userService.getUserByEmail(EMAIL_ADMIN).getUserId());
+            socketNotification.setReceiverId(email);
+            socketNotification.setType(NotificationType.AUCTION_REMINDER);
+            socketNotification.setTitle("Sắp bắt đầu phiên đấu giá");
+            socketNotification.setContent("Phiên đấu giá " + auctionSession.getAsset().getAssetName() + " sắp bắt đầu.");
+            socketNotification.setReferenceId(auctionSessionId);
+
+            notificationService.sendUserNotification(email, socketNotification);
 
             // Cập nhật trạng thái khi gửi thành công
             if (notificationLog != null) {
@@ -52,11 +77,10 @@ public class EmailNotification implements Job {
     }
 
     private void sendNotification(String email, AuctionSession auctionSession) {
-        // Thực hiện gửi thông báo ngay lập tức (ví dụ qua Email)
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(email);
-        message.setSubject("Auction Session Reminder");
-        message.setText("Auction session " + auctionSession.getAsset().getAssetName() + " is about to start");
+        message.setSubject("Nhắc nhở phiên đấu giá");
+        message.setText("Phiên đấu giá '" + auctionSession.getAsset().getAssetName() + "' sắp bắt đầu. Vui lòng truy cập hệ thống để tham gia.");
         javaMailSender.send(message);
-    }
+    }    
 }

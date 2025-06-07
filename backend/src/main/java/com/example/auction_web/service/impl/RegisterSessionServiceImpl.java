@@ -79,7 +79,7 @@ public class RegisterSessionServiceImpl implements RegisterSessionService {
             }
     
             // Thiết lập thông báo trước giờ phiên đấu giá
-            LocalDateTime notificationTime = auctionSession.getStartTime().minusMinutes(30);
+            LocalDateTime notificationTime = auctionSession.getStartTime();
             notificationService.setSchedulerNotification(
                     user.getEmail(), auctionSession.getAuctionSessionId(), notificationTime
             );
@@ -136,6 +136,7 @@ public class RegisterSessionServiceImpl implements RegisterSessionService {
                     } else {
                         response.getAuctionSession().setAsset(null);
                     }
+                    response.setTotalRegistrations(registerSessionRepository.countRegisterSessionsByAuctionSession_AuctionSessionId(registerSession.getAuctionSession().getAuctionSessionId()));
                     return response;
                 })
                 .toList();
@@ -157,6 +158,7 @@ public class RegisterSessionServiceImpl implements RegisterSessionService {
                     } else {
                         response.getAuctionSession().setAsset(null);
                     }
+                    response.setTotalRegistrations(registerSessionRepository.countRegisterSessionsByAuctionSession_AuctionSessionId(registerSession.getAuctionSession().getAuctionSessionId()));
                     return response;
                 })
                 .toList();

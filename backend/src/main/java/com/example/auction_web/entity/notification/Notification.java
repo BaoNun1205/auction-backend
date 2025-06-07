@@ -31,6 +31,7 @@ public class Notification {
     @JoinColumn(name = "receiver_id", referencedColumnName = "userId")
     User receiver;
 
+    @Column(length = 50)
     @Enumerated(EnumType.STRING)
     NotificationType type;
 

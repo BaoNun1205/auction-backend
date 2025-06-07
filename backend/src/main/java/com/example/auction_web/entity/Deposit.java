@@ -49,7 +49,4 @@ public class Deposit {
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
-
-    @OneToOne(mappedBy = "deposit", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    Bill bill;
 }

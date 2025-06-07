@@ -26,6 +26,7 @@ import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,10 +51,16 @@ public class AuctionHistoryServiceImpl implements AuctionHistoryService {
     @Override
     @Transactional
     public AuctionHistoryResponse createAuctionHistory(AuctionHistoryCreateRequest request) {
+        if (request.getUserId() == null) {
+            String userId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            request.setUserId(userId);
+        }
         try {
-            String userId = auctionHistoryRepository
-                    .findTopUserBidPriceByBidTime(request.getAuctionSessionId(), PageRequest.of(0, 1))
-                    .get(0);
+            List<String> userIds = auctionHistoryRepository
+                    .findTopUserBidPriceByBidTime(request.getAuctionSessionId(), PageRequest.of(0, 1));
+
+            String userId = (userIds != null && !userIds.isEmpty()) ? userIds.get(0) : null;
+
             Deposit deposit = depositRepository.findByAuctionSession_AuctionSessionIdAndUser_UserId(request.getAuctionSessionId(), request.getUserId());
             if (deposit == null) {
                 throw new AppException(ErrorCode.DEPOSIT_NOT_EXISTED);

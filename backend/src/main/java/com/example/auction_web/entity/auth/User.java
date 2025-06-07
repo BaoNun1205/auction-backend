@@ -5,6 +5,7 @@ import com.example.auction_web.entity.chat.Conversation;
 import com.example.auction_web.entity.chat.Message;
 import com.example.auction_web.enums.GENDER;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -55,6 +56,11 @@ public class User {
     Double responseRate;                // Tỉ lệ phản hồi (theo %)
     LocalDateTime lastResponRateCalculatedAt;
 
+    Double averageReviewRating;
+
+    @Column(columnDefinition = "TEXT")
+    String vectorJson;
+
     LocalDate dateOfBirth;
     String token;
     Boolean enabled;
@@ -69,6 +75,7 @@ public class User {
         this.totalResponseCount = 0L;
         this.totalOpponentMessages = 0L;
         this.totalOpponentMessagesReplied = 0L;
+        this.averageReviewRating = 0.0;
         this.enabled = false;
     }
 
@@ -87,10 +94,11 @@ public class User {
     @OneToMany(mappedBy = "vendor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<Asset> assets;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonManagedReference
     BalanceUser balanceUser;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     Inspector inspector;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -122,4 +130,10 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<AutoBid> autoBids;
+
+    @OneToMany(mappedBy = "buyerBill", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<Bill> buyerBills;
+
+    @OneToMany(mappedBy = "sellerBill", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<Bill> sellerBills;
 }

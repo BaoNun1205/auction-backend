@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface SessionWinnerRepository extends JpaRepository<SessionWinner, String> {
     SessionWinner getSessionWinnerByUser_UserId(String userId);
+    SessionWinner findByAuctionSession_AuctionSessionId(String auctionSessionId);
     List<SessionWinner> getSessionWinnersByUser_UserId(String userId);
 }

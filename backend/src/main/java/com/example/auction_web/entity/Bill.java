@@ -1,6 +1,7 @@
 package com.example.auction_web.entity;
 
 import com.example.auction_web.entity.auth.User;
+import com.example.auction_web.enums.SESSION_WIN_STATUS;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,21 +25,34 @@ public class Bill {
     @GeneratedValue(strategy = GenerationType.UUID)
     String billId;
 
+    String transactionCode;
+
     LocalDateTime billDate;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "addressId", referencedColumnName = "addressId")
     Address address;
 
     @OneToOne
-    @JoinColumn(name = "depositId", referencedColumnName = "depositId")
-    Deposit deposit;
+    @JoinColumn(name = "sessionId", referencedColumnName = "auctionSessionId")
+    AuctionSession session;
+
+    @ManyToOne
+    @JoinColumn(name = "buyerId", referencedColumnName = "userId")
+    User buyerBill;
+
+    @ManyToOne
+    @JoinColumn(name = "sellerId", referencedColumnName = "userId")
+    User sellerBill;
+
+    @Column(precision = 15, scale = 0)
+    BigDecimal totalPrice;
 
     @Column(precision = 15, scale = 0)
     BigDecimal bidPrice;
 
     @Column(precision = 15, scale = 0)
-    BigDecimal profitPrice;
+    BigDecimal depositPrice;
 
     Boolean delFlag;
     LocalDateTime createdAt;

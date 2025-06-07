@@ -35,6 +35,11 @@ public class RabbitMQConfig {
     }
 
     @Bean
+    public Binding sessionEndBinding(Queue sessionEndQueue, TopicExchange sessionEndExchange) {
+        return BindingBuilder.bind(sessionEndQueue).to(sessionEndExchange).with("session");
+    }
+
+    @Bean
     public Jackson2JsonMessageConverter messageConverter() {
         return new Jackson2JsonMessageConverter();
     }

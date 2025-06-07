@@ -17,9 +17,14 @@ import com.example.auction_web.repository.BalanceHistoryRepository;
 import com.example.auction_web.repository.BalanceUserRepository;
 import com.example.auction_web.repository.auth.UserRepository;
 import com.example.auction_web.service.BalanceUserService;
+import com.example.auction_web.service.auth.UserService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -35,6 +40,11 @@ public class BalanceUserServiceImpl implements BalanceUserService {
     BalanceHistoryMapper balanceHistoryMapper;
     BalanceUserMapper balanceUserMapper;
     NotificationStompService notificationStompService;
+    UserService userService;
+
+    @NonFinal
+    @Value("${email.username}")
+    String EMAIL_ADMIN;
 
     public BalanceUserResponse createCoinUser(BalanceUserCreateRequest request) {
         var coinUser = balanceUserMapper.toBalanceUser(request);
@@ -63,6 +73,11 @@ public class BalanceUserServiceImpl implements BalanceUserService {
         return balanceUserMapper.toBalanceUserResponse(balanceUserRepository.findBalanceUserByUser_UserId(userId));
     }
 
+    public BalanceUserResponse getMyCoinUser() {
+        String userId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return balanceUserMapper.toBalanceUserResponse(balanceUserRepository.findBalanceUserByUser_UserId(userId));
+    }
+
     @Override
     public BalanceUserResponse updateCoinUserVnPay(String userId, String orderInfo, BigDecimal amount) {
         BalanceUser balanceUser = balanceUserRepository.findBalanceUserByUser_UserId(userId);
@@ -78,7 +93,7 @@ public class BalanceUserServiceImpl implements BalanceUserService {
 
         // Gửi notification
         NotificationRequest notification = NotificationRequest.builder()
-            .senderId(userId)
+            .senderId(userService.getUserByEmail(EMAIL_ADMIN).getUserId())
             .receiverId(userId)
             .type(NotificationType.RECHARGE)
             .title("Nạp tiền thành công")
@@ -103,5 +118,9 @@ public class BalanceUserServiceImpl implements BalanceUserService {
         var balanceHistory = balanceHistoryMapper.toBalanceHistory(request);
         balanceHistory.setBalanceUser(balanceUser);
         balanceHistoryRepository.save(balanceHistory);
+    }
+
+    public BalanceUserResponse getBalanceUserAdmin() {
+        return balanceUserMapper.toBalanceUserResponse(balanceUserRepository.findBalanceUserByUser_Email(EMAIL_ADMIN));
     }
 }

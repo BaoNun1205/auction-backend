@@ -9,6 +9,8 @@ import lombok.experimental.FieldDefaults;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import com.example.auction_web.dto.response.auth.UserResponse;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,11 +18,19 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class BillResponse {
     String billId;
+    String transactionCode;
     LocalDateTime billDate;
-    String addressId;
-    String depositId;
+    // String buyerId;
+    // String sellerId;
+    // String addressId;
+    // String sessionId;
+    UserResponse buyerBill;
+    UserResponse sellerBill;
+    AddressResponse address;
+    AuctionSessionResponse session;
+    BigDecimal totalPrice;
     BigDecimal bidPrice;
-    BigDecimal profitPrice;
+    BigDecimal depositPrice;
     Boolean delFlag;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;

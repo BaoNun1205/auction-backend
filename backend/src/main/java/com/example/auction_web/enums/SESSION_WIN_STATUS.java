@@ -1,8 +1,9 @@
 package com.example.auction_web.enums;
 
 public enum SESSION_WIN_STATUS {
-    PREPARING,
+    PENDING_PAYMENT,       
+    PAYMENT_SUCCESSFUL,
     DELIVERING,
     RECEIVED,
-    CANCELED
+    CANCELED 
 }

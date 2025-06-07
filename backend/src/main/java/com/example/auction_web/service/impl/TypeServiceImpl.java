@@ -2,6 +2,7 @@ package com.example.auction_web.service.impl;
 
 import com.example.auction_web.dto.request.TypeCreateRequest;
 import com.example.auction_web.dto.request.TypeUpdateRequest;
+import com.example.auction_web.dto.response.TypeFilterResponse;
 import com.example.auction_web.dto.response.TypeResponse;
 import com.example.auction_web.entity.Category;
 import com.example.auction_web.entity.Type;
@@ -115,5 +116,12 @@ public class TypeServiceImpl implements TypeService {
 
     private Boolean isAllParamsNullOrEmpty(Boolean status, String keyword) {
         return status == null && (keyword == null || keyword.isEmpty());
+    }
+
+    @Override
+    public List<TypeFilterResponse> getAllTypeFilterResponse() {
+        return typeRepository.findTypesByDelFlag(false).stream()
+                .map(typeMapper::toTypeFilterResponse)
+                .toList();
     }
 }

@@ -8,7 +8,10 @@ import com.example.auction_web.dto.response.AssetResponse;
 import com.example.auction_web.dto.response.AuctionSessionResponse;
 import com.example.auction_web.dto.response.DataResponse;
 import com.example.auction_web.entity.Asset;
+import com.example.auction_web.enums.ASSET_STATUS;
 import com.example.auction_web.service.AssetService;
+import com.example.auction_web.service.SessionWinnerService;
+
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -24,6 +27,7 @@ import java.util.List;
 @FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
 public class AssetController {
     AssetService assetService;
+    SessionWinnerService sessionWinnerService;
 
     @PostMapping
     ApiResponse<AssetResponse> createAsset(@ModelAttribute AssetCreateRequest request){
@@ -85,6 +89,16 @@ public class AssetController {
         return ApiResponse.<String>builder()
                 .code(HttpStatus.OK.value())
                 .result("Asset deleted successfully")
+                .build();
+    }
+
+    
+    @PutMapping("/status/{assetId}")
+    ApiResponse<AssetResponse> updateAssetStatus(@PathVariable String assetId,
+                                                 @RequestParam ASSET_STATUS status) {
+        return ApiResponse.<AssetResponse>builder()
+                .code(HttpStatus.OK.value())
+                .result(sessionWinnerService.updateAssetStatus(assetId, status))
                 .build();
     }
 }

@@ -23,12 +23,20 @@ public class SessionWinner {
     @GeneratedValue(strategy = GenerationType.UUID)
     String sessionWinnerId;
 
-    @ManyToOne
-    @JoinColumn(name = "userId", referencedColumnName = "userId")
+    // @ManyToOne
+    // @JoinColumn(name = "userId", referencedColumnName = "userId")
+    // User user;
+
+    // @ManyToOne
+    // @JoinColumn(name = "auctionSessionId", referencedColumnName = "auctionSessionId")
+    // AuctionSession auctionSession;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId", referencedColumnName = "userId", nullable = false)
     User user;
 
-    @ManyToOne
-    @JoinColumn(name = "auctionSessionId", referencedColumnName = "auctionSessionId")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "auctionSessionId", referencedColumnName = "auctionSessionId", nullable = false, unique = true)
     AuctionSession auctionSession;
 
     LocalDateTime victoryTime;
@@ -43,6 +51,11 @@ public class SessionWinner {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         this.delFlag = false;
-        this.status = SESSION_WIN_STATUS.PREPARING.toString();
+        this.status = SESSION_WIN_STATUS.PENDING_PAYMENT.toString();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 }
