@@ -91,4 +91,20 @@ public class BillController {
                     .build();
         }
     }
+
+    @GetMapping("/session/{sessionId}")
+    ApiResponse<BillResponse> getBillBySessionId(@PathVariable String sessionId) {
+        try {
+            return ApiResponse.<BillResponse>builder()
+                    .code(HttpStatus.OK.value())
+                    .result(billService.getBillBySessionId(sessionId))
+                    .build();
+        } catch (Exception e) {
+            return ApiResponse.<BillResponse>builder()
+                    .code(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                    .result(null)
+                    .message(e.getMessage())
+                    .build();
+        }
+    }
 }

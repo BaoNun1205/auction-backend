@@ -3,8 +3,6 @@ package com.example.auction_web.service;
 import com.example.auction_web.dto.request.BillCreateRequest;
 import com.example.auction_web.dto.request.BillUpdateRequest;
 import com.example.auction_web.dto.response.BillResponse;
-import com.example.auction_web.entity.Bill;
-import com.example.auction_web.entity.auth.User;
 
 import java.util.List;
 
@@ -15,4 +13,5 @@ public interface BillService {
     List<BillResponse> getBillByBuyerBillId(String buyerBillId);
     List<BillResponse> getBillBySellerBillId(String sellerBillId);
     BillResponse getBillById(String id);
+    BillResponse getBillBySessionId(String sessionId);
 }
