@@ -1,5 +1,6 @@
 package com.example.auction_web.dto.response;
 
+import com.example.auction_web.dto.response.auth.UserInfoBase;
 import com.example.auction_web.dto.response.auth.UserResponse;
 import com.example.auction_web.entity.ImageAsset;
 import lombok.AllArgsConstructor;
@@ -20,8 +21,7 @@ import java.util.List;
 public class AssetResponse {
     String assetId;
     String assetName;
-    UserResponse vendor;
-    InspectorResponse inspector;
+    UserInfoBase vendor;
     String slug;
     String mainImage;
     List<ImageAssetResponse> listImages;

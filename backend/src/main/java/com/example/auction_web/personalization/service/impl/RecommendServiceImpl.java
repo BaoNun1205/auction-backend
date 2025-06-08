@@ -292,7 +292,7 @@ public class RecommendServiceImpl implements RecommendService {
 
                     if (info.getUserId() != null) {
                         User user = userMap.get(info.getUserId());
-                        info.setUser(user != null ? userMapper.toUserResponse(user) : null);
+                        info.setUser(user != null ? userRepository.findUserInfoBaseByUserId(info.getUserId()) : null);
                     } else {
                         info.setUser(null);
                     }
@@ -364,7 +364,7 @@ public class RecommendServiceImpl implements RecommendService {
     
                     if (info.getUserId() != null) {
                         User user = userMap.get(info.getUserId());
-                        info.setUser(user != null ? userMapper.toUserResponse(user) : null);
+                        info.setUser(user != null ? userRepository.findUserInfoBaseByUserId(info.getUserId()) : null);
                     } else {
                         info.setUser(null);
                     }

@@ -21,7 +21,6 @@ public class AuctionSessionResponse {
     String description;
     String typeSession;
     AssetResponse asset;
-    UserResponse user;
     LocalDateTime startTime;
     LocalDateTime endTime;
     BigDecimal startingBids;

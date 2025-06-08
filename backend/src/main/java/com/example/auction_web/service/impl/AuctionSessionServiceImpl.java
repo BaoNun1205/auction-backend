@@ -150,7 +150,7 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
             }
 
             if (auctionSessionInfoResponse.get(0).getUserId() != null) {
-                auctionSessionInfoResponse.get(0).setUser(userMapper.toUserResponse(userRepository.findById(auctionSessionInfoResponse.get(0).getUserId()).get()));
+                auctionSessionInfoResponse.get(0).setUser(userRepository.findUserInfoBaseByUserId(auctionSessionInfoResponse.get(0).getUserId()));
             } else {
                 auctionSessionInfoResponse.get(0).setUser(null);
             }
@@ -175,7 +175,7 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
             }
 
             if (auctionSessionInfoResponse.get(0).getUserId() != null) {
-                auctionSessionInfoResponse.get(0).setUser(userMapper.toUserResponse(userRepository.findById(auctionSessionInfoResponse.get(0).getUserId()).get()));
+                auctionSessionInfoResponse.get(0).setUser(userRepository.findUserInfoBaseByUserId(auctionSessionInfoResponse.get(0).getUserId()));
             } else {
                 auctionSessionInfoResponse.get(0).setUser(null);
             }
@@ -211,7 +211,7 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
                         }
 
                         if (auctionSessionInfoResponse.get(0).getUserId() != null) {
-                            auctionSessionInfoResponse.get(0).setUser(userMapper.toUserResponse(userRepository.findById(auctionSessionInfoResponse.get(0).getUserId()).get()));
+                            auctionSessionInfoResponse.get(0).setUser(userRepository.findUserInfoBaseByUserId(auctionSessionInfoResponse.get(0).getUserId()));
                         } else {
                             auctionSessionInfoResponse.get(0).setUser(null);
                         }
@@ -259,7 +259,7 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
                         }
 
                         if (auctionSessionInfoResponse.get(0).getUserId() != null) {
-                            auctionSessionInfoResponse.get(0).setUser(userMapper.toUserResponse(userRepository.findById(auctionSessionInfoResponse.get(0).getUserId()).get()));
+                            auctionSessionInfoResponse.get(0).setUser(userRepository.findUserInfoBaseByUserId(auctionSessionInfoResponse.get(0).getUserId()));
                         } else {
                             auctionSessionInfoResponse.get(0).setUser(null);
                         }

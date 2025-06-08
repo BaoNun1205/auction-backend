@@ -2,6 +2,7 @@ package com.example.auction_web.WebSocket.service;
 
 import java.util.List;
 
+import com.example.auction_web.dto.response.auth.UserInfoBase;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -54,7 +55,7 @@ public class NotificationStompServiceImpl implements NotificationStompService {
     
             User sender = userService.getUser(notificationRequest.getSenderId());
 
-            UserResponse sessionOwner = auctionSessionService.getAuctionSessionById(sessionId).getAsset().getVendor();
+            UserInfoBase sessionOwner = auctionSessionService.getAuctionSessionById(sessionId).getAsset().getVendor();
 
             // Lọc ra những user khác sender
             receivers.stream()

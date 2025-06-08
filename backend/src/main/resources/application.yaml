@@ -11,7 +11,7 @@ spring:
   datasource:
     url: ${DBMS_CONNECTION:jdbc:mysql://localhost:3306/auction_web}
     driverClassName: "com.mysql.cj.jdbc.Driver"
-    password: ${DBMS_PASSWORD:120503}
+    password: ${DBMS_PASSWORD:root}
     username: ${DBMS_USERNAME:root}
 
   # spring:
@@ -103,3 +103,7 @@ openai:
     api-key: ${AZURE_API_KEY}
     endpoint: ${AZURE_ENDPOINT}
     deployment-name: ${DEPLOYMENT_NAME}
+  embedding:
+    api-key: ${AZURE_API_KEY_EMBEDDING}
+    endpoint: ${AZURE_ENDPOINT_EMBEDDING}
+    deployment-name: ${DEPLOYMENT_NAME_EMBEDDING}

@@ -1,5 +1,6 @@
 package com.example.auction_web.dto.response;
 
+import com.example.auction_web.dto.response.auth.UserInfoBase;
 import com.example.auction_web.dto.response.auth.UserResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +19,7 @@ public class AuctionSessionInfoResponse {
     Long totalAuctionHistory;
     String userId;
     BigDecimal highestBid;
-    UserResponse user;
+    UserInfoBase user;
     int totalRegistrations;
 
     public AuctionSessionInfoResponse(Long totalBidder, Long totalAuctionHistory, String userId, BigDecimal highestBid) {
@@ -28,7 +29,7 @@ public class AuctionSessionInfoResponse {
         this.highestBid = highestBid;
     }
 
-    public AuctionSessionInfoResponse(Long totalBidder, Long totalAuctionHistory, String userId, BigDecimal highestBid, UserResponse user) {
+    public AuctionSessionInfoResponse(Long totalBidder, Long totalAuctionHistory, String userId, BigDecimal highestBid, UserInfoBase user) {
         this.totalBidder = totalBidder;
         this.totalAuctionHistory = totalAuctionHistory;
         this.userId = userId;
@@ -36,7 +37,7 @@ public class AuctionSessionInfoResponse {
         this.user = user;
     }
 
-        public AuctionSessionInfoResponse(Long totalBidder, Long totalAuctionHistory, String userId, BigDecimal highestBid, UserResponse user, int totalRegistrations) {
+        public AuctionSessionInfoResponse(Long totalBidder, Long totalAuctionHistory, String userId, BigDecimal highestBid, UserInfoBase user, int totalRegistrations) {
         this.totalBidder = totalBidder;
         this.totalAuctionHistory = totalAuctionHistory;
         this.userId = userId;
