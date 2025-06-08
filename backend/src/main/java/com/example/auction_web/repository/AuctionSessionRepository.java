@@ -20,6 +20,7 @@ public interface AuctionSessionRepository extends JpaRepository<AuctionSession, 
     List<AuctionSession> findAuctionSessionByStatusOrderByStartTimeAsc(String status);
     Page<AuctionSession> findAll(Specification<AuctionSession> specification, Pageable pageable);
     List<AuctionSession> findAll(Specification<AuctionSession> specification);
+    List<AuctionSession> findByAsset_AssetId(String assetId);
 
     AuctionSession getAuctionSessionByAsset_AssetId(String assetId);
 
