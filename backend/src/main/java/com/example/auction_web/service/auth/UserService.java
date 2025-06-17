@@ -22,4 +22,7 @@ public interface UserService {
     void updateUnreadNotificationCount(String userId, Long count);
     void updateUserAverageResponseTime(User user);
     void updateUserResponseRate(User user);
+    long countActiveUsers();
+    long countActiveUsersByYear(int year);
+    double getUserGrowthRateThisYear();
 }

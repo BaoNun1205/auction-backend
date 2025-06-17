@@ -309,4 +309,23 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    public long countActiveUsers() {
+        return userRepository.countActiveUsers();
+    }
+
+    public long countActiveUsersByYear(int year) {
+        return userRepository.countActiveUsersByYear(year);
+    }
+
+    public double getUserGrowthRateThisYear() {
+        int currentYear = java.time.Year.now().getValue();
+        long thisYear = userRepository.countActiveUsersByYear(currentYear);
+        long lastYear = userRepository.countActiveUsersByYear(currentYear - 1);
+
+        if (lastYear == 0) {
+            return thisYear > 0 ? 100.0 : 0.0;
+        }
+        return ((thisYear - lastYear) * 100.0) / lastYear;
+    }
+
 }

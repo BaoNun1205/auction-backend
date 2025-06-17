@@ -306,4 +306,24 @@ public class AuctionSessionServiceImpl implements AuctionSessionService {
     public List<User> getUsersBiddingInSession(String sessionId) {
         return auctionSessionRepository.findDistinctUsersByAuctionSessionId(sessionId);
     }
+
+    public long countAllActiveAuctionSessions() {
+        return auctionSessionRepository.countAllActiveAuctionSessions();
+    }
+
+    public long countActiveAuctionSessionsByCurrentYear() {
+        int currentYear = java.time.Year.now().getValue();
+        return auctionSessionRepository.countActiveAuctionSessionsByYear(currentYear);
+    }
+
+    public double getAuctionSessionGrowthRateThisYear() {
+        int currentYear = java.time.Year.now().getValue();
+        long thisYear = auctionSessionRepository.countActiveAuctionSessionsByYear(currentYear);
+        long lastYear = auctionSessionRepository.countActiveAuctionSessionsByYear(currentYear - 1);
+
+        if (lastYear == 0) {
+            return thisYear > 0 ? 100.0 : 0.0;
+        }
+        return ((thisYear - lastYear) * 100.0) / lastYear;
+    }
 }

@@ -75,6 +75,7 @@ public class ChatServiceImpl implements ChatService {
         // Cập nhật conversation
         conversation.setLastMessage(payload.get("content"));
         conversation.setTime(LocalDateTime.now().toString());
+        conversation.setUpdatedAt(LocalDateTime.now());
 
         conversationRepository.save(conversation);
 

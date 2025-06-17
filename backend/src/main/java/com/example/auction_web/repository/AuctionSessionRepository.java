@@ -36,4 +36,10 @@ public interface AuctionSessionRepository extends JpaRepository<AuctionSession, 
     @Query("SELECT DISTINCT ah.user FROM AuctionHistory ah " +
            "WHERE ah.auctionSession.auctionSessionId = :auctionSessionId AND ah.delFlag = false")
     List<User> findDistinctUsersByAuctionSessionId(@Param("auctionSessionId") String auctionSessionId);
+
+    @Query("SELECT COUNT(a) FROM AuctionSession a WHERE a.delFlag = false")
+    long countAllActiveAuctionSessions();
+
+    @Query("SELECT COUNT(a) FROM AuctionSession a WHERE a.delFlag = false AND FUNCTION('YEAR', a.createdAt) = :year")
+    long countActiveAuctionSessionsByYear(@Param("year") int year);
 }

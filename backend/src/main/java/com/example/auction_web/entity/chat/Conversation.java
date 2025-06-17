@@ -47,9 +47,9 @@ public class Conversation {
         this.delFlag = false;
     }
 
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
+    // @PreUpdate
+    // protected void onUpdate() {
+    //     this.updatedAt = LocalDateTime.now();
+    // }
 
 }

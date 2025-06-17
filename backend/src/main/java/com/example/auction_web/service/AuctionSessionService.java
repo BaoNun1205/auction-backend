@@ -21,4 +21,7 @@ public interface AuctionSessionService {
     AuctionSessionInfoDetail getDetailAuctionSessionById(String auctionSessionId);
     AuctionSessionInfoDetail getDetailAuctionSessionByAssetId(String assetId);
     List<User> getUsersBiddingInSession(String sessionId);
+    long countAllActiveAuctionSessions();
+    long countActiveAuctionSessionsByCurrentYear();
+    double getAuctionSessionGrowthRateThisYear();
 }

@@ -43,7 +43,7 @@ public enum ErrorCode {
     BID_PRICE_MUST_GREATER_THAN_MAX_BID_PRICE(1037, "Bid price must be greater than max bid price", HttpStatus.BAD_REQUEST),
     CONCURRENT_UPDATE(1038, "Concurrent update", HttpStatus.BAD_REQUEST),
     CREATE_AUTO_BID_FAILED(1039, "Create auto bid failed", HttpStatus.BAD_REQUEST),
-    USER_CANNOT_BID_HIGHER_THAN_HIS_BID(1040, "You cannot bid higher than your bid", HttpStatus.BAD_REQUEST),
+    USER_CANNOT_BID_HIGHER_THAN_HIS_BID(1040, "Bạn đang là người đặt giá cao nhất", HttpStatus.BAD_REQUEST),
     AUTOBID_NOT_EXISTED(1041, "Auto bid not existed", HttpStatus.NOT_FOUND),
     UPDATE_AUTO_BID_FAILED(1042, "Update auto bid failed", HttpStatus.BAD_REQUEST),
     BALANCE_NOT_ENOUGH(1043, "Balance not enough", HttpStatus.BAD_REQUEST),

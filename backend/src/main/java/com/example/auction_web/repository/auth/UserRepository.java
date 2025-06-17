@@ -24,4 +24,9 @@ public interface UserRepository extends JpaRepository<User, String> {
             "FROM User u WHERE u.userId = :userId")
     UserInfoBase findUserInfoBaseByUserId(@Param("userId") String userId);
 
+    @Query("SELECT COUNT(u) FROM User u WHERE u.enabled = true AND u.username <> 'manager'")
+    long countActiveUsers();
+
+    @Query("SELECT COUNT(u) FROM User u WHERE u.enabled = true AND u.username <> 'manager' AND FUNCTION('YEAR', u.createdAt) = :year")
+    long countActiveUsersByYear(@Param("year") int year);
 }
